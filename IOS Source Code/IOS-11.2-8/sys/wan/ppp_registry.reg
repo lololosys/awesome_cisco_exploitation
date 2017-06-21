@@ -1,0 +1,571 @@
+# $Id: ppp_registry.reg,v 3.1.50.21 1996/09/10 07:32:46 dblair Exp $
+# $Source: /release/112/cvs/Xsys/wan/ppp_registry.reg,v $
+#------------------------------------------------------------------
+# ppp_registry.reg - PPP Service Points 
+#
+# Jan 1996, Shoou Yiu
+#
+# Copyright (c) 1996-1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: ppp_registry.reg,v $
+# Revision 3.1.50.21  1996/09/10  07:32:46  dblair
+# CSCdi62263:  Dialer profile with Multilink not working
+# Branch: California_branch
+# Fix botched comment during previous commit of CSCdi62263
+#
+# Revision 3.1.50.20  1996/09/10  07:17:51  dblair
+# CSCdi62263:  Dialer profile with Multilink not working
+# Branch: California_branch
+# Fix multilink and dialer profiles
+#
+# Revision 3.1.50.19  1996/09/10  06:16:46  fox
+# CSCdi68456:  Parallel connection information lost if one link
+# disconnects
+# Branch: California_branch
+# Expand check for parallel connections to protect IP dynamic dialer
+# maps.
+#
+# Revision 3.1.50.18  1996/08/28  00:09:57  perryl
+# CSCdi64970:  vtemplate hide printf is too specific
+# Branch: California_branch
+# Remove vtemplate_hide_printf and vtemplate_is_process registry.
+# Vtemplate use its own tty socket to redirect IO.
+#
+# Revision 3.1.50.17  1996/08/23  20:38:00  syiu
+# CSCdi66741:  Multichassis or VPDN multilink broken
+# Branch: California_branch
+#
+# Revision 3.1.50.16  1996/08/22  07:20:11  perryl
+# CSCdi66647:  Can not tell what a virtual access interface is used for
+# Branch: California_branch
+# Add an addition parameter to reg_invoke_vtemplate_create_vaccess, to
+# describe the type of the new virtual access interface.
+#
+# Revision 3.1.50.15  1996/08/15  05:17:16  fox
+# CSCdi65101:  Neighbor routes not removed when connection ends
+# Branch: California_branch
+# Clear the neighbor route before the interface is unbound from
+# the dialer interface since the neighbor routes will point ot the
+# dialer interface.
+#
+# Revision 3.1.50.14  1996/08/01  18:57:40  perryl
+# CSCdi61809:  Reconfiguring virtual template causes configuration errors
+# Branch: California_branch
+# Add two new vtemplare registries, vtemplate_is_process and
+# vtemplate_hide_printf
+#
+# Revision 3.1.50.13  1996/07/08  15:57:58  syiu
+# CSCdi62107:  Multichassis config conflict with Dialer
+# Branch: California_branch
+#
+# Revision 3.1.50.12  1996/07/01  21:28:29  syiu
+# CSCdi61806:  Multichassis MLP and VPDN should coexist
+# Branch: California_branch
+#
+# Revision 3.1.50.11  1996/06/24  09:28:31  fox
+# CSCdi59550:  PPP causes router to crash
+# Branch: California_branch
+# Slim down and speed up linktype to NCP index to PPP protocol lookups.
+# Extend NCP protocheck functions to pass original IDB as well as config
+# IDB.  Change NCP names to upper case.  Display NCP name in trace of
+# PPP negotiation.
+#
+# Revision 3.1.50.10  1996/06/22  07:38:34  syiu
+# CSCdi59165:  PPP Virtual-Access Int will not negotiate NCPs on
+# projected links
+# Branch: California_branch
+#
+# Revision 3.1.50.9  1996/06/19  20:38:20  fox
+# CSCdi59847:  Dynamic dialer maps are not cleared on async dialer ints
+# Branch: California_branch
+# Call reg_invoke_ipcp_cleanup_ip_peer() to remove the neighbor route,
+# the dynamic dialer map, and any other mechanisms tied to the current
+# peer address before clearing the peer address.
+#
+# Revision 3.1.50.8  1996/05/19  23:31:37  perryl
+# CSCdi56888:  Bundle partitioning should reset and display warning
+# Branch: California_branch
+#
+# Revision 3.1.50.7  1996/05/11  06:11:12  fox
+# CSCdi55358:  PPP subsystem needs to be more modular
+# Branch: California_branch
+# Attach lex_ncp subsystem to lex subsystem as lex requires PPP.
+# Add registry calls to eliminate PPP's dependancy on CCP/Compress.
+#
+# Revision 3.1.50.6  1996/05/10  01:45:30  wmay
+# CPP and PPP half-bridge commit
+# Branch: California_branch
+#
+# Revision 3.1.50.5  1996/05/06  18:52:43  perryl
+# CSCdi56515:  Virtual Access IP unnumbered is intrusive
+# Branch: California_branch
+# Virtual Template and Access interfaces are default to "no ip address"
+# when
+# created. Creating virtual access intf with "ip unnumbered" is now an
+# option.
+# For MLP, if there isn't a dialer interface associated with an incoming
+# call,
+# it will create a virtual access interface as the bundle interface with
+# the
+# "ip unnumbered" options. In most cases, the default "no ip address" is
+# used.
+# In selecting "ip unnumbered" source, it will first try to pick up
+# ethernet,
+# token ring, FDDI, ATM, serial and it will not pick dialer, virtual
+# template
+# and virtual access interfaces.
+#
+# Revision 3.1.50.4  1996/05/01  14:33:55  fox
+# CSCdi55358:  PPP subsystem needs to be more modular
+# Branch: California_branch
+# Make PPP NCPs into real subsystems.  Add them to all images where
+# PPP and the related network protocol are located.  NCPs are dependant
+# on PPP and the related network protocol subsystem but not vice versa.
+# Remove dependancies between PPP and the compression code.
+#
+# Revision 3.1.50.3  1996/05/01  00:27:14  syiu
+# CSCdi56248:  Multichassis MLP not starting L2F daemon automatically
+# Branch: California_branch
+#
+# Revision 3.1.50.2  1996/04/29  09:46:35  fox
+# CSCdi55358:  PPP subsystem needs to be more modular
+# Branch: California_branch
+# Move Network Control Protocol (NCP) support from PPP subsystem to
+# individual subsystems.  Attach NCP subsystems to respective protocol
+# subsystems.  Add registry calls to network protocol init code to
+# register default NCP support for NCPs not requiring option negotiation.
+#
+# Revision 3.1.50.1  1996/04/27  06:38:11  syiu
+# Branch: California_branch
+# Commit Dial1_branch
+#
+# Revision 3.1.2.17  1996/04/08  18:07:36  syiu
+# Branch: Dial1_branch
+# Synchronize Vaccess interface state changes. Otherwise route adjusts etc
+# won't work correctly.
+#
+# Revision 3.1.2.16  1996/04/03  22:59:15  abaindur
+# Branch: Dial1_branch
+#  Enhance bid generation scheme for MLP bundle mastership. Provide
+# a means of controlling mastership based on either locality of a call
+# or load-sharing.
+#
+# Revision 3.1.2.15  1996/03/24  01:42:17  tkolar
+# Branch: Dial1_branch
+# Remove the VPN authentication incursion from PPP.
+#
+# Revision 3.1.2.14  1996/03/22  05:34:07  tkolar
+# Branch: Dial1_branch
+# Reshape the way MLPVT interacts with VPN.
+#
+# Revision 3.1.2.13  1996/03/21  23:51:00  tkolar
+# Branch: Dial1_branch
+# Add support for multiple incoming tunnels, fix a crash in the resend
+# code, and add the beginnings of true authentication.
+#
+# Revision 3.1.2.12  1996/03/16  16:43:25  syiu
+# Branch: Dial1_branch
+# Create/Delete L2F tunnels from MLPVT. Also move code into
+# L2F create/delete tunnel routines
+#
+# Revision 3.1.2.11  1996/03/09  07:18:52  syiu
+# Branch: Dial1_branch
+# Move virtual-template from mlpvt to mlp
+#
+# Revision 3.1.2.10  1996/02/17  22:58:42  tkolar
+# Branch: Dial1_branch
+# Checkpoint a pingable VPN.
+#
+# Revision 3.1.2.9  1996/02/07  20:23:26  syiu
+# Branch: Dial1_branch
+# Add MLP Stackability calls support
+#
+# Revision 3.1.2.8  1996/02/06  20:36:51  syiu
+# Branch: Dial1_branch
+# L2F enhancements for PPP
+#
+# Revision 3.1.2.7  1996/01/31  18:37:47  tkolar
+# Branch: Dial1_branch
+# Get all of the VPN code into the repository, with the right names
+# and in the right places.
+#
+# Revision 3.1.2.6  1996/01/26  20:26:16  agh
+# Branch: Dial1_branch
+# Initial Checkin of MLPVT Code.
+#
+# Revision 3.1.2.5  1996/01/26  06:44:09  syiu
+# Branch: Dial1_branch
+# More L2F registries
+#
+# Revision 3.1.2.4  1996/01/19  23:19:14  syiu
+# Branch: Dial1_branch
+# Add MLP registries
+#
+# Revision 3.1.2.3  1996/01/19  02:15:58  syiu
+# Branch: Dial1_branch
+# PPP L2F support
+#
+# Revision 3.1.2.2  1996/01/18  04:59:13  perryl
+# Branch: Dial1_branch
+# Virtual Access interface services
+#
+# Revision 3.1.2.1  1996/01/18  00:16:41  syiu
+# Branch: Dial1_branch
+# PPP L2F registry support
+#
+# Revision 3.1  1996/01/17  22:49:55  syiu
+# Placeholder for Dial1_branch
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY PPP
+
+DEFINE ppp_continue_vpn
+/*
+ * PPP continuation of VPN 
+ */
+        STUB
+        void
+        int protocol, paktype *pak, hwidbtype *hwidb
+END
+
+DEFINE ppp_lcpstate
+/*
+ * Check LCP state
+ */
+        STUB
+        boolean
+        hwidbtype *hwidb, int state
+END
+
+
+DEFINE ppp_set_lcpstate
+/*
+ * Set LCP state
+ */
+        STUB
+        boolean
+        hwidbtype *hwidb, int state
+END
+
+DEFINE ipcp_add_p2p_neighbor
+/*
+ * Add a neighbor route (if necessary)
+ */
+        STUB
+        void
+        idbtype *swidb
+END
+
+DEFINE ipcp_cleanup_ip_peer
+/*
+ * Remove a neighbor route (if it existed) and/or a dynamic dialer map
+ * and return the peer address.
+ */
+        STUB
+        ipaddrtype
+        idbtype *swidb
+END
+
+DEFINE lcp_ackci_forced
+/*
+ * If the Ack option is present, force an accept
+ * Returns: FALSE - ack was bad, TRUE - ack was good.
+ */
+        STUB
+        boolean
+        fsm *f, uchar *ucp, int len, int authtyp, int option_test
+END
+
+DEFINE vtemplate_create_vaccess
+/*
+ * Create virtual access interface, it first visits the vtemplate
+ * recycle queue, if there is a unused vaccess, it will recycle it.
+ * Otherwise a brand new vaccess is allocated.
+ *
+ * If block is specified, it will bring UP interface and block waiting
+ * for state to change
+ * If use_numbered is specified, it will create the vaccess with a
+ * valid ip unnumbered XXX. Otherwise no ip address
+ *
+ * type should be one of the enum VACCESS_TYPE value in if/if_vtemplate.h 
+ * to record what is this vaccess is used for.
+ */
+        STUB
+        hwidbtype *
+	boolean block, boolean use_unnumbered, int type
+END
+
+DEFINE vtemplate_clone_vaccess
+/* 
+ * Clone virtual template idb configuration to the virtual access idb.
+ * This routine only takes default virtual access idb. If a virtual 
+ * access idb still cloned to a virtual template idb, it first must be freed
+ * In addition it takes the virtual access out of the vtemplate_intfQ
+ * and put it in the virtual template's memberQ, so all the changes
+ * to virtual template, will also be updated to the virtual access idb.
+ */
+        STUB
+        int
+        int clone_type, uchar template_num, hwidbtype *dialer_hwidb, uchar *buffer, hwidbtype *vaccess_hwidb, boolean block, boolean ppp_only
+END
+
+DEFINE vtemplate_free_vaccess
+/*
+ * This routine free a cloned virtual access idb back to the unused pool,
+ * vtemplate_intfQ. It first unclones the virtual access idb, by running 
+ * a negated reserved ordered command list to the virtual access idb.
+ * Then it takes the virtual access idb out of the virtual template idb's
+ * vtemplate_memberQ and put the virtual access idb back into the
+ * unused pool, vtemplate_intfQ. It also reset the virtual access idb 
+ * back to its default setting.
+ */
+        STUB
+        int 
+        hwidbtype *hwidb
+END
+
+DEFINE vtemplate_passive_interface
+/* 
+ * This routine clone the vtemplate's passive router mask to its
+ * active virtual access interfaces and adjust their routes.
+ */  
+	STUB
+        void 
+        hwidbtype *hwidb, pdbtype *pdb, boolean sense
+END
+
+DEFINE lcp_closed_cleanup
+/*
+ * This registry is call when lcp is closing on an idb. Services
+ * like VPN, VP  can register their cleanup function here.
+ */
+       LIST
+       void
+       hwidbtype *hwidb
+END
+        
+DEFINE vpn
+/*
+ * VPN forwarding to remote destination
+ */
+       STUB
+       boolean 
+       char *remote_name, hwidbtype *hwidb, paktype *pak, int authtype
+END
+
+DEFINE vpn_enabled
+/*
+ * VPN enabled 
+ */
+       STUB
+       boolean 
+       -
+END
+
+DEFINE vpn_get_remote_name
+/*
+ * Copy the VPDN remote name to the idb if this is a VPDN Vaccess interface
+ * on the Home-Gateway
+ */
+       STUB
+       void
+       hwidbtype *hwidb
+END
+
+DEFINE vpn_put_ipaddress
+/*
+ * Will insert (if any) an ipaddress into the ipaddress list and also a
+ * status field and error_code into handle fields
+ */
+       STUB
+       boolean
+       vpntype *vpn_handle, ipaddrtype ip_address, int status, int error_code
+END
+
+DEFINE  vpn_peer_event_occured
+/*
+ * Index is event
+ * Used to register the handler for VPN peer events  -- subsystems outside
+ *   of VPN can call this to let us know that our link was changed.
+ * Returns TRUE if processed
+ */
+        LIST
+        void
+        int event, ipaddrtype addr
+ 
+END
+
+DEFINE l2f_create_daemon
+/* 
+ * Create the L2F daemon, if not already created
+ */
+       STUB 
+       void
+       -
+END
+
+DEFINE mlp_appoint_bundle
+/*
+ * Appointment of a MLP bundle which does not yet exist
+ */
+       STUB
+       void
+       char *bundle_name
+END
+
+DEFINE mlp_search_bundle
+/*
+ * Query MLP for existence of a bundle. Get back either a bundle
+ * mastership (existence) claim or a count of bundles being held.
+ */
+       STUB
+       int
+       char *bundle_name, int max
+END
+
+DEFINE mlp_find_bundle_netidb
+/*
+ * Find the dialer interface (if any)
+ */
+       STUB
+       hwidbtype *
+       char *bundle_name, hwidbtype **ptr_link_hwidb
+END
+
+DEFINE mlp_get_bundle_list
+/*
+ * Obtain a list of existing MLP bundles
+ */
+	STUB
+	void
+	int *bundle_cnt, char **bundle_list, int *list_len
+END
+
+DEFINE mlp_reset_bundle
+/*
+ * Reset an existing bundle
+ */
+	STUB
+	boolean
+	char *bundle_name
+END
+
+DEFINE mlp_get_vtemplate_num
+/*
+ * Get the Virtual template number from MLP
+ */
+        STUB
+        int
+        -
+END
+
+DEFINE        ncp_register 
+/*
+ * Register Network Control Protocol with PPP.
+ */
+DATA
+typedef void (*ncp_init_function) (fsm *ncp_fsm);
+typedef boolean (*protocheck_function)(hwidbtype *, hwidbtype *, int);
+END DATA
+      STUB
+      void
+      int linktype, ushort protocol, ncp_init_function init, \
+      protocheck_function proto, const char *name
+END
+ 
+DEFINE        ncp_register_link
+/*
+ * Register an extra data protocol/link type with PPP.
+ */
+      STUB
+      void
+      int linktype, ushort protocol, int ncp_linktype
+END
+ 
+DEFINE store_per_user_ip_route
+/*
+ * Parse and store the value of a "route" attribute into an idb.
+ */
+        STUB
+        boolean
+        hwidbtype *idb, enum AV_TYPE type, char *val
+END
+
+DEFINE install_per_user_route
+/*
+ * Install a per-user route (if any) stored in the T+ info portion of an idb.
+ */
+        STUB
+        void
+        hwidbtype *idb
+END
+
+DEFINE ppp_link2fsm
+/*
+ * Return fsm pointer for link type in the idb
+ */
+        STUB
+        fsm *
+        long type, hwidbtype *idb
+END
+
+DEFINE ccp_compress_outgoing_pkt
+/*
+ * Compress an outgoing packet using the selected compression mechanism
+ */
+        STUB
+        void
+        hwidbtype *idb, paktype *pak
+END
+
+DEFINE ppp_compression_config
+/*
+ * Handle configuration of compression for PPP.
+ */
+        STUB
+        void
+        hwidbtype *hwidb, boolean sense, int type
+END
+
+DEFINE compress_clearcounters
+/*
+ * Clear compression counters.
+ */
+        STUB
+        void
+        hwidbtype *hwidb
+END
+
+END REGISTRY PPP

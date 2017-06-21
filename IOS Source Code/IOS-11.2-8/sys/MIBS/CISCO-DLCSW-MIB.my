@@ -1,0 +1,26 @@
+-- $Id: CISCO-DLCSW-MIB.my,v 3.1 1996/09/11 01:54:48 vkamat Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/CISCO-DLCSW-MIB.my,v $
+-- *****************************************************************
+-- IBM DLC Switch MIB definition.
+--
+-- September 1996, Dennis Ignacio.
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-DLCSW-MIB.my,v $
+--Revision 3.1  1996/09/11  01:54:48  vkamat
+--Add placeholder for DLCSWITCH MIB.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+-- This mib was extracted from RFC xxxx
+
+--%DNP%  FYI:  Lines containing a comment starting with the "Do Not
+--%DNP%  Publish" prefix "%DNP%" (such as these) are automagicially
+--%DNP%  stripped from MIBS prior to publishing on ftp and cio, and
+--%DNP%  should be used for comments intended for cisco engineering
+--%DNP%  eyes only, or for new product identifiers that are not yet
+--%DNP%  announced.
+

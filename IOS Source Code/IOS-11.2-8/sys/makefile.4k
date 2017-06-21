@@ -1,0 +1,238 @@
+# $Id: makefile.4k,v 3.3.38.8 1996/08/28 12:35:05 thille Exp $
+# $Source: /release/112/cvs/Xsys/makefile.4k,v $
+#------------------------------------------------------------------
+# makefile.4k - R4000 common definitions for ELF object files
+#
+# 11/93, Lele Nardin
+#
+# Copyright (c) 1993-1996 by cisco Systems, Inc.
+# All rights reserved.
+# 
+# This file contains the common definitions for doing "makes" of
+# R4k based system images.
+#------------------------------------------------------------------
+# $Log: makefile.4k,v $
+# Revision 3.3.38.8  1996/08/28  12:35:05  thille
+# CSCdi67083: Message externs need a cleanup.
+# Branch: California_branch
+# Get rid of all extern msgsym()s in .c files, rework logger.h and
+# msg_foo.c files so they are included and provide the externs.  Clean up
+# other random externs in .c files.
+#
+# Revision 3.3.38.7  1996/07/14  07:10:54  hampton
+# Eliminate all redundant dependencies for any given file.  Split out
+# platform specific dependencies and put them in the appropriate obj-xxx
+# directory.  [CSCdi62810]
+# Branch: California_branch
+#
+# Revision 3.3.38.6  1996/05/23  03:00:25  mdb
+# Move to the cygnus progressive-96q1 compiler toolchain [CSCdi58500].
+# Branch: California_branch
+#
+# Revision 3.3.38.5  1996/05/08  12:01:30  mdb
+# Implement a method of naming locally built tools based on the type of
+# the Machine, the name and the revision of the Operating System.
+# Also make provide for all locally built tools be to removed when a
+# 'make superclean' is performed in the sys directory. [CSCdi57043]
+# Branch: California_branch
+#
+# Revision 3.3.38.4  1996/05/06  21:06:25  mdb
+# CSCdi56817:  should use toolchain specific strings program not UNIX
+# native
+# Even though the string.*.68k tool works for .mips64 tool generated
+# files, use the one specific for the .mips64 files.
+# Branch: California_branch
+#
+# Revision 3.3.38.3  1996/05/06  20:45:50  mdb
+# Instead of vendor supplied native 'strings' program, use $(STRINGS) set
+# as strings.$(TOOLS_VER).68k or strings.$(TOOLS_VER).mips64 [CSCdi56817].
+# Branch: California_branch
+#
+# Revision 3.3.38.2  1996/04/19  14:29:55  che
+# CSCdi55138:  IosSec_branch feature commit
+# Branch: California_branch
+# IosSecurity feature commits
+#
+# Revision 2.2.6.10  1996/04/09  19:14:59  che
+# Branch: IosSec_branch
+# Sync to California_branch (960405)
+#
+# Revision 2.2.6.9  1996/02/28  08:40:58  xliu
+# Branch: IosSec_branch
+# Using Cylink fast C implementation on MIP.
+#
+# Revision 2.2.6.8  1996/01/23  04:24:31  che
+# Branch: IosSec_branch
+# Sync with 11.1 mainline. (960122)
+#
+# Revision 2.2.6.7  1995/12/20  23:27:09  bew
+# Branch: IosSec_branch
+# Re-added DES_CODE to makefile.4k. Added the crypto subsystem to the
+# tli images -- this is temporary for the IosSec_brach only pending
+# determination of images including crypto.
+#
+# Revision 2.2.6.6  1995/12/17  00:50:12  che
+# Branch: IosSec_branch
+# Sync to Arkansas
+#
+# Revision 3.3.38.1  1996/03/18  18:45:13  gstovall
+# Branch: California_branch
+# Elvis has left the building.  He headed out to California, and took the
+# port ready changes with him.
+#
+# Revision 3.3.12.2  1996/03/09  05:03:07  hampton
+# Slim down the kernel of the router.
+# Branch: DeadKingOnAThrone_branch
+#
+# Revision 3.3.12.1  1996/03/07  08:27:00  mdb
+# Branch: DeadKingOnAThrone_branch
+# cisco and ANSI/POSIX libraries.
+#
+# Revision 3.3  1996/01/04  00:35:56  gwynne
+# CSCdi46366:  Media-specific images required for igs-in-l image
+#              feature set
+# Also:   - Change copyright end date to 1996
+#         - Add save of uncompressed binary size of disk file for
+#           self-decompressing images (-mz).
+#
+# Revision 3.2  1995/11/17  08:32:25  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  10:48:18  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.5  1995/11/08  20:47:17  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.4  1995/07/17  23:26:47  smackie
+# Tidy up various makefile semantics (CSCdi37193)
+#
+#   o Split out native tool support from cross-compilation tools
+#   o Rename errant makefiles
+#   o Make native object directories more explicitly named
+#   o Clean up bogus tool includes
+#
+# Revision 2.3  1995/06/28  03:04:06  rmontino
+# CSCdi36503:  AGS zipped images
+#
+# Revision 2.2  1995/06/09  16:09:22  ahh
+# CSCdi35589:  4k assembly listings more useful with object code
+#
+# Revision 2.1  1995/06/07  19:58:44  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+#
+# Processor Flags
+#
+
+LIBRARY_PREFIX  = 4k
+FAMILY_PREFIX   = 4k
+OBJECT_PREFIX   = 4k
+OBJECT_FLAGS    = -DOBJECT_4K -DTARGET_CISCO
+OFLAG           = -O4
+MAKEFILE_NAME	= makefile.4k
+
+#
+# Where the shared processor objects are and how to make them
+#
+
+OBJECTS = obj-$(OBJECT_PREFIX)
+
+# Prior version: 95q1
+# Current version: 96q1
+TOOLS_VER= 96q1
+
+#
+# Tool Options
+# 
+
+GNUM= 	-G 4
+COPTIONS= $(GNUM) -fno-builtin -fno-inline-functions -fsigned-char -Wa,--trap \
+	  -mcpu=r4000 -mfp32 -mips2 -mgas -pipe
+AOPTIONS= $(GNUM) -mcpu=r4000 -mfp64 -mips3 -mgas -Wa,--trap
+LOPTIONS= $(GNUM) -nostdlib
+
+#
+# Tool Chain
+#
+CC=	gcc.$(TOOLS_VER).mips64 
+AS=	$(CC)
+LD=	$(CC)
+STRINGS=strings.$(TOOLS_VER).mips64
+M4=	/router/bin/m4 -B8192
+AR= 	ar.$(TOOLS_VER).mips64
+OD=	objdump.$(TOOLS_VER).mips64
+SIZE=	size.$(TOOLS_VER).mips64
+NM=	nm.$(TOOLS_VER).mips64
+STRIP=	strip.$(TOOLS_VER).mips64
+
+#
+# Lister flags :
+#
+# LIS_FLAG="asm=0" "targ=mips64" for listing without object code
+LIS_FLAG="asm=1" "targ=mips64"
+
+#
+# Checksum the image.
+#
+%.bin: %.sun $(MKSUM_ELF_PROG)
+	cp $*.sun $@
+	$(MKSUM_ELF_PROG) $@ -sum
+	$(STRIP) $@
+	$(MKSUM_ELF_PROG) $@ -pbase 0x80000000 -vbase 0x80000000 -machine
+	ls -l $@ | tee $*.binsize
+
+%.dis: %.o
+	$(OD) -d $*.o > $*.dis
+
+%.czbin: %.czsun $(MKSUM_ELF_PROG) $(GLUE_ELF_PROG)
+	@echo 'char cisco_czip_strings[] = "' > cisco-czip.c
+	@$(STRINGS) $*.czsun | \
+	perl -ane 'if (/CW_BEGIN/../CW_END/) { \
+	s/-m([\$$\)])/-mz$$1/;s/-M([\$$\)])/-MZ$$1/; \
+	s/UNCOMPRESSED/ZIPPED/; print;}' >> cisco-czip.c
+	@echo '";' >> cisco-czip.c
+	@$(REMAKE) czip_elf
+	cp $*.czsun $*.bin
+	$(MKSUM_ELF_PROG) $*.bin -sum
+	$(STRIP) $*.bin
+	$(MKSUM_ELF_PROG) $*.bin -pbase 0x80000000 -vbase 0x80000000 -machine
+	ls -l $*.bin | tee $*.binsize
+	$(STRIP) czip_elf
+	$(GLUE_ELF_PROG) -r $*.bin -z czip_elf -o $@
+	rm $*.bin.gz $*.bin
+
+#
+# Processor specific file resolution
+#
+GDBCPU=		gdb_$(OBJECT_PREFIX).o
+CPUASM=		
+PLATFORM_ASM=	asm_$(OBJECT_PREFIX).o	# must be compiled in platform directory
+VINESASM=	vinesasm_$(OBJECT_PREFIX).o
+XNSASM=		xnsasm_$(OBJECT_PREFIX).o
+CPUISDN=	e_r4k.o
+CPUSTAC=	lzsc.o lzsd.o lzsmem.o
+CZIPASM=	czip_$(LIBRARY_PREFIX).o
+SYS_START_FILE= main_$(OBJECT_PREFIX).o
+UKERNEL_CPU=		alignment.o msg_alignment.o signal_$(OBJECT_PREFIX).o
+UKERNEL_UI_CPU=		alignment_chain.o
+UKERNEL_UI_PLATFORM=	
+DES_CODE=	cylink_fast_c_des.o
+
+#
+# unzip self extracting tool
+#
+cisco-czip.o : cisco-czip.c
+ 
+OBJ_CZIP_ELF= 	czip_$(LIBRARY_PREFIX).o czip_elf_main.o monitor1.o czip.o \
+		unzip.o inflate.o cisco-czip.o 
+
+czip_elf: $(OBJ_CZIP_ELF) $(NUTIL)
+	$(QUIET_COM)echo Linking $@...
+	$(QUIET_CC)$(LD) $(ZIP_LDFLAGS) -o czip_elf $(OBJ_CZIP_ELF) $(NUTIL)
+	$(QUIET_CC)rm -f cisco-czip.*
+

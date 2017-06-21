@@ -1,0 +1,20 @@
+-- $Id: DLSW-MIB.my,v 3.1 1995/11/09 10:50:57 shaker Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/DLSW-MIB.my,v $
+-- *****************************************************************
+-- DLSw MIB Draft Version 5
+--
+-- October 1995, Ravi Periasamy
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: DLSW-MIB.my,v $
+-- Revision 3.1  1995/11/09  10:50:57  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/10/04  18:48:48  ravip
+-- Place Holder DLSw MIB file
+--
+-- *****************************************************************
+-- $Endlog$
+

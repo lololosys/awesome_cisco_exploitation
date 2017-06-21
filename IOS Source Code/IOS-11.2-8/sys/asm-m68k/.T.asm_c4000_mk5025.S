@@ -1,0 +1,5 @@
+
+asm_c4000_mk5025.S,94
+#define MK5025_RINT_BIT	32,875
+#define MK5025_TINT_BIT	33,901
+#define MK5025_ERRORS	34,927

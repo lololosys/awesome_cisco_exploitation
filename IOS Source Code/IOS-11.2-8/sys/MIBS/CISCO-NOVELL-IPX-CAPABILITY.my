@@ -1,0 +1,278 @@
+-- $Id: CISCO-NOVELL-IPX-CAPABILITY.my,v 3.2 1995/11/17 08:34:20 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-NOVELL-IPX-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-NOVELL-IPX-CAPABILITY.my: CISCO-NOVELL-IPX-MIB AGENT-CAPABILITIES
+-- 
+-- August 1994, Jeffrey T. Johnson
+-- 
+-- Copyright (c) 1994 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-NOVELL-IPX-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:34:20  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:50:05  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:31  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-NOVELL-IPX-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoNovellIpxCapability MODULE-IDENTITY
+		LAST-UPDATED	"9408180000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for NOVELL-IPX-MIB"
+		REVISION	"9408180000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 16 }
+
+ciscoNovellIpxCapabilityV10R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.2"
+STATUS		current
+DESCRIPTION	"Novell IPX MIB capabilities"
+
+SUPPORTS	NOVELL-IPX-MIB
+INCLUDES	{ ipxSystemGroup, ipxCircuitGroup, ipxForwardingGroup,
+		  ipxServicesGroup, ipxTrapsGroup }
+
+VARIATION	ipxBasicSysInstance
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxBasicSysExistState
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxBasicSysNetNumber
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxBasicSysNode
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxBasicSysName
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxBasicSysOutMalformedRequests
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	ipxBasicSysConfigSockets
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	ipxBasicSysOpenSocketFails
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxAdvSysInstance
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxAdvSysMaxPathSplits
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxAdvSysMaxHops
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxAdvSysInCompressDiscards
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	ipxAdvSysOutCompressDiscards
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	ipxAdvSysServCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircSysInstance
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircIndex
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircExistState
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircOperState
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircIfIndex
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircName
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircType
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircDialName
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircLocalMaxPacketSize
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircCompressState
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircCompressSlots
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircStaticStatus
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxCircCompressedSent
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircCompressedInitSent
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircCompressedRejectsSent
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircUncompressedSent
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircCompressedReceived
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircCompressedInitReceived
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircCompressedRejectsReceived
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircUncompressedReceived
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0 because we don't support compression yet"
+
+VARIATION	ipxCircNeighInternalNetNum
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxDestProtocol
+SYNTAX		INTEGER { other(1), local(2), rip(3), static(5) }
+-- no		 { nlsp(4) }
+DESCRIPTION	"Unable to detect nlsp because nlsp not implemented yet"
+
+VARIATION	ipxStaticRouteSysInstance
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticRouteCircIndex
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticRouteNetNum
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticRouteExistState
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticRouteTicks
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticRouteHopCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxServProtocol
+SYNTAX		INTEGER { other(1), local(2), static(5), sap(6) }
+-- no		 { nlsp(4) }
+DESCRIPTION	"Unable to detect nlsp because nlsp not implemented yet"
+
+VARIATION	ipxStaticServSysInstance
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServCircIndex
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServName
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServType
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServExistState
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServNetNum
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServNode
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServSocket
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	ipxStaticServHopCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+	::= { ciscoNovellIpxCapability 1 }
+
+END

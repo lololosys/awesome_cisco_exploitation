@@ -1,0 +1,95 @@
+# $Id: Debug_Command,v 3.1.60.1 1996/06/21 22:07:13 billw Exp $
+
+          Title: Debug Command
+           Date: 29-May-93
+        Version: 1.0
+
+Copyright (c) 1993-1996 by cisco Systems, Inc.
+
+Modular debugging flags
+-----------------------
+
+User-visible changes:
+
+ o "show debug" now reports whether "debug all" is in effect. "debug all"
+    is considered to be in effect until an "undebug all" is issued, even
+    if some debugging flags are turned off.
+
+ o "show debug" now shows the settings only for flags that don't match
+   the current status of "debug all", or that have additional restrictions
+   (like access lists) set on the debugging output they create.
+
+ o The debugging flags displayed by "show debug" are now organized by
+   module. The flags for each module are indented under a general
+   heading. Unfortunately, many modules turn out to have only one
+   flag each...
+
+ o The debug flags for modules that aren't running in the system don't
+   show up in "show debug". It's intended that they not show up in the
+   parser, either, although the correspondence probably isn't perfect
+   yet... the parser changes and the debugging flag support changes are
+   being done by different people.
+
+ o The format in which X.25 debugging restrictions are shown has been
+   changed... the VC used now shows up in the X.25 generic header.
+
+ o "debug imp" and "debug printer" are gone entirely.
+
+
+Internal implementation:
+
+There are two system list registries associated with debug flags.
+REGISTRY_DEBUG_ALL is used when a "debug all" or "undebug all" command is
+issued. It takes a single boolean argument, which is TRUE for "debug all"
+and FALSE for "undebug all". REGISTRY_DEBUG_SHOW is for "show debug"
+commands.
+
+The debug flags themselves are not registered in any way other than via the
+parse chains. Each subsystem is expected to take care of all the
+maintenance of its own flags. There is, however, some utility code that the
+subsystems can use to help out with their boolean flags. "debug_show_flags"
+implements a generic "show debug", and "debug_command" can be used in parse
+chains as a generic flag setter and clearer. Both of these routines use
+arrays of flag descriptors; the structure of those arrays is declared in
+ui/debug.h. The routines themselves are in ui/debug.c, as is all generic
+debug code. Some macros useful for creating the arrays are in
+ui/debug_macros.h.
+
+The debug flag handling code for a typical subsystem lives in 3 files:
+<xxx>_debug.c", "<xxx>_debug.h", and "<xxx>_debug_flags.h". 
+
+<xxx>_debug.c contains the executable code and declares the initialized
+array used by the generic debug support routines.  The entry points into
+<xxx>_debug.c are typically as follows:
+
+	<xxx>_debug_init() sets all the flags to their initial values,
+	registers the "debug all" and "show debug" handlers, and does
+	whatever else is necessary to get debugging going. The subsystem
+	is responsible for making sure this routine gets called at an
+	appropriate time. The flags should be initialized to reflect
+	the current status of "debug all", which can be determined
+	by calling "debug_all_p()" from ui/debug.c.
+
+	<xxx>_debug_all() is the handler for "debug all" and "undebug all",
+	and is registered in REGISTRY_DEBUG_ALL.  Note that it is up to
+	the implementor to decide whether "debug all" will turn on a
+	particular debugging flag, but ALL debugging flags should be turned
+	OFF by "undebug all".
+
+	<xxx>_debug_show() handles "show debug" commands. "show" routines
+	that don't use debug_show_flags() should at least try to follow
+	its format.
+
+<xxx>_debug_flags.h uses macros from debug_macros.h to declare the flags
+themselves. This file gets used in a somewhat unusual way; debug_macros.h
+actually defines its macros differently depending on the current values
+of some preprocessor symbols. <xxx>_debug is included twice from <xxx>_debug.h
+and once from <xxx>_debug.c, each time with different settings of those
+symbols. The first include creates external declarations for the descriptor
+array and the booleans that embody the actual flags. The second defines
+indices for use by the parser. The third (in <xxx>_debug.c) actually creates
+the initialized text for the array.
+
+For a simple example of the way all this works, see xns/apollo_debug*.
+For an example of a fully-custom debugging module, see atalk/at_debug*.
+For an example of a hybrid system, see iprouting/iprouting_debug*.

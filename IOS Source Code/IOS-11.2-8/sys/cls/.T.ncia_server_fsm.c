@@ -1,0 +1,45 @@
+
+ncia_server_fsm.c,1461
+ushort ncia_action_1 111,3452
+ushort ncia_action_2 124,3725
+ushort ncia_action_3 137,4001
+ushort ncia_action_4 149,4218
+ushort ncia_action_5 165,4626
+ushort ncia_action_6 179,4971
+ushort ncia_action_7 192,5250
+ushort ncia_action_8 204,5466
+ushort ncia_action_9 216,5698
+ushort ncia_action_10 229,6003
+ushort ncia_action_11 245,6387
+ushort ncia_action_12 258,6629
+ushort ncia_action_13 271,6877
+ushort ncia_action_14 286,7280
+ushort ncia_action_15 304,7768
+ushort ncia_action_16 322,8283
+ushort ncia_action_17 341,8782
+ushort ncia_action_18 354,9083
+ushort ncia_action_19 372,9531
+ushort ncia_action_20 384,9756
+ushort ncia_action_21 397,10005
+ushort ncia_action_22 423,10750
+ushort ncia_action_23 444,11288
+ushort ncia_action_24 470,11955
+ushort ncia_action_25 489,12366
+ushort ncia_action_26 525,13260
+ushort ncia_action_27 557,14101
+ushort ncia_action_30 577,14638
+ushort ncia_action_31 595,15087
+ushort ncia_action_32 609,15408
+ushort ncia_action_33 622,15703
+ushort ncia_send_dlu 637,16028
+char *ncia_print_pre_server_event 728,18875
+void ncia_record_ckt_info 742,19262
+boolean ncia_flow_control_out 765,19785
+void ncia_flow_control_in 905,24660
+void ncia_print_ndlc_header 1030,29328
+static boolean ncia_validate_dmac(1100,31782
+void ncia_pre_server_fsm 1125,32491
+void ncia_send_i_can_reach 1505,44956
+char *ncia_print_circuit_state 1531,45766
+char *ncia_print_action 1555,46833
+char *ncia_print_ndlc 1598,49492

@@ -1,0 +1,5 @@
+
+rtt_sscpruecho.h,106
+#define _SSCPRUECHO_H_34,1114
+} SNA_SSCP_FRAME;SNA_SSCP_FRAME54,1993
+#define SSCP_HEADER_SIZE 56,2012

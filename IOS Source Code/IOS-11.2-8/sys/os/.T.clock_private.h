@@ -1,0 +1,7 @@
+
+clock_private.h,161
+#define _CLOCK_PRIVATE_H_34,1217
+#define NTP_RESOLUTION 36,1244
+#define PIPS_PER_USEC 37,1315
+#define USEC_PER_SEC 38,1387
+#define NTP_SHIFT_FACTOR 39,1449

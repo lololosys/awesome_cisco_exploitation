@@ -1,0 +1,109 @@
+# $Id: makecflow,v 3.3.20.1 1996/03/18 18:45:00 gstovall Exp $
+# $Source: /release/111/cvs/Xsys/makecflow,v $
+#------------------------------------------------------------------
+# Makefile for position dependant Code Flow and Coverage definitions
+#
+# January 1995, Scott Mackie
+#
+# Copyright (c) 1995-1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: makecflow,v $
+# Revision 3.3.20.1  1996/03/18  18:45:00  gstovall
+# Branch: California_branch
+# Elvis has left the building.  He headed out to California, and took the
+# port ready changes with him.
+#
+# Revision 3.2.26.2  1996/03/07  08:26:49  mdb
+# Branch: DeadKingOnAThrone_branch
+# cisco and ANSI/POSIX libraries.
+#
+# Revision 3.2.26.1  1996/02/20  00:04:18  dstine
+# Branch: DeadKingOnAThrone_branch
+#         Sync from DeadKingOnAThrone_baseline_960122 to
+#                   DeadKingOnAThrone_baseline_960213
+#
+# Revision 3.3  1996/01/31  18:44:04  lakshman
+# CSCdi47664:  Augment cflow with tracing capability
+#
+# Revision 3.2  1995/11/17  08:32:09  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  10:48:07  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  19:58:32  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+# If user has chosen to do controlflow coverage but does not want to
+# instrument the entire system then  she/he has the option of picking a set
+# of subsystem(s)/module(s). This set is specified in a file. Read in that
+# file. This file contains the definition of the variable $(cflow_list)
+ifneq ($(CFLOW),)
+ifneq ($(CFLOW),ALL)
+include $(CFLOW)
+endif
+endif
+
+# The following routines shouldn't be compiled with coverage checking,
+# because they are used as part of the coverage process.
+NOCOVERAGE = coverage_analyze.o $(libgdb) clock_guts.o
+$(NOCOVERAGE):
+	$(QUIET_COM) echo "Compiling $< to $@ (NOCOVERAGE)"	
+	$(QUIET_CC)$(CC) -c $(CFLAGS_NOCOVERAGE) $(WARN_ALL) $< || (rm -f $@ ; exit 1)
+
+# Routines in sub_cflow are used to implement controlflow coverage and
+# they themselves can't be instrumented.
+sub_cflow =     cflow_subsys.o cflow_command.o cflow_ctrace.o \
+		cflow_write_coverage.o ctrace_command.o
+sub_cflow.o :	$(sub_cflow)	
+$(sub_cflow):
+	$(QUIET_COM) echo "Compiling $< to $@ (NOCFLOW)"
+	$(QUIET_CC)$(CC) -c $(CFLAGS_NOFLOW) $(WARN_ALL) $< || (rm -f $@ ; exit 1)
+
+# Routines in nocflow_list should not be instrumented.
+# Do not instrument czip routines and those routines on 4k platforms 
+# that are invoked prior to defining the virtual address space.
+nocflow_list =	$(filter-out czip_$(LIBRARY_PREFIX).o,$(OBJ_CZIP_AOUT)) \
+		$(filter-out $(CZIPASM),$(OBJ_CZIP_ELF)) memset.o \
+		main_4k.o sierra_vspace.o c7100_vspace.o rhino_vspace.o \
+		rsp_vspace.o rvip_vspace.o stacks_4k.o
+
+# Objects in nocflow_list should never be instrumented for cflow.
+ifneq ($(CFLOW),)
+$(nocflow_list):
+	$(QUIET_COM) echo "Compiling $< to $@ (NOCFLOW)"
+	$(QUIET_CC)$(CC) -c $(CFLAGS_NOFLOW) $(WARN_ALL) $< || (rm -f $@ ; exit 1)
+endif
+
+# Compile the subsystem(s)/modules(s) chosen for controlflow coverage
+# These are contained in $(cflow_list)
+ifneq ($(CFLOW),)
+ifneq ($(CFLOW),ALL)
+$(cflow_list):
+	$(QUIET_COM) echo "Compiling $< to $@ (CFLOW)"
+	$(QUIET_CC)$(CC) -c $(CFLAGS) $(CFLOW_SWITCHES) $(WARN_ALL) $< || (rm -f $@ ; exit 1)
+
+endif
+endif
+
+# Cleanup the files used for controlflow coverage
+cflow_built = $(wildcard *.bb) $(patsubst %.bb,%.o,$(wildcard *.bb)) \
+              $(wildcard *.bbg) $(patsubst %.bbg,%.o,$(wildcard *.bbg)) \
+              $(wildcard *.da) $(patsubst %.da,%.o,$(wildcard *.da)) \
+              $(wildcard *.gcov) $(patsubst %.gcov,%.o,$(wildcard *.gcov))
+cflowclean:
+	rm -f $(cflow_built)
+
+# Cleanup the files used for controlflow coverage
+# that are specified in cflow_list
+cflowlistclean:
+	rm -f $(addsuffix .o,$(basename $(cflow_list)))
+	rm -f $(addsuffix .bb,$(basename $(cflow_list)))
+	rm -f $(addsuffix .bbg,$(basename $(cflow_list)))
+	rm -f $(addsuffix .da,$(basename $(cflow_list)))
+	rm -f $(addsuffix .gcov,$(basename $(cflow_list)))
+

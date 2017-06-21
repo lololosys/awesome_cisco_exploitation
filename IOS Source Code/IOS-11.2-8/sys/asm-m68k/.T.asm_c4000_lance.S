@@ -1,0 +1,6 @@
+
+asm_c4000_lance.S,119
+#define LANCE_RINT_BIT	31,873
+#define LANCE_TINT_BIT	32,899
+#define LANCE_ERRORS 33,924
+#define LANCE_MASK 34,1000

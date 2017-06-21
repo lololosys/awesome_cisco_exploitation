@@ -1,0 +1,7 @@
+
+ipfast_sse.h,162
+struct sse_ipinfo_ sse_ipinfo_25,819
+enum IPSSE_PROGRESS IPSSE_PROGRESS30,968
+    IPSSE_SUCCESS,31,990
+    IPSSE_FAILURE,32,1009
+    IPSSE_CONTNUE,33,1028

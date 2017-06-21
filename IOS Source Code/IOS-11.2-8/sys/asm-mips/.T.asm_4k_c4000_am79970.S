@@ -1,0 +1,8 @@
+
+asm_4k_c4000_am79970.S,216
+#define ASMINCLUDE26,867
+#define AM79970_RINT_MASK 33,943
+#define AM79970_TINT_MASK 34,994
+#define AM79970_ERRORS 36,1046
+#define AM79970_MASK 37,1126
+	andi	s0,s3,AM79970_TINT_MASK		# check for Tx intr 94,2950

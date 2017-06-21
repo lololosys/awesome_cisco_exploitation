@@ -1,0 +1,40 @@
+/* $Id:  $
+ * $Source: $
+ *------------------------------------------------------------------
+ * Linker for srec format
+ *
+ * January 1997, Joe Liu
+ *
+ * Copyright (c) 1997 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+OUTPUT_FORMAT(srec)
+OUTPUT_ARCH(m68k:68000)
+
+SECTIONS
+{
+	.text 0x0 :
+	{
+		CREATE_OBJECT_SYMBOLS
+		*(.text)
+		_etext = ALIGN(4);
+	}
+
+	.data ALIGN(4) :
+	{
+		*(.data)
+		_edata = ALIGN(4);
+	}
+
+	.bss  SIZEOF(.data) + ADDR(.data) :
+	{
+		__bss_start = .;
+		*(.bss)
+		*(COMMON)
+		_end = ALIGN(4) ;
+		__end = ALIGN(4) ;
+	}
+}

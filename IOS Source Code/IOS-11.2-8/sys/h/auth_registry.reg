@@ -1,0 +1,675 @@
+# $Id: auth_registry.reg,v 3.3.22.5 1996/08/13 18:46:38 widmer Exp $
+#------------------------------------------------------------------
+# auth_registry.reg - Service Points for Authentication Registry
+#
+# January 1995, Tim Kolar
+#
+# Copyright (c) 1995-1996 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: auth_registry.reg,v $
+# Revision 3.3.22.5  1996/08/13  18:46:38  widmer
+# CSCdi65503:  security hole when using httpd and no enable passwd is set
+# Branch: California_branch
+# Make http authentication work with "enable use-tacacs"
+#
+# Revision 3.3.22.4  1996/06/04  08:35:06  che
+# CSCdi57424:  router crashes attempting kerberos telnet
+# Branch: California_branch
+# Added kerberos_stackcheck() registry to ensure correct stacksize of
+# process running kerberos clients.
+#
+# Revision 3.3.22.3  1996/05/28  16:20:25  vandys
+# CSCdi50153:  systat does not display ISDN access users
+# Branch: California_branch
+#
+# Revision 3.3.22.2  1996/04/19  15:15:03  che
+# CSCdi55138:  IosSec_branch feature commit
+# Branch: California_branch
+# IOS Security feature commmit
+#
+# Revision 2.1.6.9  1996/04/09  20:19:25  che
+# Branch: IosSec_branch
+# Sync to California_branch (960405)
+#
+# Revision 2.1.6.8  1996/03/30  02:37:02  carrel
+# cvs fixes
+#
+# Revision 2.1.6.7  1996/03/28  08:44:30  che
+# Branch: IosSec_branch
+# Introduce function to release memory in conn->proto.tn.kerberos_info
+#
+# Revision 2.1.6.6  1996/03/27  23:31:08  che
+# Branch: IosSec_branch
+# More Kerberos authentication cleanup
+#
+# Revision 2.1.6.5  1996/03/22  17:25:00  lol
+# Branch: IosSec_branch
+#         Modularise tacacs_plus tcp handle cleanup.
+#
+# Revision 2.1.6.4  1996/03/05  04:43:14  che
+# Branch: IosSec_branch
+# Kerberos Phase 2 commit.
+#
+# Revision 2.1.6.3  1996/02/28  06:14:32  lol
+# Branch: IosSec_branch
+# TACACS+ processing.
+#
+# Revision 2.1.6.2  1996/02/21  03:16:14  che
+# Branch: IosSec_branch
+# Sync to 11.1 Mainline (02/20/96)
+#
+# Revision 2.1.6.1  1995/11/17  16:41:48  carrel
+# Branch: IosSec_branch
+# Sync to Arkansas
+# Revision 3.3.22.1  1996/03/27  08:32:01  billw
+# CSCdi49184:  AAA accounting records do not contain IP addr if
+# autoselected
+# Branch: California_branch
+#
+# Revision 3.3  1996/01/23  22:39:31  billw
+# CSCdi43679:  RADIUS support does not include CHAP
+# Do it in a way that will be obsolete in California
+#
+# Revision 3.2  1995/11/17  09:11:47  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  11:34:47  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.6  1995/11/08  20:58:23  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.5  1995/08/31  01:33:10  billw
+# CSCdi39522:  AAA Accounting not portability-safe
+# Change a bunch of "int" to "long" or "ulong"
+#
+# Revision 2.4  1995/07/13  06:45:31  billw
+# CSCdi36954:  AAA accounting done improperly when exec login command is
+# used
+#
+# aaa_dup_user no longer duplicates acctQ.  New registry point for
+# changing from one username to another.
+#
+# Revision 2.3  1995/06/27  17:07:17  tkolar
+# CSCdi35462:  DES code needs to be its own subsystem
+# Make it easier to export the source base.
+#
+# Revision 2.2  1995/06/15  22:57:16  syiu
+# CSCdi35686:  Async callback AAA authorization and accounting phase not
+# working
+#
+# Revision 2.1  1995/06/07  20:34:37  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY AUTH
+
+
+DEFINE kerberos_client_auth
+/*
+ * Function to authenticate a Kerberized client with a Kerberized server.
+ */
+	STUB
+	boolean 
+	tcbtype *tcb, tt_soc *tty, addrtype *rhost, long apreq_opts,\
+	char *luser, char *ruser, char *cmd, void *do_telnet, int auth_type
+END
+
+
+DEFINE kerberos_server_auth
+/*
+ * Function to authenticate a Kerberized client.
+ */
+	STUB
+	boolean 
+	tcbtype *tcb, char *authdata, int authdata_len, void *kerberos_info
+END
+
+
+DEFINE  kerberos_use_kerb_clients
+/*
+ * Function to determine whether using Kerberos clients are mandatory.
+ */
+        STUB
+        boolean
+        -
+END
+
+
+DEFINE  kerberos_is_running
+/*
+ * Function to determine whether or not Kerberos is installed and running.
+ */
+	STUB
+	boolean
+	-
+END
+
+
+DEFINE  kerberos_stackcheck
+/*
+ * Function to determine whether or not the current process has enough
+ * allocated stackspace to process Kerberos credentials.
+ */
+	STUB
+	boolean
+	-
+END
+
+
+DEFINE  kerberos_free_kerberos_info
+/*
+ * Function to free memory stored in conn->proto.tn.kerberos_info.
+ */
+	STUB
+	void
+	void *kerberos_data
+END
+
+
+DEFINE	telnet_auth
+/*
+ * Function to handle Telnet RFC1416 authentication.
+ */
+	CASE
+	void
+	boolean *result, conntype *conn, int length, int auth_type
+	2
+	int method
+END
+
+
+DEFINE	start_login
+/*
+ * Function to start a network login sequence (tacacs+, radius, kerberos)
+ * This is the NEW authentication entry point
+ */
+	CASE
+	void
+	boolean *result,userstruct *ustruct, authenstruct *authen, int action
+	AAA_METHODS_MAX
+	int method
+END
+
+
+
+
+DEFINE	cont_login
+/* 
+ * Function to continue a network login sequence
+ * This is the NEW authentication entry point
+ */
+	CASE
+	void
+	boolean *result, userstruct *ustruct, authenstruct *authen
+	AAA_METHODS_MAX
+	int method
+END
+
+
+
+
+DEFINE	abort_login
+/*
+ * Function to prematurely abort the TACACS+ login sequence.
+ */
+	CASE
+	void
+	userstruct *ustruct, authenstruct *authen, char *reason
+	AAA_METHODS_MAX
+	int method
+END
+
+
+
+
+DEFINE do_author
+/*
+ * Function to do TACACS+/radius/kerberos authorization
+ */
+	CASE
+	void
+	boolean *result, userstruct *ustruct, authorstruct *author
+	AAA_METHODS_MAX
+	int method
+END
+
+
+
+
+DEFINE	do_acct
+/*
+ * Function to do TACACS+/radius accounting
+ */
+	CASE
+	void
+	boolean *result, userstruct *ustruct, acctstruct *authen
+	AAA_METHODS_MAX
+	int method
+END
+
+DEFINE	tacacs_closeconn
+/*
+ * Function to close the network connection that TACACS+ opened.
+ */
+	STUB
+	void
+	addrtype *addr, void **handle
+END
+
+DEFINE	tacacs_plus_close_handle
+/*
+ * Function to close a tcp handle that TACACS+ opened. Used only
+ * when deleting a server.
+ */
+	STUB
+	void
+	void **handle
+END
+
+DEFINE  tacacs_service
+/*
+ * sets up options for tacacs
+ */
+	STUB
+	void
+	parseinfo *csb
+END
+
+
+
+
+DEFINE	login_authen 
+/*
+ * Ask TACACS for authentication info for a given user.
+ * Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	char *user, void *data, int data_len, int recv_len, \
+	char **reason, int type, tt_soc *tty
+END
+
+
+
+
+DEFINE	login_connect 
+/*
+ * Ask TACACS for permission to make a connection.  Returns TRUE or FALSE.
+ */
+	STUB
+	boolean
+	ipaddrtype ipaddr, ushort fport
+END
+
+
+
+DEFINE	login_enable 
+/*
+ * Ask TACACS if the given user is allowed to give the ENABLE command.
+ * Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	tt_soc *stdio, char *user, char **reason, uchar level
+END
+
+
+DEFINE	login_enable_pw
+/*
+ * Ask TACACS if the given user is allowed to give the ENABLE command
+ * with the password. Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	tt_soc *stdio, char *user, char *pw, char **reason, uchar level
+END
+
+
+DEFINE	login_login 
+/*
+ * Ask TACACS if the given user is allowed to log onto the server.
+ * Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	tt_soc *tty, char *user, char *pass, char **reason
+END
+
+
+
+DEFINE	login_logout 
+/*
+ * Notify TACACS that the user is logging off.
+ */
+	STUB
+	void
+	tt_soc *tty
+END
+
+
+
+DEFINE	login_slipon 
+/*
+ * Ask TACACS if we can turn on SLIP.  Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	char *user, char *pw, char **reason, tt_soc *stdio, \
+	ipaddrtype addr, boolean routing, boolean from_exec_cmd
+END
+
+
+
+DEFINE	login_slipoff 
+/*
+ * Notify TACACS that we are turning off SLIP (logging off)
+ */
+	STUB
+	void
+	tt_soc *tty, ipaddrtype slip_curaddr, hwidbtype *idb, boolean from_ipcp
+END
+
+
+
+DEFINE	login_slipaddr 
+/*
+ * Ask TACACS if a user is allowed to set a particular SLIP address.
+ * Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	tt_soc *soc, char *host,  char **reason, ipaddrtype addr,\
+	boolean routing
+END
+
+
+
+DEFINE	login_enable_note 
+/*
+ * Notify TACACS that someone enabled on the server.
+ */
+	STUB
+	void
+	tt_soc *stdio, uchar level
+END
+
+                                                                             
+
+DEFINE	login_set_enable 
+/*
+ * Configure TACACS to ask for password when someone enables.
+ */
+	STUB
+	void
+	parseinfo *csb
+END
+
+
+
+DEFINE	login_rcmdauth 
+/*
+ * Ask TACACS if the given user is allowed to configure rcmd
+ * Returns TRUE/FALSE.
+ */
+	STUB
+	boolean
+	tt_soc *stdio, char *user, char **reason
+END
+
+
+
+
+DEFINE	login_rcmd_note 
+/*
+ * Notify TACACS that someone configured a rcmd option
+ */
+	STUB
+	void
+	tt_soc *stdio
+END
+
+                                                                             
+
+DEFINE	login_set_rcmd 
+/*
+ * Configure TACACS to ask for password when someone tries to
+ * configure a rcmd
+ */
+	STUB
+	void
+	parseinfo *csb
+END
+
+DEFINE aaa_acct_cmd
+/*
+ * Do aaa accounting for a generic command or exec start
+ */
+	STUB
+	acctinfo *
+	userstruct *ustruct, parseinfo *csb
+END
+
+DEFINE aaa_acct_conn
+/*
+ * start aaa accounting for a (stream) connection like telnet.
+ */
+	STUB
+	acctinfo *
+	userstruct *user, parseinfo *csb, conntype *conn
+END
+
+DEFINE aaa_acct_net
+/*
+ * start aaa accounting for a network service like PPP or slip
+ */
+	STUB
+	acctinfo *
+	userstruct *user, parseinfo *csb, idbtype *idb
+END
+
+DEFINE aaa_acct_end
+/*
+ * submit the end-of-event accounting for something previously started
+ */
+	STUB
+	void
+	userstruct *user, int status, acctinfo *acct, ulong bytesin,\
+	           ulong bytesout, ulong paksin, ulong paksout
+END
+
+DEFINE aaa_acct_attr_add
+/*
+ * Store aaa attribute/value pairs in a protocol independent way, putting
+ * the results in a nice bytestream.  tacacs+, radius, or whatever will
+ * later decode this into protocol specific formats.
+ */
+	STUB
+	void
+        acctinfo *acct, int type, void *value, int fmt, int len
+END
+
+DEFINE aaa_acct_search_create_type
+/*
+ * Search for accounting entry type for specified user
+*/
+	STUB
+	acctinfo *
+	userstruct *user, short type, boolean create
+END
+
+DEFINE aaa_acct_cleanup
+/*
+ * as a user is logging out, clean up their accounting queue.
+ */
+	STUB
+	void
+	userstruct *user
+END
+
+DEFINE aaa_acct_cmdparse
+/*
+ * handle the "aaa accounting" command
+ */
+	STUB
+	void
+	parseinfo *csb
+END
+
+DEFINE	aaa_acct_netinfo
+/*
+ * provide additional info (protocol addresses) for network
+ * type aaa accounting.  This may come before or after the netstart.
+ */
+	STUB
+	void
+	userstruct *user, int type, void *value, int fmt, int len, boolean send
+END
+
+DEFINE aaa_acct_execinfo
+/*
+ * provide additional info (protocol addresses) for exec
+ * type aaa accounting.  This may come before or after the start,
+ * and is typically used by a service like dialback to provide
+ * additional info about an exec session.
+ */
+	STUB
+	void
+	userstruct *user, int type, void *value, int fmt, int len
+END
+
+DEFINE aaa_acct_cmdinfo
+/*
+ * provide additional info (protocol addresses) for command
+ * type aaa accounting.  This may come before or after the command start.
+ */
+	STUB
+	void
+	userstruct *user, int type, void *value, int fmt, int len
+END
+
+DEFINE aaa_acct_relogin_fixup
+/*
+ * When a user executes an exec login command or otherwise changes there
+ * username, adjust the accounting records to make sense.
+ */
+	STUB
+	void
+	userstruct *newuser, userstruct *olduser
+END
+
+DEFINE des_init
+/*
+ * Initialize the des state
+ */
+	STUB
+	int
+	int mode, des_state_type **state
+END
+
+DEFINE des_setkey
+/*
+ *  Set DES key
+ */
+	STUB
+	void
+	des_state_type *state, char *key
+END
+
+DEFINE des_endes
+/*
+ *   Encrypt a block.
+ */
+	STUB
+	void
+	des_state_type *state, char *block
+END
+
+DEFINE des_dedes
+/*
+ *   Decrypt a block.
+ */
+	STUB
+	void
+	des_state_type *state, char *block
+END
+
+DEFINE des_done
+/*
+ *   Complete encryption
+ */
+	STUB
+	void
+	des_state_type *state
+END
+
+DEFINE get_authname
+/*
+ * Return name based on authentication
+ */
+	LOOP
+	boolean
+	hwidbtype *hw, char **namep
+END
+
+DEFINE put_authname
+/*
+ * Add authentication information to the idb
+ */
+	LOOP
+	boolean
+	hwidbtype *hw, userstruct *ustruct, char*user
+END
+
+DEFINE des_pw_bitshift
+/*
+ * Required for arap authentication
+ */
+	STUB
+	void
+        char *pw
+END
+
+DEFINE author_remove_per_user
+/*
+ * Used to remove any per-user authorisation configuration
+ */
+    LIST
+    void
+    hwidbtype *idb
+END
+
+END REGISTRY AUTH

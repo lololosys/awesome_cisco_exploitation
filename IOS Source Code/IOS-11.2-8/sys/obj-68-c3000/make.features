@@ -1,0 +1,164 @@
+# $Id: make.features,v 3.1.2.2 1996/09/14 05:30:30 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/obj-68-c3000/make.features,v $
+#------------------------------------------------------------------
+# make.features - Make the GAIA based features for 68-c3000 
+#
+# July 1996, Venugopal Margabandu 
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.features,v $
+# Revision 3.1.2.2  1996/09/14  05:30:30  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.2.1  1996/09/04  19:35:17  mvenugop
+# CSCdi68050:  Gaia make.feature for each platform
+# Branch: California_branch
+#
+# Revision 3.1  1996/07/16  19:01:24  mvenugop
+# Adding Gaia platform feature file
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+######################################################################
+#
+#	GAIA Platform Dependent Variables
+#
+######################################################################
+
+ETHER_GAIA = sub_lance.o shr_ether.o
+ISDN_GAIA = sub_isdn.o sub_bri.o $(DIALER_FEATURE) sub_les_serial.o \
+		shr_serial.o 
+SERIAL_GAIA = shr_serial.o sub_hd64570.o sub_les_serial.o
+TRING_GAIA = shr_tring.o sub_tms380.o
+NONMODULAR_PLATFORM_REQ = $(SRBCORE)
+
+#######################################################################
+#
+#	Feature to .o mapping
+#
+#######################################################################
+
+PCBUS_DESCRIPTION = "PC Bus driver support"
+PCBUS_ABBREV = PCBUS
+PCBUS_HELP = ""
+PCBUS_TEST_SCRIPT = ""
+PCBUS_FEATURE = shr_serial.o sub_pcbus.o
+
+CD2430_DESCRIPTION = "TTY driver"
+CD2430_ABBREV = CD2430
+CD2430_HELP = ""
+CD2430_TEST_SCRIPT = ""
+CD2430_FEATURE = shr_serial.o sub_cd2430.o $(PPP_FEATURE)
+
+LEX_DESCRIPTION = "Support for Lan EXterntion"
+LEX_ABBREV = LEX
+LEX_HELP = ""
+LEX_TEST_SCRIPT = ""
+LEX_FEATURE = sub_lex_platform.o shr_lex.o shr_lex_ncp.o $(PPP_FEATURE)
+
+CSU_DSU_DESCRIPTION = "CSU_DSU support"
+CSU_DSU_ABBREV = CSU_DSU
+CSU_DSU_HELP = ""
+CSU_DSU_TEST_SCRIPT = ""
+CSU_DSU_FEATURE = sub_csu_dsu.o $(SERIAL_FEATURE)
+CSU_DSU_GNMIB = sub_ds1c2500mib.o sub_icsudsumib.o
+
+BOOT_DESCRIPTION = "platform dependant boot support"
+BOOT_ABBREV = BOOT
+BOOT_HELP = ""
+BOOT_TEST_SCRIPT = ""
+BOOT_FEATURE = sub_lance.o sub_hd64570.o sub_csu_dsu.o sub_tms380.o \
+		sub_isdn.o shr_ether.o  shr_serial.o shr_tring.o \
+		sub_bri.o sub_les_serial.o shr_core.o sub_core_platform.o \
+		shr_ukernel.o sub_ukernel_platform.o sub_c2500.o \
+		shr_fastswitch.o shr_arp.o  shr_srbcore.o \
+		shr_ipudptcp.o shr_ipcore.o shr_ipboot.o shr_ipdiag.o \
+		shr_iprarp.o shr_ipbootp.o shr_ipaccount.o shr_ipcomprs.o \
+		shr_frame.o shr_smds.o  shr_ppp.o shr_compress.o \
+		shr_dialer.o  shr_x25.o shr_pad.o shr_llc2.o shr_dlc_base.o \
+		shr_tacacs.o
+
+#######################################################################
+#
+#	All abbreviations for platform dependent features and partially
+#	dependent features
+#
+#######################################################################
+
+PLATFORM_FEATURE_ABBRV = \
+$(ETHER_ABBREV) $(SERIAL_ABBREV) $(ISDN_ABBREV) \
+$(PCBUS_ABBREV) $(VLANS_ABBREV)  $(CPP_ABBREV) \
+$(CD2430_ABBREV) $(TRING_ABBREV) $(V120_ABBREV) $(LEX_ABBREV) \
+$(RMON_ABBREV) $(DSPU_ABBREV) $(DLSW_ABBREV) $(DLSW_SLOW_ABBREV) \
+$(APPN_ABBREV) $(NCIA_ABBREV) $(MMP_ABBREV) \
+$(IBM_BASE_ABBREV) $(SNA_PRIORITY_ABBREV) $(QLLC_ABBREV) \
+$(SNANM_ABBREV) $(BSTUN_ABBREV) $(TRLANE_ABBREV) $(CSU_DSU_ABBREV) \
+$(BOOT_ABBREV)
+
+######################################################################
+#
+# Cisco internal build features
+#
+######################################################################
+
+TEST_DESCRIPTION = "TEST support"
+TEST_ABBREV = TEST
+TEST_HELP = ""
+TEST_TEST_SCRIPT = ""
+TEST_FEATURE = sub_test.o
+
+MK5025_DESCRIPTION = "MK5025 support"
+MK5025_ABBREV = MK5025
+MK5025_HELP = ""
+MK5025_TEST_SCRIPT = ""
+MK5025_FEATURE = sub_les_serial.o sub_mk5025.o
+
+BRUT_DESCRIPTION = "DEC Brut drivers"
+BRUT_ABBREV = BRUT
+BRUT_HELP = ""
+BRUT_TEST_SCRIPT = ""
+BRUT_FEATURE = sub_brut.o
+
+HUB_DESCRIPTION = "Hub driver support"
+HUB_ABBREV = HUB
+HUB_HELP = ""
+HUB_TEST_SCRIPT = ""
+HUB_FEATURE = sub_hub.o
+HUB_GNMIB = $(HUB_MIB)
+
+PARTNER_DESCRIPTION = "Partners product support"
+PARTNER_ABBREV = PARTNER
+PARTNER_HELP = ""
+PARTNER_TEST_SCRIPT = ""
+PARTNER_FEATURE = sub_partner.o $(SERIAL_FEATURE)
+
+C2500_PLATFORM_PLUS_PACK_DESCRIPTION = "C2500 Platform Plus package"
+C2500_PLATFORM_PLUS_PACK_ABBREV = C2500_PLATFORM_PLUS_PACK
+C2500_PLATFORM_PLUS_PACK_HELP = ""
+C2500_PLATFORM_PLUS_PACK_TEST_SCRIPT = ""
+C2500_PLATFORM_PLUS_PACK_FEATURE = $(IBM_BASE_FEATURE) $(BRIDGE_SR_FEATURE) \
+                $(RTTM_FEATURE) $(RTTM_GNMIB) $(QLLC_FEATURE) $(NCIA_FEATURE) \
+                $(DSPU_FEATURE) $(DSPU_GNMIB) $(DLSW_FEATURE) $(BSTUN_GNMIB) \
+                $(BSTUN_FEATURE) $(IBM_BASE_GNMIB) $(DLSW_GNMIB) \
+		$(IP_NAT_FEATURE) \
+		$(RMON_FEATURE)
+
+#######################################################################
+#
+#	All abbreviations for Cisco internal features
+#
+#######################################################################
+
+INTERNAL_ABBRV = \
+$(BRUT_ABBREV) $(HUB_ABBREV) $(PARTNER_ABBREV) \
+$(TEST_ABBREV) $(MK5025_ABBREV) $(TUNNEL_SLOW_ABBREV)
+
+######################################################################
+#
+#	End of GAIA
+#
+######################################################################

@@ -1,0 +1,5 @@
+
+partner_subsys.h,106
+#define PARTNER_MAJVERSION 21,663
+#define PARTNER_MINVERSION 22,697
+#define PARTNER_EDITVERSION 23,731

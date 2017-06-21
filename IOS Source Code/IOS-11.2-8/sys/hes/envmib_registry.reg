@@ -1,0 +1,94 @@
+# $Id: envmib_registry.reg,v 3.1 1995/12/01 19:03:39 sdurham Exp $
+#------------------------------------------------------------------
+# envmib_registry.reg - Service Points for environmental monitor mib
+#
+# November, 1995 Sandra Durham
+#
+# Copyright (c) 1995 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: envmib_registry.reg,v $
+# Revision 3.1  1995/12/01  19:03:39  sdurham
+# CSCdi44362:  envmon is non-modular w.r.t envmon mib.
+#   Remove direct calls from envmon code to mib code. Use service points.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+BEGIN REGISTRY ENVMIB
+
+DEFINE envmib_shutdown_trap
+/*
+ * trigger a shutdown trap
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE envmib_redundant_supply_trap
+/*
+ * trigger a  redundant supply trap
+ */
+	STUB
+	void
+	int  indx
+END
+
+DEFINE envmib_temperature_trap
+/*
+ * trigger a temperature warning trap
+ */
+	STUB
+	void
+	int indx
+END
+
+DEFINE envmib_voltage_trap
+/*
+ * trigger a voltage warning trap
+ */
+	STUB
+	void
+	int indx
+END
+
+DEFINE envmib_fan_trap
+/*
+ * trigger a fan warningtrap
+ */
+	STUB
+	void
+	int  indx
+END
+
+END REGISTRY

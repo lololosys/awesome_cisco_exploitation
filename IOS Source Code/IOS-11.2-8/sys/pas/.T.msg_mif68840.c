@@ -1,0 +1,3 @@
+
+msg_mif68840.c,33
+#define DEFINE_MESSAGES	49,1729

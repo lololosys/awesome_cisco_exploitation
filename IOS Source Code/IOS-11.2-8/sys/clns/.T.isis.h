@@ -1,0 +1,325 @@
+
+isis.h,14860
+#define __ISIS_H__312,13974
+#define ISIS_MAX_QUEUE_DEPTH 317,14062
+#define ISIS_PACKET_LIMITER 318,14142
+#define ISIS_TIMER_LIMITER 319,14180
+#define ISIS_JITTER_PERCENT 320,14239
+#define ISIS_HT_MULTIPLIER 321,14316
+#define ISIS_DEF_HELLO_IVL 322,14353
+#define ISIS_LAN_DR_HELLO_DIVISOR 323,14398
+#define ISIS_DEF_CSNP_TIMER 324,14435
+#define ISIS_DEF_RETRANS_TIMER 325,14480
+#define ISIS_AGE_INTERVAL 326,14524
+#define ISIS_NLSP_SPF_INITIAL_WAIT 327,14593
+#define ISIS_MAX_INTERFACES	328,14680
+#define ISIS_P2P_CSNP_WAIT	329,14755
+#define ISIS_P2P_LSP_WAIT	330,14828
+#define ISIS_LSP_BUILD_DELAY	331,14900
+#define ISIS_LSP_REFRESH_OFFSET 332,14970
+#define NLSP_LAN_DR_HELLO_DIVISOR 333,15046
+#define ISIS_DEF_DR_PRIO 338,15146
+#define NLSP_DR_PRIO_RAISE 339,15174
+#define ISIS_DEF_METRIC 340,15244
+#define ISIS_MAX_PRIO 345,15307
+#define ISIS_MAX_METRIC 346,15341
+#define ISIS_MAX_PATH_METRIC 347,15375
+#define ISIS_MAX_QOS 348,15432
+#define ISIS_MAX_PATHS 349,15463
+#define ISIS_DUPID_COUNT 357,15746
+#define ISIS_DUPID_INTERVAL 358,15803
+#define ISIS_AREA_ADDRESSES 363,15933
+#define ISIS_IS_NEIGHBORS 364,15965
+#define ISIS_ES_NEIGHBORS 365,15997
+#define ISIS_L2_PART_DR 366,16029
+#define ISIS_PREFIX_NEIGHBORS 367,16061
+#define ISIS_IS_NEIGHBORS_IIH 368,16093
+#define ISIS_PAD 369,16125
+#define ISIS_SNP 370,16157
+#define ISIS_AUTHENTICATION 371,16189
+#define ISIS_NLPID 372,16222
+#define ISIS_AUTH_PW_TYPE 373,16256
+#define ISIS_IP_INTERNAL_ADDR 378,16340
+#define ISIS_IP_EXTERNAL_ADDR 379,16374
+#define ISIS_IDR_INFO 380,16408
+#define ISIS_IP_IF_ADDRESSES 381,16442
+#define ISIS_NLSP_AREA_ADDRS 386,16534
+#define ISIS_NLSP_MGMT_INFO 387,16569
+#define ISIS_NLSP_LINK_INFO 388,16604
+#define ISIS_NLSP_SVCS_INFO 389,16639
+#define ISIS_NLSP_EXT_ROUTES 390,16674
+#define ISIS_NLSP_LOCAL_MTU 391,16709
+#define ISIS_NLSP_SUMMARY_ROUTES 392,16744
+#define ISIS_SERIAL_CIRC_STATE 397,16847
+#define ISIS_SERIAL_CIRC_STATE_LENGTH 398,16883
+#define ISIS_NUM_CODES_POSSIBLE 400,16953
+#define ISIS_VERSION 402,17016
+#define NLSP_VERSION 403,17046
+#define ISIS_VERSION_LSP 404,17076
+#define ISIS_VERSION_HELLO 405,17106
+#define ISIS_CIRCUIT_NONE 413,17280
+#define ISIS_CIRCUIT_L1 414,17310
+#define ISIS_CIRCUIT_L2 415,17382
+#define ISIS_CIRCUIT_L1L2 416,17454
+#define ISIS_NUM_CIRC_TYPES 417,17533
+#define ISIS_LAN_L1_HELLO 422,17656
+#define ISIS_LAN_L2_HELLO 423,17685
+#define ISIS_PT_HELLO 424,17714
+#define ISIS_L1_LSP 425,17743
+#define ISIS_L2_LSP 426,17772
+#define ISIS_L1_CSNP 427,17801
+#define ISIS_L2_CSNP 428,17830
+#define ISIS_L1_PSNP 429,17859
+#define ISIS_L2_PSNP 430,17888
+#define ISIS_LSPBUFFERSIZE	435,17951
+#define ISIS_METRIC_UNSUPPORTED 437,17984
+#define ISIS_MINBCASTLSPGENINTERVAL 439,18041
+#define ISIS_DEF_PACING_INTERVAL 440,18080
+#define ISIS_CSNPINTERVAL 441,18119
+#define ISIS_ZEROAGE_LIFETIME 443,18186
+#define ISIS_SEQUENCE_MODULUS 444,18248
+#define ISIS_PSEUDO_ID	446,18306
+#define ISIS_LSP_CHECKSUM_LENGTH 448,18374
+#define	ISIS_INVALID_IP_NEXTHOP	450,18413
+#define NLSP_TYPE_GENERIC_LAN	454,18517
+#define NLSP_TYPE_GENERIC_WAN	455,18572
+#define NLSP_TYPE_LOCALTALK	456,18627
+#define NLSP_TYPE_ETHERNET	457,18678
+#define NLSP_TYPE_802_3_LLC	458,18734
+#define NLSP_TYPE_802_3_RAW	459,18796
+#define NLSP_TYPE_802_3_SNAP	460,18851
+#define NLSP_TYPE_802_5_LLC	461,18912
+#define NLSP_TYPE_802_5_SNAP	462,18974
+#define NLSP_TYPE_ISDN	463,19035
+#define NLSP_TYPE_IP_TUNNEL	464,19077
+#define NLSP_TYPE_IP_RELAY	465,19128
+#define NLSP_TYPE_FDDI_LLC	466,19177
+#define NLSP_TYPE_FDDI_SNAP	467,19237
+#define NLSP_TYPE_PPP	468,19296
+#define NLSP_TYPE_X_25	469,19336
+#define NLSP_TYPE_FRAME_RELAY	470,19378
+#define NLSP_TYPE_WAN_MASK	471,19433
+#define NLSP_STATIC_MTU 475,19551
+#define NLSP_STATIC_BANDWIDTH 476,19606
+#define NLSP_STATIC_DELAY 477,19645
+#define NLSP_STATIC_COST 478,19676
+typedef struct isis_lspid_ isis_lspid_487,19896
+} isis_lspid;isis_lspid491,20072
+#define ISIS_LSPID_LENGTH 492,20086
+#define ISIS_MAX_LSP_FRAGMENT 493,20140
+#define ISIS_PDU_HEADER_FIELDS 503,20420
+typedef struct isishdrtype_ isishdrtype_515,20719
+} isishdrtype;isishdrtype517,20776
+#define ISIS_MINIMAL_HEADER_SIZE 518,20791
+#define isisheadstart(isisheadstart520,20829
+typedef struct isis_pt_IIH_hdrtype_ isis_pt_IIH_hdrtype_526,20916
+} isis_pt_IIH_hdrtype;isis_pt_IIH_hdrtype536,21430
+#define ISIS_PT_HELLO_HEADER_SIZE 537,21453
+typedef struct isis_lan_IIH_hdrtype_ isis_lan_IIH_hdrtype_544,21594
+} isis_lan_IIH_hdrtype;isis_lan_IIH_hdrtype556,22186
+#define ISIS_LAN_HELLO_HEADER_SIZE 557,22210
+#define ISIS_LSP_CORE_STRUCT 567,22510
+#define ISIS_LSP_CORE_SIZE 576,23057
+#define ISIS_LSP_L2_ATTACHED 577,23132
+typedef struct isis_lsp_core_ isis_lsp_core_587,23450
+} isis_lsp_core;isis_lsp_core589,23503
+typedef struct isis_LSP_hdrtype_ isis_LSP_hdrtype_594,23575
+} isis_LSP_hdrtype;isis_LSP_hdrtype599,23808
+#define isis_LSP_hdr_copy_start 600,23828
+#define ISIS_LSP_HEADER_SIZE 601,23901
+typedef struct isis_CSNP_hdrtype_ isis_CSNP_hdrtype_607,23989
+} isis_CSNP_hdrtype;isis_CSNP_hdrtype614,24200
+#define ISIS_CSNP_HEADER_SIZE 615,24221
+typedef struct isis_snp_entry_ isis_snp_entry_617,24260
+} isis_snp_entry;isis_snp_entry622,24404
+#define ISIS_SNP_ENTRY_LENGTH 623,24422
+typedef struct isis_PSNP_hdrtype_ isis_PSNP_hdrtype_629,24504
+} isis_PSNP_hdrtype;isis_PSNP_hdrtype634,24649
+#define ISIS_PSNP_HEADER_SIZE 635,24670
+typedef struct isis_lsp_parent_ isis_lsp_parent_650,25077
+} isis_lsp_parent;isis_lsp_parent657,25401
+struct isis_lspdbtype_ isis_lspdbtype_672,25833
+} isis_info_type;isis_info_type721,27997
+#define ISIS_INFO_TYPE_OVERHEAD 723,28016
+#define ISIS_INFO_TYPE_MAXDATA 724,28088
+#define ISIS_LSPDB_OVERHEAD 730,28281
+#define ADVANCE_ITEM(ADVANCE_ITEM740,28636
+static inline uchar isis_item_length 755,29096
+static inline ulong isis_overall_item_length 766,29416
+#define ISIS_MIN_IS_AD_SIZE 774,29582
+#define ISIS_MIN_ES_AD_SIZE 775,29619
+#define ISIS_MIN_PREFIX_AD_SIZE 776,29654
+#define ISIS_ONE_ES_AD_SIZE 777,29725
+#define ISIS_ONE_IS_AD_SIZE 778,29759
+typedef struct isis_metric_type_ isis_metric_type_783,29862
+} isis_metric_type;isis_metric_type788,29997
+typedef struct isis_is_nbr_ad_ isis_is_nbr_ad_790,30018
+} isis_is_nbr_ad;isis_is_nbr_ad793,30131
+typedef struct isis_es_nbr_ad_ isis_es_nbr_ad_798,30186
+} isis_es_nbr_ad;isis_es_nbr_ad801,30327
+typedef struct isis_prefix_nbr_ad_ isis_prefix_nbr_ad_806,30386
+} isis_prefix_nbr_ad;isis_prefix_nbr_ad809,30505
+typedef struct isis_ip_nbr_ad_ isis_ip_nbr_ad_814,30566
+} isis_ip_nbr_ad;isis_ip_nbr_ad818,30688
+typedef struct isis_idr_info_ isis_idr_info_823,30765
+} isis_idr_info;isis_idr_info826,30889
+typedef struct isis_nlsp_area_addrs_ isis_nlsp_area_addrs_833,31027
+} isis_nlsp_area_addrs;isis_nlsp_area_addrs836,31163
+#define ISIS_NLSP_MAX_AREA_ADDRS 838,31188
+#define ISIS_NLSP_AREA_ADDRS_LEN 839,31248
+typedef struct isis_nlsp_mgmt_info_ isis_nlsp_mgmt_info_845,31327
+} isis_nlsp_mgmt_info;isis_nlsp_mgmt_info851,31650
+#define ISIS_NLSP_MGMT_INFO_LEN 853,31674
+#define NLSP_IPX_VERSION_NUMBER 854,31735
+typedef struct isis_nlsp_link_info_ isis_nlsp_link_info_862,31914
+} isis_nlsp_link_info;isis_nlsp_link_info872,32398
+#define ISIS_NLSP_LINK_INFO_LEN 874,32422
+typedef struct isis_nlsp_svcs_info_ isis_nlsp_svcs_info_881,32522
+} isis_nlsp_svcs_info;isis_nlsp_svcs_info888,32848
+#define ISIS_NLSP_SVCS_INFO_LEN 890,32872
+#define ISIS_NLSP_SVCS_INFO_KEY_OFFSET 891,32933
+#define ISIS_NLSP_SVC_MAXLEN 892,33005
+typedef struct isis_nlsp_ext_routes_ isis_nlsp_ext_routes_897,33109
+} isis_nlsp_ext_routes;isis_nlsp_ext_routes901,33307
+#define ISIS_NLSP_EXT_ROUTES_LEN 903,33332
+#define ISIS_NLSP_EXT_ROUTES_KEY_OFFSET 904,33367
+typedef struct isis_nlsp_summary_routes_ isis_nlsp_summary_routes_909,33474
+} isis_nlsp_summary_routes;isis_nlsp_summary_routes914,33789
+#define ISIS_NLSP_SUMMARY_ROUTES_LEN 916,33818
+#define ISIS_NLSP_SUMMARY_ROUTES_KEY_OFFSET 917,33857
+typedef struct isis_nlsp_local_mtu_ isis_nlsp_local_mtu_922,33933
+} isis_nlsp_local_mtu;isis_nlsp_local_mtu924,34011
+#define ISIS_NLSP_LOCAL_MTU_LEN 926,34035
+typedef union isis_generic_ad_ isis_generic_ad_932,34095
+} isis_generic_ad;isis_generic_ad947,35103
+typedef struct isis_rexmit_entry_ isis_rexmit_entry_956,35274
+} isis_rexmit_entry;isis_rexmit_entry963,35614
+struct isis_tree_type_ isis_tree_type_970,35710
+typedef struct isis_rdbtype_ isis_rdbtype_982,36164
+} isis_rdbtype;isis_rdbtype986,36426
+struct isis_ddbtype_ isis_ddbtype_993,36558
+typedef struct isis_addrsumtype_ isis_addrsumtype_1041,38856
+} isis_addrsumtype;isis_addrsumtype1048,39215
+typedef struct isis_lspcontext_ isis_lspcontext_1074,40143
+} isis_lspcontext;isis_lspcontext1084,40630
+typedef struct isis_TLV_parse_ isis_TLV_parse_1089,40702
+} isis_TLV_parse;isis_TLV_parse1091,40791
+typedef struct csnp_control_ csnp_control_1096,40893
+} csnp_control;csnp_control1101,41168
+    ISIS_SPF_TRIG_PERIODIC,1109,41308
+    ISIS_SPF_TRIG_NEWSYSID,1110,41356
+    ISIS_SPF_TRIG_NEWAREA,1111,41405
+    ISIS_SPF_TRIG_NEWLEVEL,1112,41448
+    ISIS_SPF_TRIG_RTCLEAR,1113,41504
+    ISIS_SPF_TRIG_NEWMETRIC,1114,41558
+    ISIS_SPF_TRIG_IPBACKUP,1115,41614
+    ISIS_SPF_TRIG_IPQUERY,1116,41668
+    ISIS_SPF_TRIG_IPXBACKUP,1117,41720
+    ISIS_SPF_TRIG_IPXQUERY,1118,41776
+    ISIS_SPF_TRIG_ATTACH,1119,41830
+    ISIS_SPF_TRIG_DISTANCE,1120,41885
+    ISIS_SPF_TRIG_AREASET,1121,41942
+    ISIS_SPF_TRIG_NEWADJ,1122,41993
+    ISIS_SPF_TRIG_DBCHANGED,1123,42040
+    ISIS_SPF_TRIG_OVERFLOWHIT,1124,42103
+    ISIS_SPF_TRIG_NEWLSP0,1130,42339
+    ISIS_SPF_TRIG_LSPEXPIRY,1131,42383
+    ISIS_SPF_TRIG_FIELDS,1132,42431
+    ISIS_SPF_TRIG_CODE,1133,42489
+    ISIS_SPF_TRIG_TLVCHG,1134,42539
+    ISIS_SPF_TRIG_NUMTYPES	1135,42583
+#define ISIS_SPF_TRIG_SAVES_LSPID 1137,42644
+#define ISIS_SPF_LOG_SIZE 1142,42744
+typedef struct isis_spf_log_entry_ isis_spf_log_entry_1144,42811
+} isis_spf_log_entry;isis_spf_log_entry1151,43190
+struct isis_spf_log_ isis_spf_log_1153,43213
+typedef struct isis_mesh_group_display_ isis_mesh_group_display_1165,43487
+} isis_mesh_group_display;isis_mesh_group_display1168,43639
+struct isis_mesh_group_entry_ isis_mesh_group_entry_1177,43805
+struct isisidbtype_ isisidbtype_1193,44341
+#define NLSP_MINIMUM_PACING_INTERVAL 1325,49510
+#define ISIS_P2P_CKT_MASK 1331,49699
+#define ISIS_P2P_CKT_OFFSET 1332,49771
+#define ISIS_LAN_CKT_COUNT 1333,49845
+enum {ISIS_L1_HELLO_TIMER,1338,49949
+enum {ISIS_L1_HELLO_TIMER, ISIS_L2_HELLO_TIMER,1338,49949
+enum {ISIS_L1_HELLO_TIMER, ISIS_L2_HELLO_TIMER, ISIS_DR_TIMER,1338,49949
+	  ISIS_ADJ_TIMER,1339,50012
+	  ISIS_ADJ_TIMER, ISIS_PSNP_TIMER,1339,50012
+	  ISIS_ADJ_TIMER, ISIS_PSNP_TIMER, ISIS_L1_CSNP_TIMER,1339,50012
+	  ISIS_L2_CSNP_TIMER,1340,50068
+	  ISIS_L2_CSNP_TIMER, ISIS_AGE_TIMER,1340,50068
+	  ISIS_L2_CSNP_TIMER, ISIS_AGE_TIMER, ISIS_REXMIT_TIMER,1340,50068
+	  ISIS_LSP_PACING_TIMER,1341,50126
+	  ISIS_LSP_PACING_TIMER, ISIS_LSP_GEN_TIMER,1341,50126
+	  ISIS_LSP_PACING_TIMER, ISIS_LSP_GEN_TIMER, ISIS_LSP_TIMER,1341,50126
+	  ISIS_LSP_REFRESH_TIMER,1342,50188
+	  ISIS_LSP_REFRESH_TIMER, ISIS_L1_LSP_BUILD_TIMER,1342,50188
+	  ISIS_L2_LSP_BUILD_TIMER,1343,50240
+	  ISIS_L2_LSP_BUILD_TIMER, ISIS_L1_SPF_TIMER,1343,50240
+	  ISIS_L2_LSP_BUILD_TIMER, ISIS_L1_SPF_TIMER, ISIS_L2_SPF_TIMER,1343,50240
+          ISIS_L1_PRC_TIMER,1344,50306
+          ISIS_L1_PRC_TIMER, ISIS_DUPID_TIMER}1344,50306
+isis_route_type;isis_route_type1369,51293
+struct isis_lspix_type_ isis_lspix_type_1371,51311
+#define ISIS_LSPIX_INCREMENT 1381,51740
+typedef struct isis_snp_build_context_ isis_snp_build_context_1390,51925
+} isis_snp_build_context;isis_snp_build_context1397,52289
+typedef struct isis_csnp_parse_context_ isis_csnp_parse_context_1404,52425
+} isis_csnp_parse_context;isis_csnp_parse_context1414,52907
+struct isis_backuptype_ isis_backuptype_1446,54434
+#define ISIS_BACKUP_MAX_METRIC_DEPTH 1455,54808
+#define ISIS_BACKUP_L2_METRIC_BIT 1456,54877
+#define ISIS_BACKUP_BASE_METRIC(ISIS_BACKUP_BASE_METRIC1457,54941
+#define ISIS_BACKUP_LEVEL(ISIS_BACKUP_LEVEL1458,55021
+struct isis_cleanup_queue_ isis_cleanup_queue_1477,55853
+#define cleanup_ip_addr 1488,56136
+#define cleanup_ip_mask 1489,56193
+struct isis_fastpsnp_type_ isis_fastpsnp_type_1495,56388
+#define ISIS_FASTPSNP_CACHESIZE 1499,56439
+#define ISIS_FASTPSNP_ID_SIZE 1500,56486
+#define ISIS_L1_HASH(ISIS_L1_HASH1508,56675
+#define ISIS_LSPID_IN_RANGE(ISIS_LSPID_IN_RANGE1510,56745
+#define ADVANCE_POINTER(ADVANCE_POINTER1517,56960
+enum {ISIS_L1_HELLO_OUT,1524,57104
+enum {ISIS_L1_HELLO_OUT, ISIS_L1_HELLO_IN,1524,57104
+enum {ISIS_L1_HELLO_OUT, ISIS_L1_HELLO_IN, ISIS_L2_HELLO_OUT,1524,57104
+	  ISIS_L2_HELLO_IN,1525,57167
+	  ISIS_L2_HELLO_IN, ISIS_PTP_HELLO_OUT,1525,57167
+	  ISIS_L2_HELLO_IN, ISIS_PTP_HELLO_OUT, ISIS_PTP_HELLO_IN,1525,57167
+	  ISIS_L1_LSP_OUT,1526,57228
+	  ISIS_L1_LSP_OUT, ISIS_L1_LSP_IN,1526,57228
+	  ISIS_L1_LSP_OUT, ISIS_L1_LSP_IN, ISIS_L2_LSP_OUT,1526,57228
+	  ISIS_L1_LSP_OUT, ISIS_L1_LSP_IN, ISIS_L2_LSP_OUT, ISIS_L2_LSP_IN,1526,57228
+	  ISIS_L1_CSNP_OUT,1527,57298
+	  ISIS_L1_CSNP_OUT, ISIS_L1_CSNP_IN,1527,57298
+	  ISIS_L1_CSNP_OUT, ISIS_L1_CSNP_IN, ISIS_L2_CSNP_OUT,1527,57298
+	  ISIS_L2_CSNP_IN,1528,57355
+	  ISIS_L2_CSNP_IN, ISIS_L1_PSNP_OUT,1528,57355
+	  ISIS_L2_CSNP_IN, ISIS_L1_PSNP_OUT, ISIS_L1_PSNP_IN,1528,57355
+	  ISIS_L2_PSNP_OUT,1529,57411
+	  ISIS_L2_PSNP_OUT, ISIS_L2_PSNP_IN,1529,57411
+	  ISIS_L2_PSNP_OUT, ISIS_L2_PSNP_IN, ISIS_L1_DR_ELECTS,1529,57411
+	  ISIS_L2_DR_ELECTS,1530,57469
+	  ISIS_L2_DR_ELECTS, ISIS_L1_SPF_DONE,1530,57469
+	  ISIS_L2_DR_ELECTS, ISIS_L1_SPF_DONE, ISIS_L2_SPF_DONE,1530,57469
+	  ISIS_L1_PARTIALS,1531,57527
+	  ISIS_L1_PARTIALS, ISIS_L2_PARTIALS,1531,57527
+	  ISIS_L1_PARTIALS, ISIS_L2_PARTIALS, ISIS_LSP_CORR,1531,57527
+	  ISIS_L1_OVR_LOAD,1532,57581
+	  ISIS_L1_OVR_LOAD, ISIS_L1_DBASE_OVR_LOAD,1532,57581
+	  ISIS_L1_OVR_LOAD, ISIS_L1_DBASE_OVR_LOAD, ISIS_MAXSEQNUMS,1532,57581
+          ISIS_SEQNUMSKIPS,1533,57643
+          ISIS_SEQNUMSKIPS, ISIS_LSP_PURGE,1533,57643
+          ISIS_SEQNUMSKIPS, ISIS_LSP_PURGE, ISIS_VERSION_ERR,1533,57643
+	  ISIS_INCORRECT_PACKETS,1534,57705
+	  ISIS_INCORRECT_PACKETS, ISIS_RESOURCE_FAIL,1534,57705
+	  ISIS_INCORRECT_PACKETS, ISIS_RESOURCE_FAIL, ISIS_CKSUM_ERR,1534,57705
+	  ISIS_CKSUM_ERR_HT0,1535,57768
+	  ISIS_CKSUM_ERR_HT0, ISIS_RETRANSMITS,1535,57768
+	  ISIS_CKSUM_ERR_HT0, ISIS_RETRANSMITS, ISIS_FASTPSNP_CACHEHITS,1535,57768
+	  ISIS_L1_LSP_BUILD,1536,57834
+	  ISIS_L1_LSP_BUILD, ISIS_L2_LSP_BUILD,1536,57834
+	  ISIS_L1_LSP_REFRESHED,1537,57875
+	  ISIS_L1_LSP_REFRESHED, ISIS_L2_LSP_REFRESHED,1537,57875
+	  ISIS_MAX_TRAFFIC}1538,57924

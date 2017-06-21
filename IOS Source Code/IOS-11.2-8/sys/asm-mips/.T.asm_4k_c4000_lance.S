@@ -1,0 +1,8 @@
+
+asm_4k_c4000_lance.S,162
+#define ASMINCLUDE25,843
+#define LANCE_RINT_MASK	32,917
+#define LANCE_TINT_MASK	33,964
+#define LANCE_ERRORS	34,1011
+#define LANCE_MASK 35,1077
+	nop	60,1566

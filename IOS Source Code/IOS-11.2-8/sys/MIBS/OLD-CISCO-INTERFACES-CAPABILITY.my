@@ -1,0 +1,84 @@
+-- $Id: OLD-CISCO-INTERFACES-CAPABILITY.my,v 3.2 1995/11/17 08:36:00 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/OLD-CISCO-INTERFACES-CAPABILITY.my,v $
+-- *****************************************************************
+-- OLD-CISCO-INTERFACES-CAPABILITY.my:
+--			OLD-CISCO-INTERFACES-MIB AGENT-CAPABILITIES
+--
+-- August 1994, Jeffrey T. Johnson
+--
+-- Copyright (c) 1994 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: OLD-CISCO-INTERFACES-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:36:00  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:51:30  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:02:10  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+OLD-CISCO-INTERFACES-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+oldCiscoIfCapability MODULE-IDENTITY
+		LAST-UPDATED	"9408180000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for OLD-CISCO-INTERFACES-MIB"
+		REVISION	"9408180000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 7 }
+
+oldCiscoIfCapabilityV10R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.2"
+STATUS		current
+DESCRIPTION	"IOS 10.2 Old Cisco Interfaces MIB capabilities"
+
+SUPPORTS	OLD-CISCO-INTERFACES-MIB
+INCLUDES	{ linterfacesGroup }
+
+VARIATION	locIfchaosInPkts
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	locIfchaosOutPkts
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	locIfchaosInOctets
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	locIfchaosOutOctets
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+	::= { oldCiscoIfCapability 1 }
+
+END

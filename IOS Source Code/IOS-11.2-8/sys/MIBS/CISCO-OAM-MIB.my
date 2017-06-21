@@ -1,0 +1,29 @@
+-- $Id: CISCO-OAM-MIB.my,v 3.1 1996/01/18 02:08:11 lcheung Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-OAM-MIB.my,v $
+-- *****************************************************************
+-- OAM MIB Definition File
+--
+-- Dec 1995, rbhide
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-OAM-MIB.my,v $
+-- Revision 3.1  1996/01/18  02:08:11  lcheung
+-- placeholder
+--
+--Revision 2.1  1995/12/06  20:48:51  rbhide
+--Placeholder for Rhino_branch
+--
+-- *****************************************************************
+-- $Endlog$
+--
+-- This mib was extracted from RFC xxxx
+
+--%DNP%  FYI:  Lines containing a comment starting with the "Do Not
+--%DNP%  Publish" prefix "%DNP%" (such as these) are automagicially
+--%DNP%  stripped from MIBS prior to publishing on ftp and cio, and
+--%DNP%  should be used for comments intended for cisco engineering
+--%DNP%  eyes only, or for new product identifiers that are not yet
+--%DNP%  announced.
+

@@ -1,0 +1,6 @@
+
+partner_registry.c,179
+static void partner_registry_init 37,1220
+#define PARTNER_REGISTRY_MAJVERSION 47,1424
+#define PARTNER_REGISTRY_MINVERSION 48,1462
+#define PARTNER_REGISTRY_EDITVERSION 49,1500

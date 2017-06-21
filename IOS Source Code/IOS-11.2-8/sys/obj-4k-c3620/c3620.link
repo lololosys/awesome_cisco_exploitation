@@ -1,0 +1,17 @@
+/* $Id: c3620.link,v 1.1 1996/09/12 21:35:36 yoko Exp $
+ * $Source: /release/112/cvs/Xsys/obj-4k-c3620/c3620.link,v $
+ *------------------------------------------------------------------
+ * c3620.link - Loader command script for c3620 (Lynx)
+ *
+ * January 1996, Yoko Izumi
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: c3620.link,v $
+# Revision 1.1  1996/09/12  21:35:36  yoko
+# placeholder files
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */

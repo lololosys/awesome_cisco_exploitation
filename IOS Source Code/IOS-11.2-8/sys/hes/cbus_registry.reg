@@ -1,0 +1,673 @@
+# $Id: cbus_registry.reg,v 3.5.42.5 1996/09/02 08:19:11 bchan Exp $
+#------------------------------------------------------------------
+# cbus_registry.reg - Service Points for Cbus/Dbus support
+#
+# William H. Palmer, October 1993
+#
+# Copyright (c) 1993-1997 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: cbus_registry.reg,v $
+# Revision 3.5.42.5  1996/09/02  08:19:11  bchan
+# CSCdi67808:  Change tn3270-server mib
+# Branch: California_branch
+#
+# Revision 3.5.42.4  1996/08/15  15:31:51  skufer
+# CSCdi60891:  HSA needs to work with SVIP and RVIP
+# Branch: California_branch
+#         HSA (fail-over dual RSP) now works with VIP.
+#
+# Revision 3.5.42.3  1996/08/12  06:11:47  dlobete
+# CSCdi59677:  distributed switching broken if MIP queuing fixed
+# Branch: California_branch
+# Eliminate mci_index from DFS scope and replace with the more
+# suitable hw_if_index. This not only fixes DFS to MIP channel-groups
+# but also paves the way for input from the new channelized port-adaptors
+# into DFS.
+#
+# Revision 3.5.42.2  1996/05/17  11:16:56  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.5.30.2  1996/04/03  14:27:09  ppearce
+# Sync to IbuMod_Calif_baseline_960402
+#
+# Revision 3.5.30.1  1996/03/28  11:28:29  bchan
+# CSCdi52724:  merge tn3280 server code
+# Branch: IbuMod_Calif_branch
+#
+# Revision 3.5.42.1  1996/03/18  19:39:44  gstovall
+# Branch: California_branch
+# Elvis has left the building.  He headed out to California, and took the
+# port ready changes with him.
+#
+# Revision 3.5.12.1  1996/01/24  21:44:56  gstovall
+# Branch: DeadKingOnAThrone_branch
+# Nuke piles of externs, start hiding driver specific stuff from the rest
+# of the system.
+#
+# Revision 3.5  1995/12/26  23:08:11  dlobete
+# CSCdi42282:  chassis mib incomplete for VIP
+# Add support for PA MIB information to be relayed from VIP to RP/RSP
+# via love-letter.
+# Rework some of the 4T PA's data structures as a result of above.
+#
+# Revision 3.4  1995/12/02  05:50:01  rharagan
+# CSCdi41966:  Messages between 4T PA & driver should be per interface
+# Move to single interface commands, incorporate code review comments.
+#
+# Revision 3.3  1995/11/27  21:31:48  yanke
+# Add 'debug cbus monitor' command, add cbus protection
+# registry functions.
+#
+# CSCdi44478:  slave rsp crashes or resets during ips eoir events
+#
+# Revision 3.2  1995/11/17  09:14:53  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  11:37:35  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.6  1995/11/08  20:59:31  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.5  1995/09/26  21:33:15  motto
+# Decouple IPC from RSP subsystem.
+# CSCdi40168:  IPC does not work with a CIP in a RSP (c75xx) router
+#
+# Revision 2.4  1995/08/31  22:38:37  izhu
+# CSCdi32813:  SDLC Multidrops need router to ignore DCD for High-End
+# Platform
+# and
+# CSCdi38317  STUN: cannot IPL a 3725 using FSIP
+#
+# Convert to midrange signal model for line state (RTS/CTS state not
+# used),
+# permit DCD to be ignored.
+#
+# Revision 2.3  1995/08/24  20:45:56  kramling
+# CSCdi39113:  FEIP controllers are not listed in show version output
+# Remove unused service point, ctrlr_print
+#
+# Revision 2.2  1995/08/09  19:29:14  rbatz
+# CSCdi38250:  CIP CSNA SNMP traps do not work
+#
+# Revision 2.1  1995/06/07  20:38:11  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+BEGIN REGISTRY CBUS
+
+DEFINE cbus_hard_reset
+/*
+ * reset all cards on cbus, and start switch procesor
+ */
+    STUB
+    void
+    mcitype* cbus
+END
+
+DEFINE cbus_soft_reset
+/* 
+ * reset and start all daughter controllers on cbus
+ */
+    STUB
+    void
+    mcitype* cbus
+END 
+
+DEFINE get_hw_version
+/*
+ * fetch card hw version
+ */
+    STUB
+    ushort
+    void* bus, uint slot
+END
+
+DEFINE get_controller_type
+/*
+ * fetch controller type (who)
+ * Must do FCI_CMD_CTRLR_SELECT before invoking if AGS+
+ */
+    STUB
+    ushort
+    void* dbusorcbus
+END
+
+DEFINE assign_mac_addr
+/*
+ * assign mac address to interface
+ */
+    STUB
+    boolean	
+    hwidbtype* idb	
+END
+
+DEFINE fddi_ringstate_leds
+/*
+ * Update leds for fddi ring state
+ */
+    STUB	
+    void
+    hwidbtype* idb
+END
+
+DEFINE slot_enable_led_on
+/*
+ *  Turn on slot enabled led (turned off by reset)
+ */
+    STUB
+    void
+    uint slot
+END
+
+DEFINE disable_slot
+/*
+ * Disable card in a given slot 
+ */
+    STUB
+    void
+    uint slot
+END
+
+DEFINE flush_dci
+/*
+ * Mark cbus/dci data structures to reflect vanished daughter card
+ */
+    STUB
+    void
+    mcitype* cbus, dcitype* dci
+END
+
+DEFINE slot_enabled
+/*
+ * Return TRUE if card in specified slot is enabled
+ */
+    STUB
+    boolean
+    uint slot
+END
+
+DEFINE cxbus_card_present
+/*
+ * Return TRUE if specified slot is part of cbus complex
+ */
+    STUB
+    boolean
+    uint slot
+END
+	
+DEFINE send_ipc_slave_cmd
+/*
+ * Send IPC slave command in master-slave init sequence
+ */
+    STUB
+    ushort
+    hwidbtype *hwidb, ulong seat_id, ulong zpid
+END
+
+DEFINE ipc_cbus_input
+/*
+ * Poll ipc cBus hwqueue
+ */
+    STUB
+    void
+    -
+END
+
+DEFINE ipc_cbus_num_of_cards
+/*
+ * Return the number of ipc cards detected present.
+ */
+    STUB
+    void
+    int *num_turbo, int *num_classic
+END
+
+DEFINE invoke_ipc_init
+/*
+ * Send init command to IPC card.
+ */
+    STUB
+    void
+    -
+END
+
+DEFINE ipc_cbus_init
+/*
+ * Clear ipc cbus global structures.
+ */
+    STUB
+    void
+    -
+END
+
+DEFINE ipc_ctrlr_analyze
+/*
+ * Analyze the controller at this slot to check if
+ * it's supporting IPC. Called from ctrlr_analyze()
+ */
+    STUB
+    void
+    -
+END
+
+DEFINE switch_proc_present
+/*
+ * Returns TRUE if CxBus Switch Processor in this slot
+ * AGS+ returns FALSE
+ */
+    STUB
+    boolean
+    dgtype* dbus
+END
+
+DEFINE nrzi_control
+/*
+ * Control use of nrzi encoding on an interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0
+    int idbtype
+END
+
+DEFINE crc_control
+/*
+ * enable use of 32 or 16 bit CRC on an interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0
+    int idbtype
+END
+
+DEFINE timeslot_control
+/*
+ * enable use of framing on a G.703 interface
+ */
+    CASE
+    void
+    hwidbtype* idb	
+    0
+    int idbtype
+END
+
+DEFINE crc4_control
+/*
+ * enable use of CRC4 on a G.703 interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0
+    int idbtype
+END
+
+DEFINE ts16_control
+/*
+ * enable use of time slot 16 for data on a G.703 interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0
+    int idbtype
+END
+
+DEFINE clocksource_control
+/*
+ * configure clock source a G.703 interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0
+    int idbtype
+END
+
+DEFINE invert_txclock_control
+/*
+ * Control use of inverted transmit clock on an interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0
+    int idbtype	
+END
+
+DEFINE internal_txclock_control
+/*
+ * Control use of internal transmit clock on an interface
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable	
+    0	
+    int idbtype 
+END
+
+DEFINE short_txq_localbuf
+/*
+ * Control use of short transmit local buffer on an interface
+ */
+    CASE
+    void
+    hwidbtype* idb, ushort enable	
+    0	
+    int idbtype 
+END
+
+DEFINE cbus_get_statistics
+/*
+ * Protocol specific code to gather statistics from the SP.
+ */
+    LIST
+    void
+    hwidbtype* idb
+END
+
+DEFINE cbus_get_ip_errors
+/*
+ * IP specific code to gather error counts from the IP's
+ */
+    CASE
+    void
+    hwidbtype* hwidb
+    FCI_TYPE_MAX+1
+    int fci_type
+END
+
+DEFINE cbus_bce_update_ifa
+
+/*
+ * Update a BCE's IFA entry
+ */
+
+    LIST
+    void
+    btetype* bte
+
+END
+
+DEFINE cbus_bce_update_permissions
+
+/*
+ * Update the access control filter permission masks for a BCE
+ */
+
+    LIST
+    void
+    btetype* bte
+
+END
+
+DEFINE print_cbus_controller
+/*
+ * Print out appropriate version string for cbus controller of various
+ * sizes, shapes, and colors. 
+ */
+    STUB
+    void
+    mcitype* cbus
+END
+
+DEFINE hwidb_setup_routine
+/*
+ * Device specific call for intialization of a new hwidb.
+ */
+    CASE
+    void
+    hwidbtype* hwidb
+    0	
+    int idbtype	
+END
+
+DEFINE show_controller_specific
+/*
+ * Device specific displays under 'show controller cbus'
+ * indexed by interface controller type (e.g. FCI_ETHER_CONTROLLER)
+ */ 
+    CASE
+    void
+    ushort index
+    FCI_NUM_CONTROLLERS
+    int ctrlr_type
+END
+
+DEFINE show_pa_specific
+/*
+ * Port-adaptor specific displays under 'show controller cbus'
+ * indexed by hwidb type (e.g. IDBTYPE_CBUSSERIAL)
+ */
+    CASE
+    void
+    hwidbtype *hwidb, int ctrlr_type
+    0
+    int type
+END
+
+DEFINE ctrlr_analyze
+/*
+ * indexed by interface controller type (e.g. FCI_ETHER_CONTROLLER)
+ * analyze a controller at system restart or online-insertion
+ * Analyze includes finding all the interfaces on the controller, and
+ * allocating/finding the IDB's for those interfaces.
+ */
+	CASE
+	void
+	slottype *slot
+	FCI_NUM_CONTROLLERS
+	int ctrlr_type
+END
+
+DEFINE ctrlr_init
+/*
+ * indexed by interface controller type (e.g. FCI_ETHER_CONTROLLER)
+ * initialize a controller at system restart or online-insertion
+ * These functions send all of the initialization information that
+ * is in the IDB to the IP's.
+ */
+	CASE
+	void
+	slottype *slot
+	FCI_NUM_CONTROLLERS
+	int ctrlr_type
+END
+
+DEFINE if_init
+/*
+ * indexed by interface controller type (e.g. FCI_ETHER_CONTROLLER)
+ * initialize a controller at system restart or online-insertion
+ * These functions send all of the interface-specific initialization 
+ * information that is in the IDB (and perhaps in global data) to the IP's.
+ */
+	CASE
+	void
+	hwidbtype *hwidb
+	FCI_NUM_CONTROLLERS
+	int ctrlr_type
+END
+
+DEFINE	ctrlr_removed
+/*
+ * indexed by controller type (i.e. FCI_*_CONTROLLER)
+ * invoked from process level when a card has been removed
+ */
+	CASE
+	void
+	slottype *slot
+	FCI_NUM_CONTROLLERS
+	int ctrlr_type
+END
+
+DEFINE get_llc_info
+/*
+ * llc specific code to gather llc information for RP
+ * based llc stack or intelligent IP based llc stack.
+ * This registration allows for the SNA DLC LLC MIB
+ * sub-agent to query for llc info from multiple
+ * stacks without coupling to a specific sub-system.
+ */
+	LOOP
+	boolean
+	boolean get_match, hwidbtype *hwidb, void *llc_data
+END
+
+DEFINE cip_netmgt_event
+/*
+ * indexed by event class (e.g. SYSMGT_LLC)
+ * Process a NETMGT event received from the CIP.
+ */
+	CASE
+	void
+	ushort slot, ushort code, ushort length, void *ev_data
+	0
+	int class
+END
+
+DEFINE cip_cipcsna_trap
+/*
+ * Process a CIP CSNA trap received from the CIP.
+ */
+	STUB
+	void
+        hwidbtype *hwidb, ushort code, cip_llctype *csna_data
+END
+
+DEFINE cip_cipchan_trap
+/*
+ * Process a CIP channel trap received from the CIP.
+ */
+	STUB
+	void
+        ushort code, cip_linktype *chan_data
+END
+
+DEFINE ignore_dcd_control
+/*
+ * disable DCD checking
+ */
+    CASE
+    void
+    hwidbtype* idb, boolean enable
+    0
+    int idbtype
+END
+
+DEFINE cbus_unavailable_notify
+/*
+ * Routine to notify applications cbus is not available.
+ */
+    LIST
+    void
+    -
+END
+
+DEFINE cbus_available_notify
+/*
+ * Routine to notify applications cbus is available.
+ */
+    LIST
+    void
+    -
+END
+
+DEFINE initialize_pa_info
+/*
+ * Initialize VIP port adaptor's info structure.
+ */
+    STUB
+    void
+    hwidbtype *hwidb, mcitype *mci
+END
+
+DEFINE priv_pa_info_op
+/*
+ * Perform either an initialization or cleanup of private
+ * PA information structure.
+ */
+    STUB
+    void
+    hwidbtype *hwidb, boolean do_init, int slot
+END
+
+DEFINE send_hwindex_to_vips
+/*
+ * Send hwindex info to VIP cards.
+ */
+    STUB
+    void
+    hwidbtype *hwidb
+END
+
+DEFINE cip_tn3270s_trap
+/*
+ * indexed by event type (e.g. EVTTN3270S_GENERIC_POOL_DEPLETED)
+ * Process a NETMGT event received from the CIP.
+ */
+DATA
+  struct tn3270s_data;
+END DATA
+
+	CASE
+	void
+        ushort slot, struct tn3270s_data* trap_info
+	0
+	int ev_type
+END
+
+
+DEFINE snmp_add_dlur_entity
+/*
+ * register dlur to the entity
+ */
+    STUB
+    void
+    const char* entityName, const char* entitydescr
+END
+
+DEFINE snmp_add_appn_entity
+/*
+ * register appn to the entity
+ */
+    STUB
+    void
+    const char* entityName, const char* entitydescr
+END
+
+END REGISTRY

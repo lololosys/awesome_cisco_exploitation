@@ -1,0 +1,8 @@
+
+exec_pad.h,185
+#define	PAD_DEBUG_SET	58,1979
+#define	PAD_CUD_SET	59,2006
+#define	PAD_PROFILE_SET	60,2031
+#define	PAD_REVERSE_SET	61,2060
+#define	PAD_QUIET_SET	62,2089
+#define	ALTERNATE	112,3816

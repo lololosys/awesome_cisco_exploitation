@@ -1,0 +1,62 @@
+/* $Id: pred_ram.link,v 3.2.58.1 1996/03/21 23:25:26 gstovall Exp $
+ * $Source: /release/111/cvs/Xsys/rommon/obj-4k-c7100/pred_ram.link,v $
+ *------------------------------------------------------------------
+ * pred_ram.link - Predator Rom Monitor linker script (RAM)
+ *
+ * July 1995, Michael Beesley
+ *
+ * Copyright (c) 1995-1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: pred_ram.link,v $
+ * Revision 3.2.58.1  1996/03/21  23:25:26  gstovall
+ * Branch: California_branch
+ * The ELC_branch now knows the joy of California dreaming.
+ *
+ * Revision 3.2.2.1  1995/11/23  19:15:11  szhang
+ * Branch: ELC_branch
+ * Initial source code commit to ELC branch for Predator (C7100) ROM
+ * monitor.
+ *
+ * Revision 3.2  1995/11/17  18:40:26  hampton
+ * Remove old entries from the RCS header logs.
+ *
+ * Revision 3.1  1995/11/09  13:04:12  shaker
+ * Bump version numbers from 2.x to 3.x.
+ *
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+
+
+/*
+ * RSP Linker Command Script for run from RAM
+ */
+
+SECTIONS {
+
+	.text 0x80010000 : {
+	    	*(.text)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata . : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+		edata = .;
+		_edata = .;
+	}
+	.bss . : {
+		_fbss = .;
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

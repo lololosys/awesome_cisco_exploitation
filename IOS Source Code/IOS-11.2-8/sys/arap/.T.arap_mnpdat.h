@@ -1,0 +1,70 @@
+
+arap_mnpdat.h,1898
+#define SIGN_8 31,851
+#define SIGN_16 32,878
+#define SIGN_8 34,917
+#define SIGN_16 35,937
+#define USIGN_8 38,967
+#define USIGN_16 39,997
+#define SUCCESS 41,1034
+#define TRUE	44,1112
+#define FALSE	45,1128
+#define FAILURE 50,1231
+#define TIME_OUT 51,1287
+#define NO_PHYSICAL 52,1328
+#define LNK_DOWN 53,1386
+#define LR_CODE 55,1486
+#define BUFF_ERR 65,1859
+#define NULL	70,1998
+#define LR	75,2049
+#define LD	76,2085
+#define LT	77,2123
+#define LA	78,2164
+#define LN	79,2193
+#define LNA	80,2228
+#define PDU_LI	84,2309
+#define PDU_TYPE	85,2357
+struct BLST BLST96,2689
+struct BUFFER BUFFER105,2984
+#define BIT0_ON 114,3332
+#define PROT_ERR	123,3574
+#define PROT_LVL_MISMATCH	124,3594
+#define BAD_LR_PARMS	125,3622
+#define RETRAN_TMR_EXP	126,3646
+#define INACT_TMR_EXP	127,3672
+struct link_ctl_blk link_ctl_blk129,3698
+#define LA_RECEIVED	172,5621
+#define LINK_EST	173,5673
+#define DATA_READY	174,5722
+#define ACK_TIMER	175,5790
+#define RET_TIMER	176,5833
+#define MODE	177,5883
+#define HDUPLEX 178,5937
+#define ACK	179,5999
+#define FORCE_ACK	184,6120
+#define FORCE_RET	185,6188
+#define ZERO_WNDW	186,6256
+#define WNDW_TIMER	187,6311
+#define LN_RECEIVED	192,6435
+#define LNA_RECEIVED	193,6487
+#define FORCE_LNA	194,6541
+#define LN_TIMER	195,6599
+#define DUP_IGNORED	196,6651
+#define LN_SENT	198,6742
+#define FRAME_SND	201,6833
+#define FRAME_RCV	202,6879
+#define FRAME_DN	203,6931
+#define LT_SEQ	207,7038
+#define RBUF_LEN	210,7137
+#define SBUF_LEN	211,7183
+typedef struct MNP_CB MNP_CB219,7436
+#define	FD_HWFLOW	FD_HWFLOW248,8485
+#define	FD_USE_DTR	FD_USE_DTR249,8510
+#define	FD_IGNORE_CD	FD_IGNORE_CD250,8536
+#define	FD_SOFT_CD	FD_SOFT_CD251,8564
+} mnp_t;mnp_t348,11384
+#define FLOW(FLOW350,11394
+#define T_DEBUG(T_DEBUG351,11439
+#define F_DEBUG(F_DEBUG352,11488
+#define M_DEBUG(M_DEBUG353,11538
+#define M_DEBUG_ON	354,11584

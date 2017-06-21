@@ -1,0 +1,62 @@
+/* $Id: svipdbus.link,v 1.1.10.1 1996/07/08 22:42:22 mwu Exp $
+ * $Source: /release/112/cvs/Xsys/rommon/obj-4k-svip/svipdbus.link,v $
+ *------------------------------------------------------------------
+ * svipdbus.link
+ *
+ * Mar, 96. Paul Greenfield.
+ *
+ * Copyright (c) 1995-1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: svipdbus.link,v $
+# Revision 1.1.10.1  1996/07/08  22:42:22  mwu
+# CSCdi60922:  11.2 Core Features Commit
+# Branch: California_branch
+#
+# Revision 1.1  1996/03/23  01:14:03  pgreenfi
+# Placeholder files for obj-4k-svip
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+/*
+ * DBUS Linker Command Script for run from RAM
+ */
+
+SECTIONS {
+
+	.text 0x80008000 : {
+               link_start = .;
+	    	*(.text)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata . : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+		edata = .;
+		_edata = .;
+	}
+        link_end = .;
+	.bss . : {
+		_fbss = .;
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+/*	.bss 0x80010000 : {
+	       _fbss = .;
+	       *(.bss)
+	       *(COMMON)
+               _end = .;
+	       end = .;
+        }
+*/
+}

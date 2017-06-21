@@ -1,0 +1,129 @@
+# $Id: makefile.sp-sunos,v 3.1.62.3 1996/08/28 12:35:08 thille Exp $
+# $Source: /release/112/cvs/Xsys/makefile.sp-sunos,v $
+#------------------------------------------------------------------
+# makefile.sp-sunos - SunOS common defines
+#
+# May 27, 1992, Kevin Paul Herbert
+#
+# Copyright (c) 1992-1996 by cisco Systems, Inc.
+# All rights reserved.
+# 
+#------------------------------------------------------------------
+# $Log: makefile.sp-sunos,v $
+# Revision 3.1.62.3  1996/08/28  12:35:08  thille
+# CSCdi67083: Message externs need a cleanup.
+# Branch: California_branch
+# Get rid of all extern msgsym()s in .c files, rework logger.h and
+# msg_foo.c files so they are included and provide the externs.  Clean up
+# other random externs in .c files.
+#
+# Revision 3.1.62.2  1996/07/14  07:10:59  hampton
+# Eliminate all redundant dependencies for any given file.  Split out
+# platform specific dependencies and put them in the appropriate obj-xxx
+# directory.  [CSCdi62810]
+# Branch: California_branch
+#
+# Revision 3.1.62.1  1996/03/18  18:45:22  gstovall
+# Branch: California_branch
+# Elvis has left the building.  He headed out to California, and took the
+# port ready changes with him.
+#
+# Revision 3.1.28.3  1996/03/09  05:03:11  hampton
+# Slim down the kernel of the router.
+# Branch: DeadKingOnAThrone_branch
+#
+# Revision 3.1.28.2  1996/03/07  08:27:06  mdb
+# Branch: DeadKingOnAThrone_branch
+# cisco and ANSI/POSIX libraries.
+#
+# Revision 3.1.28.1  1996/02/20  13:04:10  dstine
+# Branch: DeadKingOnAThrone_branch
+#         Sync from DeadKingOnAThrone_baseline_960122 to
+#                   DeadKingOnAThrone_baseline_960213
+#
+# Revision 3.1  1995/11/09  10:48:25  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/07/17  23:26:51  smackie
+# Tidy up various makefile semantics (CSCdi37193)
+#
+#   o Split out native tool support from cross-compilation tools
+#   o Rename errant makefiles
+#   o Make native object directories more explicitly named
+#   o Clean up bogus tool includes
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+#
+# Processor Flags
+#
+
+LIBRARY_PREFIX  = generic
+FAMILY_PREFIX   = sp
+OBJECT_PREFIX   = sp
+OBJECT_FLAGS    = -DTARGET_UNIX
+OFLAG           = -O
+MAKEFILE_NAME	= makefile.sp-sunos
+
+#
+# Where the shared processor objects are
+#
+OBJECTS =
+
+#
+# The tools version is the same as the native tools
+#
+TOOLS_VER= $(TOOLS_VER_NATIVE)
+
+# Tool Options
+#
+
+COPTIONS= -pipe -fno-builtin
+AOPTIONS=
+LOPTIONS= 
+
+# Tool Chain
+#
+CC=	$(CC_NATIVE)
+AR=	$(AR_NATIVE)
+LD=	$(LD_NATIVE)
+AS=	$(CC)
+M4=	/router/bin/m4 -B8192
+SIZE=	$(SIZE_NATIVE)
+NM=	$(NM_NATIVE)
+STRIP=	$(STRIP_NATIVE)
+CPSTRIP=cpstrip.aout
+
+# Lister flags :
+#
+# LIS_FLAG="asm=1" "targ=sparc" for full listing
+LIS_FLAG="asm=0" "targ=sparc"
+
+%.bin: %.sun
+	@# cp $*.sun $@
+	@# $(STRIP) $@
+	$(CPSTRIP) $*.sun $@
+	ls -l $@
+
+%.bin: %.sun
+	@# cp $*.sun $@
+	@# $(STRIP) $@
+	$(CPSTRIP) $*.sun $@
+	ls -l $@
+
+#
+# Processor specific file resolution
+#
+GDBCPU=		unix_exception.o msg_unix.o
+CPUASM=		asm.o
+PLATFORM_ASM=	unix_sparc.o
+VINESASM= 	vinesasm.o
+XNSASM=		xnsasm.o
+CPUISDN=
+CPUSTAC=	lzsc.o lzsd.o lzsmem.o
+SYS_START_FILE= 
+UKERNEL_CPU=	
+UKERNEL_UI_CPU=	

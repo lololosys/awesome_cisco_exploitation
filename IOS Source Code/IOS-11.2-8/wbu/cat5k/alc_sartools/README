@@ -1,0 +1,153 @@
+# $Id: README,v 1.1.4.1 1996/05/09 15:00:39 rbadri Exp $
+# $Source: /release/112/cvs/Xwbu/cat5k/alc_sartools/README,v $
+#------------------------------------------------------------------
+# README -- installation notes for LSI Logic ATMizer tools.
+#
+# 
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: README,v $
+# Revision 1.1.4.1  1996/05/09  15:00:39  rbadri
+# Branch: California_branch
+# Synergy features to the mainline
+#
+# Revision 1.1.40.1  1996/04/27  06:16:36  cakyol
+# non sync sync from V112_0_2 to ....
+# Branch: LE_Cal_ATM_FR_California_Postsync_960425_branch
+#
+# Revision 1.1.28.1  1996/04/08  01:41:54  bbenson
+# Branch: LE_Cal_V112_0_2_branch
+# Sync of LE_Cal to new V112_0_2 sync point (post Port Ready).
+#
+# Revision 1.1.16.1  1996/03/22  09:12:48  rlowe
+# Non-sync Synalc3_LE_Cal_V111_1_0_3_merge_branch to V111_1_3
+# yielding LE_Syn_Cal_V111_1_3_branch.
+# Branch: LE_Syn_Cal_V111_1_3_branch
+#
+# Revision 1.1.2.1  1996/03/13  02:38:22  rlowe
+# Add file content from Synergy repository.
+# Branch: Synalc3_LE_Cal_V111_1_0_3_merge_branch
+#
+# Revision 1.1  1996/03/11  07:44:29  rlowe
+# Placeholders for California.
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+		Installing the LSI Software Support Package     Jul 15, 1994
+			Installation Notes for V4.1_Beta
+
+
+	This package currently supports the following environments,
+
+		MIPS Workstations.
+		MIPS-based DecStations.
+		MIPS cross tools on a SparcStation (2.11 & 3.0).
+		BSO/tasking cross tools on a SparcStation. 
+		Embedded Performance tools on a SparcStation.
+		
+	and the following targets,
+
+		LR3000  - 32-bit RISC processor
+		LR33000	- LR3000 with on-board caches
+		LR33020 - LR33000 with graphics coprocessor
+		LR33050 - LR33000 with hardware floating-point 
+		LR33120 - LR33000 with enhanced graphics coprocessor
+
+	for both big and little endian byte ordering.  Use the
+	`Install' program to specify the appropriate configuration.
+
+INSTALLATION ON UNIX HOSTS
+
+1. If you have tapes, copy the tapes into a new directory using
+   the command:
+
+	% tar xo			-- MIPS hosts
+	% tar xof /dev/rst0		-- Sun hosts
+	
+   If you have floppy discs, copy the files into new directory, and
+   then unbundle the files using the command:
+
+	% uudecode <filename>.uu 
+	% zcat <filename>.tar | tar xof -
+
+2. Use the Install script to guide you through the installation
+   process. 
+
+	% Install
+
+  Read and follow the instructions printed at completion of the
+  installation process.
+
+3. Source the appropriate file to set the shell's environment.
+
+	% source source.csh		-- C Shell
+	$ . dot.sh			-- Bourne Shell
+
+4. Build the package.
+
+	% make
+
+The package is now ready for use. If you have the Prom Monitor source
+package, you can use the package to compile and link a demonstration
+program. 
+
+	% cd examples 
+	% pmcc -o game game.c
+
+To download and execute this example program, refer to the appropriate
+section of the "LR33000 MIPS PROM Monitor and C Function Run-Time
+Library User's Guide".
+
+
+INSTALLATION ON MSDOS HOSTS
+
+To install and build this package on an MSDOS host, you will need a
+copy of Microsoft's 'nmake' or an equivalent (nmake is supplied as
+part of the Visual C++ package).
+
+1. Copy the disks into a new directory using the command:
+
+	C> xcopy a: /s
+
+2. Use the 'install' script to guide you through the installation
+   process. 
+
+	C> install
+
+  Read and follow the instructions printed at completion of the
+  installation process.
+
+3. Execute the batch file to set the shell's environment.
+
+	C> setenv
+
+4. Build the package.
+
+	C> nmake		-- nmake is provided with Microsoft's C++
+
+The package is now ready for use. If you have the Prom Monitor source
+package, you can use the package to compile and link a demonstration
+program. 
+
+	C> cd examples 
+	C> pmcc -o game game.c
+
+To download and execute this example program, refer to the appropriate
+section of the "LR33000 MIPS PROM Monitor and C Function Run-Time
+Library User's Guide".
+
+
+KNOWN PROBLEMS AND RECENT ADDITIONS
+
+Known problems and recent additions are documented in README files
+that are located in the product subdirectories.
+
+	PROM Monitor				- pmon/README
+	Floating-point emulation		- fpem/README
+	Optimized Floating-point emulation	- optfpem/README
+

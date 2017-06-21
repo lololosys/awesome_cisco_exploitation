@@ -1,0 +1,52 @@
+/* $Id: rsp2dbus.link,v 3.2 1996/01/21 06:27:18 mansonw Exp $
+ * $Source: /vws/aam/cherf.111/ios/sys/rommon/obj-4k-rsp2/rsp2dbus.link,v $
+ *------------------------------------------------------------------
+ * DBUS handler linker command file.
+ *
+ * 1 / 1996, mansonw
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: rsp2dbus.link,v $
+# Revision 3.2  1996/01/21  06:27:18  mansonw
+# CSCdi47058:  Fix the broken ROMMON build
+# Fix the dbus handler linker script and change the arbitration timer
+#
+# Revision 3.1  1996/01/17  23:27:45  mansonw
+# CSCdi47058:  Fix the broken ROMMON build
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+/*
+ * DBUS Linker Command Script for run from RAM
+ */
+
+SECTIONS {
+
+	.text 0x80008000 : {
+	    	*(.text)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata . : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+		edata = .;
+		_edata = .;
+	}
+	.bss . : {
+		_fbss = .;
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

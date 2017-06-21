@@ -1,0 +1,163 @@
+# $Id: Self_Decompression,v 3.2 1995/11/17 08:33:04 hampton Exp $
+# $Source: /swtal/cherf.111/ios/sys/Doc/Self_Decompression,v $
+#
+# Copyright (c) 1994 by cisco Systems, Inc.
+#
+# $Log: Self_Decompression,v $
+# Revision 3.2  1995/11/17  08:33:04  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  10:48:56  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  19:59:28  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+# ------------------------------------------------------------------
+# $Endlog$
+
+	Title: Self_Decompression
+	Date: 13-December-1994
+
+[1] Introduction
+
+	The router code (in the latest release at this time which is 
+	Alaska, aka 10.3) has gotten to the point where a 'unix compressed'
+	router image is too large to fit into onboard system flash for
+	some platforms, notably the RP1 in the c7000 product.
+
+	For this reason, self decompressing images have been added
+	to the 10.2 and 10.3 releases. The compression algorithm
+	used is the DEFLATE method from unzip51. It results
+	in significantly more efficient compression, yielding
+	a compressed image that now fits comfortably in 4 MBytes
+	of flash.
+
+[2] Make Target
+
+	The self decompressing images can be made for 68k based platforms
+	by typing either of the two following make commands in the
+	platform based obj directory
+
+	% make <target>.cz	Makes a self decompressing router
+				image and copies it to the tftp directory
+				as <target>
+
+	% make <target>.CZ	Makes a self decompressing router
+				image and leaves it in the obj directory
+				as <target>.CZ
+
+[3] Supported and Tested Platforms / Test Results
+
+	The self decompressing images have been tested for the c4000 and
+	the c7000. The following outlines the test results. On the c7000
+	the decompress times were compared for unix compressed images
+	versus self decompressing images for both a tftp boot and
+	a boot from flash. There appears to be no significant
+	impact on booting time for the self decompressing images.
+
+	Image		Uncompressed	Unix Compressed		ZIP Compressed
+	----------------------------------------------------------------------
+	gs7-k.102	5128 K		3792 K			2739 K
+	xx-k.102	4005 K		2634 K			1919 K
+	
+	gs7-k.103	5977 K		4316 K			3099 K
+	xx-k.103	4787 K		3119 K			2253 K
+
+	----------------------------------------------------------------------
+
+	Note : These images were from up-to-date repositories on 12/14/94.
+	       The sizes reflect the file size from an 'ls -l' command
+	       which is the amount of space required to store the file 
+	       on a flash device.
+
+	The self decompressing images were tested on a 16Mbyte c4000
+	and a 16Mbyte c7000. It ran without error.
+
+	The ZIP support is available for all run-from-ram images on
+	all 68k based boxes. Self-decompressing gs7-k image has been
+	added to the TRUNKD_TEST rule in the obj-68-c7000 makefile.
+
+[4] Algorithm
+
+	When the monitor invokes the entry point of the self decompressing
+	image, the startup code queries main memory size from the monitor,
+	relocates the stack to the top of memory, saves the current
+	rom monitor stack and calls the main routine.
+
+	The main routine queries the rom monitor for the config register
+	to see if the diagnostic bit is set. If so, the debug flag is set
+	making the self decompressor print out verbose information as it
+	decompresses the image.
+
+	The information inserted into the self decompressing images data
+	section by the glue utility is read and checked. The required
+	main DRAM memory to perform the decompression is calculated and
+	the existance of at least this amount of memory is checked.
+
+	The image then checksums the compressed router image and ensures
+	that it agrees with the checksum written by glue_aout. The compressed
+	image is then copied into high memory after the reserved stack
+	and PIC buffer.
+
+	The bss section of the self decompressor is then zeroed. The unzip
+	code is then called to decompress the image from high memory
+	to a location just past the end of the self decompressor
+	executable. After the decompress is complete, checks are made to
+	ensure that all of the compressed router image was decompressed
+	and that the checksum of the decompressed image is correct. The entry
+	point of the router image (from the embedded a.out header) is compared
+	to the entry point of the self decompressing executable. If they are 
+	not the same, the image returms to the monitor with an error.
+
+	The code then copies the copy_and_launch() assembly language
+	routine to a buffer in high memory, flushes the caches
+	and then calls this position independant routine to relocate
+	the uncompressed image to the correct place. It does this
+	by copying the image from its present position to the address
+	of its entry point. It then flushes the caches, restores the
+	original rom monitor's stack pointer and calls the entry point
+	of the router image.
+	
+[5] Improvements
+
+	- bcopy : 
+
+		The bcopy is byte oriented. It could be sped up by
+		using words or long words instead.
+
+	- copy_and_launch :
+
+		copy_and_launch() relocates the image using byte
+		operations. This could be sped up by using words
+		or long words.
+		
+[6] Files
+
+	The self decompressing images rely on two executables as well as
+	on the actual router image that is being built. These executables
+	are built in the platform obj directory during the make process.
+
+	glue_aout
+	=========
+
+		Source : 	sys/czip/glue_aout.c
+
+	This utility is responsible for checksumming the uncompressed 
+	router image, calling /router/bin/zip to compress it, checksumming 
+	the compressed router and glueing the compressed router image 
+	together with the czip_aout self decompressing exeutable.
+
+	czip_aout
+	=========
+
+		Source :	sys/czip/czip_68k.S
+				sys/czip/czip_aout_main.c
+				sys/czip/czip.c
+				sys/czip/inflate.c
+				sys/czip/unzip.c
+
+	This is the self decompressing code that is bundled together
+	with the router image and is loaded onto a router.
+
+===============================================================================

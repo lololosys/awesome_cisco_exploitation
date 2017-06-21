@@ -1,0 +1,36 @@
+/* $Id: tr_alert4.alt,v 3.2 1995/11/17 18:57:22 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/tr_alert4.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management TR Alert4
+ *     Open phase, remove adaptor cmd received
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: tr_alert4.alt,v $
+# Revision 3.2  1995/11/17  18:57:22  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:15:20  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:47:46  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct TrAlert4 ##TRALERT4 { ?,01,3211
+  , {3705}
+  , {7101
+    , ACT = 2010,3101,32C0
+    , DET = {82216101,adptNo:1}, {82210700,errCode:2}
+    }
+  , 
+  , 
+  , {51, {03,macAddr:6}}
+  , {05, {108009,lanName:8,003909,ringName:8,002E}}
+  }
+

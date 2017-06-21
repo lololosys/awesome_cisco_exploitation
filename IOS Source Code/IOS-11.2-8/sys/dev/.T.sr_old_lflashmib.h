@@ -1,0 +1,11 @@
+
+sr_old_lflashmib.h,305
+#define _old_lflashmib_h_56,2073
+#define OP_IN_PROGRESS 65,2296
+#define FLASH_SUCCESS 66,2330
+#define FLASH_OP_FAILURE 67,2364
+#define FLASH_READ_ONLY 68,2398
+#define FLASH_OPEN_FAILURE 69,2432
+#define BUFFER_ALLOC_FAILURE 70,2466
+#define SNMP_FLASH_BUSY 76,2613
+#define SNMP_FLASH_READY 77,2640

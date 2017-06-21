@@ -1,0 +1,143 @@
+# $Id: make.features,v 3.1.2.2 1996/09/14 05:30:41 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/obj-68-c4000/make.features,v $
+#------------------------------------------------------------------
+# make.features - Make the GAIA based features for 68-c4000 
+#
+# July 1996, Venugopal Margabandu 
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.features,v $
+# Revision 3.1.2.2  1996/09/14  05:30:41  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.2.1  1996/09/04  19:35:23  mvenugop
+# CSCdi68050:  Gaia make.feature for each platform
+# Branch: California_branch
+#
+# Revision 3.1  1996/07/16  19:03:26  mvenugop
+# Adding Gaia platform feature file
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+######################################################################
+#
+#	GAIA Platform Dependent Variables
+#
+######################################################################
+
+ETHER_GAIA = sub_lance.o shr_ether.o
+ISDN_GAIA = sub_isdn.o sub_bri.o sub_c4000_pri.o $(DIALER_FEATURE)
+SERIAL_GAIA = shr_serial.o sub_hd64570.o sub_les_serial.o 
+TRING_GAIA = shr_tring.o sub_tms380.o
+
+#######################################################################
+#
+#	Feature to .o mapping
+#
+#######################################################################
+
+FDDI_DESCRIPTION = "FDDI driver support"
+FDDI_ABBREV = FDDI
+FDDI_HELP = ""
+FDDI_TEST_SCRIPT = ""
+FDDI_FEATURE = sub_c4000_fddi.o shr_tring.o $(FDDI_SMT) $(BSI)
+FDDI_GNMIB =	$(FDDIMIB)
+
+DSX1_DESCRIPTION = "C4000 dsx1 support for CE1/T1"
+DSX1_ABBREV = DSX1
+DSX1_HELP = ""
+DSX1_TEST_SCRIPT = ""
+DSX1_FEATURE = sub_dsx1.o
+DSX1_GNMIB = $(DS1MIB)
+
+MCN_DESCRIPTION = "The Munich 32 and the MCN support"
+MCN_ABBREV = MCN
+MCN_HELP = ""
+MCN_TEST_SCRIPT = ""
+MCN_FEATURE = sub_mcn.o
+
+LEX_DESCRIPTION = "Support for Lan EXterntion"
+LEX_ABBREV = LEX
+LEX_HELP = ""
+LEX_TEST_SCRIPT = ""
+LEX_FEATURE = sub_lex_platform.o shr_lex.o shr_lex_ncp.o $(PPP_FEATURE)
+
+MK5025_DESCRIPTION = "MK5025 support"
+MK5025_ABBREV = MK5025
+MK5025_HELP = ""
+MK5025_TEST_SCRIPT = ""
+MK5025_FEATURE = sub_mk5025.o
+
+BOOT_DESCRIPTION = "platform dependant boot support"
+BOOT_ABBREV = BOOT
+BOOT_HELP = ""
+BOOT_TEST_SCRIPT = ""
+BOOT_FEATURE = shr_core.o sub_core_platform.o shr_ukernel.o \
+		sub_ukernel_platform.o sub_c4000.o shr_fastswitch.o \
+		shr_arp.o shr_srbcore.o shr_ipudptcp.o shr_ipcore.o \
+		shr_ipboot.o shr_ipdiag.o shr_iprarp.o shr_ipbootp.o \
+		shr_ipaccount.o shr_ipcomprs.o \
+		sub_lance.o sub_mk5025.o sub_tms380.o sub_hd64570.o \
+		sub_mcn.o sub_bri.o sub_dsx1.o shr_ether.o shr_serial.o \
+		shr_tring.o shr_lex.o sub_lex_platform.o \
+		shr_lex_ncp.o sub_les_serial.o sub_isdn.o shr_v120.o \
+		sub_c4000_fddi.o sub_fddi_smt.o sub_bsi.o \
+		sub_c4000_pri.o shr_cpp.o shr_frame.o shr_smds.o shr_ppp.o \
+		shr_compress.o shr_dialer.o shr_x25.o shr_pad.o \
+		shr_llc2.o shr_dlc_base.o shr_tacacs.o
+
+C4000_PLATFORM_PLUS_PACK_DESCRIPTION = "4000 platform plus package" 
+C4000_PLATFORM_PLUS_PACK_ABBREV = C4000_PLATFORM_PLUS_PACK
+C4000_PLATFORM_PLUS_PACK_HELP = ""
+C4000_PLATFORM_PLUS_PACK_TEST_SCRIPT = ""
+C4000_PLATFORM_PLUS_PACK_FEATURE = $(IP_NAT_FEATURE) \
+                $(DLSW_FEATURE) $(BRIDGE_SR_FEATURE) $(BRIDGE_SR_GNMIB) \
+                $(VDLC_FEATURE) $(SNANM_FEATURE) $(RTTM_FEATURE) \
+                $(RTTM_GNMIB) $(NCIA_FEATURE) $(QLLC_FEATURE) \
+                $(DSPU_FEATURE) $(DSPU_GNMIB) $(BSTUN_FEATURE) $(BSTUN_GNMIB)
+#######################################################################
+#
+#	All abbreviations for platform dependent features and partially
+#	dependent features
+#
+#######################################################################
+
+PLATFORM_FEATURE_ABBRV = \
+$(FDDI_ABBREV) $(LEX_ABBREV) $(DSX1_ABBREV) $(ETHER_ABBREV) $(SERIAL_ABBREV) \
+$(ISDN_ABBREV) $(TRING_ABBREV) $(MK5025_ABBREV) $(CPP_ABBREV) $(NCIA_ABBREV) \
+$(V120_ABBREV) $(VLANS_ABBREV) $(RMON_ABBREV) $(TRLANE_ABBREV) $(MMP_ABBREV) \
+$(DSPU_ABBREV) $(DLSW_ABBREV) $(APPN_ABBREV) $(IBM_BASE_ABBREV) \
+$(SNA_PRIORITY_ABBREV) $(QLLC_ABBREV) $(SNANM_ABBREV) $(BSTUN_ABBREV) \
+$(BOOT_ABBREV)
+
+
+######################################################################
+#
+# Cisco internal build features
+#
+######################################################################
+
+TEST_DESCRIPTION = "TEST support"
+TEST_ABBREV = TEST
+TEST_HELP = ""
+TEST_TEST_SCRIPT = ""
+TEST_FEATURE = sub_test.o
+
+#######################################################################
+#
+#	All abbreviations for Cisco internal features
+#
+#######################################################################
+
+INTERNAL_ABBRV = \
+$(TEST_ABBREV)
+
+######################################################################
+#
+#	End of GAIA
+#
+######################################################################

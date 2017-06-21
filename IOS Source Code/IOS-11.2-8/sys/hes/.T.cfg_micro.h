@@ -1,0 +1,5 @@
+
+cfg_micro.h,99
+#define CFG_MICRO_SET_PREFS 51,1709
+#define CFG_MICRO_RELOAD	52,1742
+#define	ALTERNATE	176,6225

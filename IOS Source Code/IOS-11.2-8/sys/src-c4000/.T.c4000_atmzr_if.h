@@ -1,0 +1,223 @@
+
+c4000_atmzr_if.h,7531
+#define ADRSPC_PUB_SRAM 49,1932
+#define ADRSPC_PRIV_SRAM 50,2003
+#define ADRSPC_PUB_SRAM 52,2080
+#define ADRSPC_PRIV_SRAM 53,2151
+#define MAX_ATMZR_VPXVC 63,2441
+#define MAX_ATMZR_VCIDS 64,2521
+#define MAX_ATMZR_AAL34_VCS 66,2616
+#define MAX_ATMZR_AAL34_VCS 68,2695
+#define MAX_ATMZR_MIDS 70,2775
+#define ATMZR_RATEQ_NO 71,2833
+typedef volatile unsigned char          vchar;vchar79,3088
+typedef volatile unsigned short         vshort;vshort80,3135
+typedef volatile unsigned long          vlong;vlong81,3183
+typedef struct  atmhdr_t_ atmhdr_t_88,3408
+} atmhdr_t;atmhdr_t94,3750
+typedef vshort                          indx_t;indx_t95,3762
+} freeq_t;freeq_t113,4153
+#define	SMALL_FREEQ_MTU	114,4164
+#define MID_FREEQ_MTU	115,4223
+#define BIG_FREEQ_MTU	116,4257
+#define LARGE_FREEQ_MTU	117,4318
+#define SEMI_HUGE_FREEQ_MTU	118,4377
+#define HUGE_FREEQ_MTU	119,4436
+#define ATMZR_BAD_POOL	120,4498
+#define	CMDRSPQSZ	125,4579
+#define	PKTDESCRTSZ	126,4635
+#define	INDXQSZ	127,4694
+#define	CMDRSPDATASZ	128,4747
+#define	EVENTQSZ	129,4805
+#define	MAX_PURAMSZ	130,4851
+#define	RXPKTDLIMIT	131,4906
+#define	TXPKTDLIMIT	132,4973
+typedef union pktd_t_ pktd_t_139,5199
+} pktd_t;pktd_t185,6848
+#define	free_start	186,6858
+#define	rxrdy_stat_vc	187,6889
+#define	rxrdy_size	188,6926
+#define	txrdy_start	189,6957
+#define	txrdy_opt_vc 190,6990
+#define	txrdy_size	191,7028
+#define	txng_next	192,7059
+#define	txdone_stat_mid	193,7088
+typedef struct cmd_t_ cmd_t_201,7308
+} cmd_t;cmd_t205,7445
+typedef struct rsp_t_ rsp_t_207,7455
+} rsp_t;rsp_t211,7595
+typedef struct cmdrsp_t_ cmdrsp_t_213,7605
+} cmdrsp_t;cmdrsp_t217,7760
+#define	CMDRSP_SIZE	218,7772
+#define	CMD_SYNC	221,7848
+#define	CMD_ASYNC	222,7898
+#define	CMD_OBJ_VC	224,7951
+#define	CMD_OBJ_PRMEM	225,7995
+#define	CMD_OBJ_CFG	226,8054
+#define	CMD_OBJ_RATEQ	227,8110
+#define	CMD_OBJ_MSK	228,8165
+#define	CMD_OPR_0	230,8217
+#define	CMD_OPR_1	231,8262
+#define	CMD_OPR_2	232,8307
+#define	CMD_OPR_3	233,8352
+#define	CMD_OPR_4	234,8397
+#define	CMD_OPR_5	235,8442
+#define	CMD_OPR_6	236,8487
+#define	CMD_OPR_7	237,8532
+#define	CMD_OPR_MSK	238,8577
+#define	CMD_VC_OPEN	240,8632
+#define	CMD_VC_CLOSE	241,8678
+#define	CMD_VC_READ	242,8725
+#define	CMD_VC_WRITE	243,8771
+#define	CMD_PRMEM_RDBLK	244,8818
+#define	CMD_PRMEM_WRBLK	245,8871
+#define	CMD_PRMEM_FILLBLK	246,8924
+#define	CMD_CFG_SET	247,8978
+#define	CMD_RATEQ_CREATE	248,9025
+#define	CMD_RATEQ_DESTROY	249,9078
+#define	CMD_RATEQ_READ	250,9132
+#define	CMD_MSK	251,9184
+#define	RSP_STAT_OK	253,9242
+#define	RSP_STAT_FULL	254,9296
+#define	RSP_STAT_TOOBIG	255,9350
+#define	RSP_STAT_TOUT	256,9412
+#define	RSP_STAT_CMDINVAL	257,9465
+#define RSP_STAT_NOTRDY 258,9524
+#define	RSP_STAT_VCIDINVAL	259,9592
+#define	RSP_STAT_VCIDINUSE	260,9648
+#define	RSP_STAT_VCIDUNUSED	261,9703
+#define RSP_STAT_RATEQINACTIVE 262,9759
+#define RSP_STAT_BUFQIDINVAL 263,9839
+#define RSP_STAT_NOAAL34SLOT 264,9919
+#define	RSP_STAT_ADDRINVAL	265,9996
+#define	RSP_STAT_CFGINVAL	266,10061
+#define	RSP_STAT_RATEQINVAL	267,10126
+#define	RSP_STAT_RATEQINUSE	268,10191
+#define	RSP_STAT_MSK	269,10255
+typedef struct rqdata_t_ rqdata_t_278,10486
+} rqdata_t;rqdata_t283,10702
+typedef struct vcdata_t_ vcdata_t_293,10996
+} vcdata_t;vcdata_t331,12640
+#define vc_misc_info 332,12652
+#define vc_aal 333,12691
+#define vc_rateq 334,12741
+#define vc_bufq 335,12793
+#define vc_options 336,12844
+#define vc_mid_info 338,12900
+#define vc_midhi 339,12939
+#define vc_midlo 340,12991
+#define vc_midnxt 341,13043
+typedef struct prmemdata_t_ prmemdata_t_344,13137
+} prmemdata_t;prmemdata_t348,13340
+typedef struct cfgdata_t_ cfgdata_t_351,13403
+} cfgdata_t;cfgdata_t368,14311
+typedef struct pusram_t_ pusram_t_371,14371
+} pusram_t;pusram_t386,14880
+typedef struct intr_t_ intr_t_389,14954
+} intr_t;intr_t394,15281
+#define PRODINDEX(PRODINDEX404,15485
+#define CONSINDEX(CONSINDEX409,15779
+#define CLRINDEX(CLRINDEX414,16073
+#define PKT_RX_DMAPTR 429,16629
+#define PKT_RX_MTU 430,16687
+#define PKT_RX_STAT 431,16742
+#define PKT_RX_LEN 432,16804
+#define PKT_RX_CRC32 433,16872
+#define PKT_RX_ID 434,16944
+#define PKT_RX_CONGST 435,17020
+#define PKT_RX_NEXT 436,17097
+#define PKT_RX_PREV 437,17171
+#define PKT_RX_REAS_TIME 438,17245
+#define PKT_RX_UNUSED 439,17320
+#define PKT_TX_DMAPTR 444,17438
+#define PKT_TX_MISC 445,17496
+#define PKT_TX_PKTLEN 446,17565
+#define PKT_TX_CRC32 447,17625
+#define PKT_TX_NEXTPTR 448,17697
+#define PKT_TX_PTI_MASK 451,17796
+#define PKT_TX_EOM 452,17851
+#define PKT_TX_OAM 453,17927
+#define PKT_TX_1ST_CELL 454,18003
+#define PKT_TX_34_STATE 455,18076
+#define PKT_TX_VCID_MASK 456,18151
+#define PKT_TX_LEN_MASK 457,18231
+#define PKT_TX_MID_MASK 458,18311
+#define PKT_TX_STAT_MASK 459,18367
+#define PKT_TX_34_SN_MASK 468,18704
+#define PKT_TX_34_SN_SHIFT 469,18782
+#define PKT_TX_34_MID_MASK 470,18859
+#define	TXOPT_MSK	477,19024
+#define	TXOPT_PTI_USRNOCONG0	478,19079
+#define	TXOPT_PTI_USRNOCONG1	479,19148
+#define	TXOPT_PTI_USRCONG0	480,19217
+#define	TXOPT_PTI_USRCONG1	481,19281
+#define	TXOPT_PTI_SEGMENTF5	482,19345
+#define	TXOPT_PTI_END2ENDF5	483,19407
+#define	TXOPT_PTI_MSK	484,19472
+#define	TXOPT_EOMEN	485,19524
+#define	TXOPT_OAM	486,19582
+#define	RXSTAT_OK	491,19691
+#define	RXSTAT_MSK	492,19738
+#define RXSTAT_SHIFT 493,19798
+#define	RXSTAT_CRC	494,19879
+#define	RXSTAT_LENGTH	495,19923
+#define	RXSTAT_GIANT	496,19973
+#define	RXSTAT_REASTOUT	497,20029
+#define	RXSTAT_AAL34_MID	498,20094
+#define	RXSTAT_AAL34_BUFOVFL	499,20160
+#define	RXSTAT_AAL34_SEQNUM	500,20228
+#define	RXSTAT_AAL34_P_ABORT	501,20297
+#define	RXSTAT_AAL34_U_ABORT	502,20366
+#define	RXSTAT_AAL5_FORMAT	503,20435
+#define	RXSTAT_F5_SEGMENT 504,20502
+#define	RXSTAT_F5_END2END 505,20564
+#define	NUM_RXERR	506,20629
+#define	TXSTAT_OK	507,20682
+#define	TXSTAT_ABORTED	508,20729
+#define	TXSTAT_MSK	509,20788
+#define TXSTAT_SHIFT 510,20849
+#define RXVCID_MSK 513,20950
+#define VC_NO_AAL 518,21069
+#define VC_AAL5 519,21136
+#define VC_AAL34 520,21192
+#define PUB_RESERVED 525,21300
+#define PUB_SMALL_RXFREE 526,21336
+#define PUB_MID_RXFREE 527,21374
+#define PUB_BIG_RXFREE 528,21412
+#define PUB_LARGE_RXFREE 529,21450
+#define PUB_SEMI_HUGE_RXFREE 530,21488
+#define PUB_HUGE_RXFREE 531,21526
+#define PUB_RXRDY_Q 532,21564
+#define PUB_TXRDY_Q 533,21602
+#define PUB_TXDONE_Q 534,21640
+#define PUB_CMDRSP_Q 535,21678
+#define PUB_EVENT_Q 536,21716
+#define PUB_PKTDSC_TBL 537,21755
+#define PUB_DEBUG_AREA 538,21794
+#define PUB_RXFREE_Q_SZ 540,21834
+#define PUB_RXRDY_Q_SZ 541,21872
+#define PUB_TXRDY_Q_SZ 542,21910
+#define PUB_TXDONE_Q_SZ 543,21948
+#define PUB_CMDRSP_Q_SZ 544,21986
+#define PUB_EVENT_Q_SZ 545,22024
+#define PUB_RSPRDY_INTR 550,22128
+#define PUB_EVENT_INTR 551,22165
+#define PUB_TXRDY_INTR 552,22202
+#define PUB_CMDRDY_INTR 553,22239
+#define EVAL_SETCMD_ADDR 559,22350
+#define EVAL_RSTCMD_ADDR 560,22424
+#define EVAL_INTR_CLEAR_ALL 561,22500
+#define EVAL_INTR_AUTO 562,22580
+#define EVAL_INTR_TST 563,22656
+#define EVAL_CLR_AUTO 564,22731
+#define EVAL_CLR_TST 565,22809
+#define EVENTQ_INIT_DONE 571,22934
+#define EVENTQ_BADMEM_PUBSRAM 572,22973
+#define EVENTQ_BADMEM_PRVSRAM 573,23012
+#define EVENTQ_BADMEM_IRAM 574,23051
+#define EVENTQ_BADMEM_VCR 575,23090
+#define EVENTQ_RQ_OVERLOAD 576,23129
+#define EVENTQ_BADCHK_PUBSRAM 577,23168
+#define EVENTQ_BADCHK_PRVSRAM 578,23207
+#define EVENTQ_BADCHK_IRAM 579,23246
+#define EVENTQ_EXCEPTION 580,23285

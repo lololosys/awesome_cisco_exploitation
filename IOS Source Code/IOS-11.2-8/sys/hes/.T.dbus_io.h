@@ -1,0 +1,17 @@
+
+dbus_io.h,514
+#define DBUS_IO_CONSOLE 48,1570
+#define DBUS_IO_DEBUG 49,1607
+#define DBUS_IO_MSG 50,1644
+#define DBUS_IO_CONSOLE_ACTIVE 51,1681
+#define DBUS_IO_DEBUG_ACTIVE 52,1752
+#define DBUS_IO_CRASH 53,1823
+#define DBUS_IO_TO_RECOVERY 54,1862
+#define DBUS_IO_STATUS_SET 56,1935
+#define DBUS_IO_NO_TTY 58,1972
+#define DBUS_IO_QUIT_CHAR	60,2008
+#define DBUS_IO_QUIT_THRESHOLD	61,2048
+#define DBUS_IO_EMPTY 63,2108
+#define DBUS_IO_BUGINF 64,2144
+typedef struct dcbtype_ dcbtype_70,2313
+} dcbtype;dcbtype78,2543

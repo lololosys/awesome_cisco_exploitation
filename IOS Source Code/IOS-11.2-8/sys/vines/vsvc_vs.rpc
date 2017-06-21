@@ -1,0 +1,211 @@
+# $Id: vsvc_vs.rpc,v 3.2 1995/11/17 18:00:04 hampton Exp $
+# $Source: /swtal/cherf.111/ios/sys/vines/vsvc_vs.rpc,v $
+#------------------------------------------------------------------
+# vsvc_vs.rpc - Definition of the `VINES Security' RPC calls.
+#
+# April 1994, David Hampton
+#
+# Copyright (c) 1994 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: vsvc_vs.rpc,v $
+# Revision 3.2  1995/11/17  18:00:04  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:46:27  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  23:16:30  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+SERVICE VS
+  /*
+   * This is the VINES Security Service.
+   */
+  NAME		VINES Security
+  WKP		0x0013
+  DEFAULT	REJECT	VVS_ERROR_NOT_RUNNING
+  VERSIONS	55050	32299	69999
+  PERIODIC	VVS_PERIOD	VVS_PERIOD
+
+  ROUTINE	WHERE
+    /*
+     *
+     */
+    NAME	Where
+    NUMBER	10
+    RECEIVE 	REJECT	VSVC_ERR_BADPROCNUM
+  END ROUTINE
+
+  ROUTINE	GET_NEIGHBOR
+    /*
+     * Given the network layer address of a client (in terms of a port)
+     * and a list of server name/interface/mac address sets, check to see
+     * if the client exists as one of the sets.
+     *
+     * It doesn't seem to matter if all the individual items are checked,
+     * as long as the correct information is returned for the client.
+     * The requester will check the returned information to make sure it
+     * is contained in his internal list.  However, this causes a lot of
+     * extra network activity as the requestor will call the router again
+     * as many times as there are entries in the access list.
+     *
+     * This routine is used as part of login location security.
+     */
+    NAME	Get Neighbor
+    NUMBER	15
+    RECEIVE 	ACCEPT
+    CONTENT	QUERY
+      address	  client_port
+      short	  unknown1
+      short	  unknown2
+      short	  entry_count
+      struct	  entry		LIMIT VVS_MAX_LOCATIONS
+        domainname  server_name
+        ushort	    unknown4
+        char	    slot_no
+        char	    line_no
+        char	    address	array 16	printed mac address, zero terminated
+      end	  struct
+    END CONTENT
+    CONTENT	REPLY
+      domainname  server_name
+      description network_name
+      char	  slot_no
+      char	  line_no
+      char	  mac_address	array 16	printed mac address, zero terminated
+      char	  other		array 20
+    END 	CONTENT
+  END ROUTINE
+
+  ROUTINE	CHECK_NEIGHBOR
+    /*
+     * Check to see if a given MAC address belongs to a neighbor of the
+     * router, and if so, return which interface card is used to reach
+     * that neighbor.
+     *
+     * This routine is used as part of login location security.
+     */
+    NAME	Check Neighbor
+    NUMBER	16
+    RECEIVE 	ACCEPT
+    CONTENT	QUERY
+      address     client_port
+    END		CONTENT
+    CONTENT	REPLY
+      domainname  server_name
+      description network_name
+      char	  slot_no
+      char	  line_no
+      char	  mac_address	array 16	printed mac address, zero terminated
+      short	  user_id
+    END 	CONTENT
+  END ROUTINE
+
+  ROUTINE	AUTH_LINK
+    /*
+     * This query is sent/received whenever a "WAN" interface comes
+     * up.  It is used to determine whether or not the interface
+     * should be marked as "secure", "restricted" or "unrestricted".
+     * The setting determines what type of information is allowed to
+     * pass through the link. 
+     */
+    NAME	Authenticate Link
+    NUMBER	18
+    RECEIVE 	REJECT	VSVC_ERR_BADPROCNUM
+  END ROUTINE
+
+  ROUTINE	RESET_CAPS
+    /*
+     *
+     */
+    NAME	Reset Capabilities
+    NUMBER	20
+    RECEIVE 	REJECT	VSVC_ERR_BADPROCNUM
+  END ROUTINE
+
+  ROUTINE	FULL_LOGIN
+    /*
+     *
+     */
+    NAME	Full Login
+    NUMBER	23
+    RECEIVE 	REJECT	VSVC_ERR_BADPROCNUM
+  END ROUTINE
+
+  ROUTINE	START_SESSION
+    /*
+     *
+     */
+    NAME	Start Session
+    NUMBER	27
+    RECEIVE 	REJECT	VSVC_ERR_BADPROCNUM
+  END ROUTINE
+
+  ROUTINE	Validate
+    /*
+     *
+     */
+    NAME	Validate Nonce
+    NUMBER	28
+    SEND
+    RECEIVE 	ACCEPT
+    NOTIFY	ABORT
+    CONTENT	QUERY
+      nonce	  client_nonce
+      address	  client_port
+      ushort	  unknown1
+      ushort	  unknown2
+      string	  unknown3	100
+    END		CONTENT
+    CONTENT	REPLY
+      string	  username	VST_TOTALLEN
+      ulong	  version
+      ulong	  unknown1
+      ushort	  unknown2
+      ulong	  unknown3
+      ulong	  unknown4
+      ushort	  unknown5
+      ulong	  unknown6
+    END		CONTENT
+  END ROUTINE
+
+  ROUTINE	PRE_LOGIN
+    /*
+     *
+     */
+    NAME	Pre Login
+    NUMBER	29
+    RECEIVE 	REJECT	VSVC_ERR_BADPROCNUM
+  END ROUTINE
+
+  ROUTINE	USER_LOC
+    /*
+     * Given a user name, look up the addresses from which this person
+     * has logged in, and return the addresses to the requestor.  This
+     * is used by the "send" program to find out where to send the
+     * message.
+     */
+    NAME	Get User Location
+    NUMBER	39
+    RECEIVE 	PROXY
+    CONTENT	QUERY
+      string	  full_user_name	VST_TOTALLEN
+    END		QUERY
+    CONTENT	REPLY
+      ushort	  port_count
+      address	  port	LIMIT VVS_MAX_LOCATIONS
+    END		CONTENT      
+  END ROUTINE
+
+END SERVICE
+
+###
+### Local Variables:
+### mode: Indented-Text
+### End:
+###

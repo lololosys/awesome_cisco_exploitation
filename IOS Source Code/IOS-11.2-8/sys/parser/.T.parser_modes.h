@@ -1,0 +1,5 @@
+
+parser_modes.h,110
+#define	PARSER_MODE_NONE	40,1439
+#define	PARSER_MODE_ALIASES	41,1471
+#define	PARSER_MODE_PRIVILEGE	42,1506

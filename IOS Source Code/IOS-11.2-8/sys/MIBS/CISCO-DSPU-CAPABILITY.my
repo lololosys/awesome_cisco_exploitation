@@ -1,0 +1,375 @@
+-- $Id: CISCO-DSPU-CAPABILITY.my,v 3.3 1995/12/22 07:05:43 thille Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-DSPU-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-DSPU-CAPABILITY.my:  Cisco DSPU capability MIB
+--
+-- January 1995, Paul Pearce
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+--
+-- *****************************************************************
+-- $Log: CISCO-DSPU-CAPABILITY.my,v $
+-- Revision 3.3  1995/12/22  07:05:43  thille
+-- CSCdi46022:  Mibs need to have group information updated.
+-- Clean up the group information.
+--
+-- Revision 3.2  1995/11/17  08:33:58  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:49:46  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:15  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+CISCO-DSPU-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoDspuCapability MODULE-IDENTITY
+		LAST-UPDATED	"9501250000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for the DSPU-MIB"
+		REVISION	"9501250000Z"
+		DESCRIPTION
+			"Used to manage DSPU objects."
+	::= { ciscoAgentCapability 44 }
+
+ciscoDspuCapabilityV10R03 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.3"
+STATUS		obsolete  -- superseded by ciscoDspuCapabilityV11R01
+DESCRIPTION	"IOS 10.3 Cisco DSPU MIB capabilities"
+
+SUPPORTS	CISCO-DSPU-MIB
+  INCLUDES	{ dspuNodeGroup,
+                  dspuPoolClassGroup,
+                  dspuPooledLuGroup,
+                  dspuPuGroup,
+                  dspuLuGroup,
+                  dspuSapGroup
+                }
+
+  VARIATION dspuNodeRsrb
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbLocalVirtualRing
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbBridgeNumber
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbTargetVirtualRing
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbVirtualMacAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeDefaultPu
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeDefaultPuWindowSize
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeDefaultPuMaxIframe
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeActivationWindow
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPoolClassName
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPoolClassInactivityTimeout
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminName
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminRemoteMacAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminRemoteSapAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminLocalSapAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminXid
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminXidFmt
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminWindowSize
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminMaxIframe
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminLinkRetryCount
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminLinkRetryTimeout
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminStartPu
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminDlcType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminDlcUnit
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminDlcPort
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminFocalPoint
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminRowStatus
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminPoolClassName
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminPeerPuIndex
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminPeerLuLocalAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminRowStatus
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuSapType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuSapRowStatus
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+::= { ciscoDspuCapability 1 }
+
+ciscoDspuCapabilityV11R01 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 11.1"
+STATUS		current
+DESCRIPTION	"IOS 11.1 Cisco DSPU MIB capabilities"
+
+SUPPORTS	CISCO-DSPU-MIB
+  INCLUDES	{ dspuNodeGroup,
+                  dspuPoolClassGroup,
+                  dspuPooledLuGroup,
+                  dspuPuGroupV11R01,
+                  dspuLuGroupV11R01,
+                  dspuSapGroup
+                }
+	
+  VARIATION dspuNodeRsrb
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbLocalVirtualRing
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbBridgeNumber
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbTargetVirtualRing
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeRsrbVirtualMacAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeDefaultPu
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeDefaultPuWindowSize
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeDefaultPuMaxIframe
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuNodeActivationWindow
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPoolClassName
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPoolClassInactivityTimeout
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminName
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminRemoteMacAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminRemoteSapAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminLocalSapAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminXid
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminXidFmt
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminWindowSize
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminMaxIframe
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminLinkRetryCount
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminLinkRetryTimeout
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminStartPu
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminDlcType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminDlcUnit
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminDlcPort
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminFocalPoint
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuPuAdminRowStatus
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminPoolClassName
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminPeerPuIndex
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminPeerLuLocalAddress
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuLuAdminRowStatus
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuSapType
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+  VARIATION dspuSapRowStatus
+    ACCESS    read-only
+    DESCRIPTION "create/write not implemented"
+  
+::= { ciscoDspuCapability 2 }
+
+END

@@ -1,0 +1,3 @@
+
+msg_tn3270.c,33
+#define DEFINE_MESSAGES	32,1107

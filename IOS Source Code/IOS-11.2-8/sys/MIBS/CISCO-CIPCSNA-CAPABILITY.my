@@ -1,0 +1,96 @@
+-- $Id: CISCO-CIPCSNA-CAPABILITY.my,v 3.2 1995/11/17 08:33:45 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-CIPCSNA-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-CIPCSNA-CAPABILITY - Capabilities Agent for CIP CSNA MIB
+--
+-- April 1995, Mike Otto
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-CIPCSNA-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:33:45  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:49:35  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:05  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+CISCO-CIPCSNA-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoCipCsnaCapability MODULE-IDENTITY
+		LAST-UPDATED	"9504160000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for the CISCO-CIPCSNA-MIB"
+		REVISION	"9504160000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 53 }
+
+ciscoCipCsnaCapabilityV11R00 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 11.0"
+STATUS		current
+DESCRIPTION	"IOS 11.0 Cisco CIP SNA MIB capabilities"
+
+SUPPORTS	CISCO-CIPCSNA-MIB
+  INCLUDES	{ cipCardCsnaAdminTable,
+                  cipCardSessionsAdminTable }
+	
+  VARIATION cipCardCsnaAdminPath
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipCardCsnaAdminDevice
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipCardCsnaAdminBlockDelayTime
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipCardCsnaAdminBlockDelayLength
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipCardCsnaAdminMaxBlockLength
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipCardCsnaAdminRowStatus
+    ACCESS    not-implemented
+    DESCRIPTION "read-create not implemented"
+
+  VARIATION cipCardAdminMaxLlc2Sessions
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+::= { ciscoCipCsnaCapability 1 }
+
+END

@@ -1,0 +1,11 @@
+
+ncia_chain.c,288
+#define ALTERNATE 74,1994
+#define	ALTERNATE	84,2158
+#define	ALTERNATE	93,2320
+#define ALTERNATE 102,2480
+#define	ALTERNATE	112,2651
+static void ncia_parser_init 135,3259
+#define NCIA_UI_MAJVERSION 144,3417
+#define NCIA_UI_MINVERSION 145,3446
+#define NCIA_UI_EDITVERSION 146,3475

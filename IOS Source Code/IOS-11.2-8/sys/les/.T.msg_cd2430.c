@@ -1,0 +1,3 @@
+
+msg_cd2430.c,33
+#define DEFINE_MESSAGES	48,1707

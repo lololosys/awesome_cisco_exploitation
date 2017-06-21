@@ -1,0 +1,38 @@
+-- $Id: SNMPv2-CONF.my,v 3.2.60.1 1996/04/19 21:24:44 jjohnson Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/SNMPv2-CONF.my,v $
+-- *****************************************************************
+-- SNMPv2-CONF.my:  SNMPv2 Conformance MIB file
+--
+-- May 1994, Jeffrey T. Johnson
+--
+-- Copyright (c) 1994,1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: SNMPv2-CONF.my,v $
+-- Revision 3.2.60.1  1996/04/19  21:24:44  jjohnson
+-- CSCdi55117:  Need to support the Draft Standard SNMPv2 SMI
+-- Branch: California_branch
+-- Install the DS MIBS
+--
+-- Revision 3.2  1995/11/17  08:37:07  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:52:23  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:03:13  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+--	This mib was extracted from RFC 1904
+--	All macro definitions have been removed because they are
+--	predefined in the mib compiler
+
+SNMPv2-CONF DEFINITIONS ::= BEGIN
+
+-- everything is predefined in the mib compiler
+
+END

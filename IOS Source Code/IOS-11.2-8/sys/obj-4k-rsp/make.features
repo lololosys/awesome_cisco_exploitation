@@ -1,0 +1,217 @@
+# $Id: make.features,v 3.1.2.2 1996/09/14 05:37:46 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/obj-4k-rsp/make.features,v $
+#------------------------------------------------------------------
+# make.features - Make the GAIA based features for RSP system software 
+#
+# July 1996, Venugopal Margabandu 
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.features,v $
+# Revision 3.1.2.2  1996/09/14  05:37:46  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.2.1  1996/09/04  19:43:00  mvenugop
+# CSCdi68050:  Gaia make.feature for each platform
+# Branch: California_branch
+#
+# Revision 3.1  1996/07/16  18:12:00  mvenugop
+# *** empty log message ***
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+######################################################################
+#
+#	GAIA Platform Dependent Variables
+#
+######################################################################
+
+ETHER_GAIA = shr_ether.o
+ISDN_GAIA = sub_isdn.o sub_rsp_pri.o $(DIALER_FEATURE)
+SERIAL_GAIA = shr_serial.o
+TRING_GAIA = shr_tring.o
+
+#######################################################################
+#
+#	Feature to .o mapping
+#
+#######################################################################
+
+IPC_CBUS_RSP_DESCRIPTION = "RSP IPC support"
+IPC_CBUS_RSP_ABBREV = IPC_CBUS_RSP
+IPC_CBUS_RSP_HELP = ""
+IPC_CBUS_RSP_TEST_SCRIPT = ""
+IPC_CBUS_RSP_FEATURE = sub_ipc_cbus_rsp.o
+
+IPC_CBUS_MRSP_DESCRIPTION = "MRSP IPC support"
+IPC_CBUS_MRSP_ABBREV = IPC_CBUS_MRSP
+IPC_CBUS_MRSP_HELP = ""
+IPC_CBUS_MRSP_TEST_SCRIPT = ""
+IPC_CBUS_MRSP_FEATURE = sub_ipc_cbus_mrsp.o
+
+FDDI_DESCRIPTION = "FDDI driver support"
+FDDI_ABBREV = FDDI
+FDDI_HELP = ""
+FDDI_TEST_SCRIPT = ""
+FDDI_FEATURE = $(FDDI_SMT)
+FDDI_GNMIB =	$(FDDIMIB)
+
+CHANNEL_DESCRIPTION = "Channel support"
+CHANNEL_ABBREV = CHANNEL
+CHANNEL_HELP = ""
+CHANNEL_TEST_SCRIPT = ""
+CHANNEL_FEATURE = sub_channel.o
+CHANNEL_GNMIB = $(CHANNELMIB)
+
+TN3270S_DESCRIPTION = "Tn3270 server support"
+TN3270S_ABBREV = TN3270S
+TN3270S_HELP = ""
+TN3270S_TEST_SCRIPT = ""
+TN3270S_FEATURE = sub_tn3270s.o
+TN3270S_GNMIB = $(TN3270SMIB)
+
+TN3270S_SHARE_DESCRIPTION = "Tn3270 Share"
+TN3270S_SHARE_ABBREV = TN3270S
+TN3270S_SHARE_HELP = ""
+TN3270S_SHARE_TEST_SCRIPT = ""
+TN3270S_SHARE_FEATURE = sub_tn3270s.o $(APPNMIB_SHARE)
+
+LEX_DESCRIPTION = "Support for Lan EXterntion"
+LEX_ABBREV = LEX
+LEX_HELP = ""
+LEX_TEST_SCRIPT = ""
+LEX_FEATURE = sub_lex_platform.o shr_lex.o $(PPP_FEATURE) \
+shr_lex_ncp.o $(FAST_LEX)
+
+DSW_DESCRIPTION = "Distributed switching image, VIP"
+DSW_ABBREV = DSW
+DSW_HELP = ""
+DSW_TEST_SCRIPT = ""
+DSW_FEATURE = $(ETHER) $(SERIAL) $(TRING) \
+        $(DRIVERS_DSW) $(PLATFORM_SUPPORT_DSW) $(IPC) $(TEST) $(TRAFFIC_SHAPE)
+
+DSWC_DESCRIPTION = "Distributed switching image, VIP with crypto"
+DSWC_ABBREV = DSWC
+DSWC_HELP = ""
+DSWC_TEST_SCRIPT = ""
+DSWC_FEATURE = $(ETHER) $(SERIAL) $(TRING) \
+        $(DRIVERS_DSW) $(PLATFORM_SUPPORT_DSW) $(IPC) $(TEST) \
+	$(TRAFFIC_SHAPE) $(CRYPTO_VIP)
+
+BASE_DW_DESCRIPTION = "Base router and platform support, required for rsp-dw"
+BASE_DW_ABBREV = BASE_DW
+BASE_DW_HELP = ""
+BASE_DW_TEST_SCRIPT = ""
+BASE_DW_FEATURE =    $(GAIA_DW) srb_sb.o
+
+BOOT_DESCRIPTION = "platform dependant boot support"
+BOOT_ABBREV = BOOT
+BOOT_HELP = ""
+BOOT_TEST_SCRIPT = ""
+BOOT_FEATURE = shr_atm.o  shr_atm_arp.o sub_fddi_smt.o shr_ether.o \
+		shr_serial.o shr_tring.o sub_isdn.o shr_lex.o \
+		sub_lex_platform.o shr_lex_ncp.o sub_rsp_pri.o  shr_ipc_udp.o \
+		sub_ipc_cbus_rsp.o  sub_ipc_cbus_mrsp.o shr_core.o \
+		sub_core_platform.o shr_ukernel.o sub_ukernel_platform.o \
+		sub_rsp.o shr_ipc.o shr_fastswitch.o shr_arp.o \
+		shr_srbcore.o shr_ipudptcp.o shr_ipcore.o shr_ipboot.o \
+		shr_ipdiag.o shr_iprarp.o shr_ipbootp.o shr_ipaccount.o \
+		shr_ipcomprs.o shr_frame.o shr_smds.o  shr_ppp.o \
+		shr_compress.o shr_dialer.o  shr_x25.o shr_pad.o \
+		shr_llc2.o shr_dlc_base.o shr_tacacs.o
+
+RSP_PLATFORM_PLUS_PACK_DESCRIPTION = "RSP platform plus package"
+RSP_PLATFORM_PLUS_PACK_ABBREV = RSP_PLATFORM_PLUS_PACK
+RSP_PLATFORM_PLUS_PACK_HELP = ""
+RSP_PLATFORM_PLUS_PACK_TEST_SCRIPT = ""
+RSP_PLATFORM_PLUS_PACK_FEATURE = $(IP_NAT_FEATURE) $(LANE_FEATURE) \
+		$(IBM_BASE_FEATURE) $(SNANM_FEATURE) $(RTTM_FEATURE) \
+		$(BSTUN_FEATURE) $(BSTUN_GNMIB) $(QLLC_FEATURE) \
+		$(NCIA_FEATURE) $(IBM_BASE_GNMIB) $(RTTM_GNMIB) \
+		$(DSPU_FEATURE) $(DSPU_GNMIB) $(DLSW_GNMIB)
+
+RSP_PLATFORM_PARTS_PACK_DESCRIPTION = "RSP platform parts package"
+RSP_PLATFORM_PARTS_PACK_ABBREV = RSP_PLATFORM_PARTS_PACK
+RSP_PLATFORM_PARTS_PACK_HELP = ""
+RSP_PLATFORM_PARTS_PACK_TEST_SCRIPT = ""
+RSP_PLATFORM_PARTS_PACK_FEATURE = $(ISDN_FEATURE) \
+                		  $(MCN_FEATURE) \
+                		  $(TRING_GNMIB) \
+                		  $(ATM_GNMIB) \
+                		  $(ATMZR_FEATURE) \
+                		  $(AM79970_GNMIB) \
+                		  $(TRING_FEATURE) \
+                		  $(TEST_FEATURE) \
+                		  $(DSX1_FEATURE) \
+                		  $(AM79970_FEATURE) \
+                		  $(ISDN_GNMIB) \
+                		  $(LEX_FEATURE) \
+                		  $(FDDI_GNMIB) \
+                		  $(FDDI_FEATURE) \
+                		  $(ATM_FEATURE) \
+                		  $(CPP_FEATURE) \
+                		  $(MK5025_FEATURE) \
+                		  $(V120_FEATURE) \
+                		  $(PARTNER_FEATURE)
+			
+RSP_J_ONLY_PACK_DESCRIPTION = "RSP J options package"
+RSP_J_ONLY_PACK_ABBREV = RSP_J_ONLY_PACK
+RSP_J_ONLY_PARTS_PACK_HELP = ""
+RSP_J_ONLY_PARTS_PACK_TEST_SCRIPT = ""
+RSP_J_ONLY_PACK_FEATURE = $(CHANNEL_FEATURE) \
+                          $(CHANNEL_GNMIB) \
+                          $(TN3270S_SHARE_FEATURE) \
+                          $(TN3270S_GNMIB) 
+
+RSP_AJ_ONLY_PACK_DESCRIPTION = "RSP AJ options package"
+RSP_AJ_ONLY_PACK_ABBREV = RSP_AJ_ONLY_PACK
+RSP_AJ_ONLY_PARTS_PACK_HELP = ""
+RSP_AJ_ONLY_PARTS_PACK_TEST_SCRIPT = ""
+RSP_AJ_ONLY_PACK_FEATURE = $(CHANNEL_FEATURE) \
+			   $(CHANNEL_GNMIB) \
+			   $(TN3270S_FEATURE) \
+			   $(TN3270S_GNMIB)
+
+# This platform has additional comserver support, depending on the image.
+RSP_P_ONLY_PACK_DESCRIPTION = "RSP P options package"
+RSP_P_ONLY_PACK_ABBREV = RSP_P_ONLY_PACK
+RSP_P_ONLY_PARTS_PACK_HELP = ""
+RSP_P_ONLY_PARTS_PACK_TEST_SCRIPT = ""
+RSP_P_ONLY_PACK_FEATURE = $(RADIUS_FEATURE)
+	
+
+######################################################################
+#
+#	All abbreviations for platform dependent features and partially
+#	dependent features 
+#
+######################################################################
+
+PLATFORM_FEATURE_ABBRV = \
+$(ISDN_ABBREV) $(ETHER_ABBREV) $(SERIAL_ABBREV) $(CPP_ABBREV) \
+$(TRING_ABBREV) $(V120_ABBREV) $(LEX_ABBREV) $(IPC_CBUS_RSP_ABBREV) \
+$(IPC_CBUS_MRSP_ABBREV) $(LANE_ABBREV) $(VLANS_ABBREV) $(TRLANE_ABBREV) \
+$(FDDI_ABBREV) $(ATM_ABBREV) $(CHANNEL_ABBREV) $(ISDN_HTTP_ABBREV) \
+$(DSPU_ABBREV) $(DLSW_ABBREV) $(APPN_ABBREV) $(IBM_BASE_ABBREV) \
+$(NCIA_ABBREV) $(MMP_ABBREV) \
+$(SNA_PRIORITY_ABBREV) $(QLLC_ABBREV) $(SNANM_ABBREV) $(BSTUN_ABBREV) \
+$(TN3270S_ABBREV) $(TN3270S_SHARE_ABBREV) $(BASE_DW_ABBREV) \
+$(BOOT_ABBREV)
+
+######################################################################
+#
+# Cisco internal build features
+#
+######################################################################
+
+INTERNAL_ABBRV = \
+$(DSW_ABBREV) $(DSWC_ABBREV) $(TEST_ABBREV)
+
+######################################################################
+#
+#	End of GAIA
+#
+######################################################################

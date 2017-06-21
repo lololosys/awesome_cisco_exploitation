@@ -1,0 +1,631 @@
+-- $Id: PIM-MIB.my,v 3.3.42.1 1996/06/11 19:39:06 snyder Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/PIM-MIB.my,v $
+-- *****************************************************************
+-- PIM-MIB.my:  PIM MIB file
+--
+-- November 1994.
+--
+-- Copyright (c) 1994-1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: PIM-MIB.my,v $
+-- Revision 3.3.42.1  1996/06/11  19:39:06  snyder
+-- CSCdi60118:  MIB doc spellink errors
+-- Branch: California_branch
+--
+-- Revision 3.3  1995/12/22  07:05:49  thille
+-- CSCdi46022:  Mibs need to have group information updated.
+-- Clean up the group information.
+--
+-- Revision 3.2  1995/11/17  08:36:28  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:51:55  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.5  1995/09/15  20:29:57  thille
+-- CSCdi40467:  MIBs should reference source documents
+-- Add a comment explaining what draft RFC or ATM Forum document each of
+-- the mibs was derived from.  Also fix a few syntax problems in one of
+-- the MIBs found by smicng.
+--
+-- Revision 2.4  1995/08/21  20:33:12  thille
+-- CSCdi37883:  Mib changes needed to facilitate automatic publication
+-- Do a lot of MIB fixups.  Fix problems with negative indexes, fix
+-- problems where a SEQUENCE clause specifies one syntax and a SYNTAX
+-- statement specifies another for the same mib variable.  Fix other
+-- random bogosity.
+--
+-- Revision 2.3  1995/07/26  20:13:56  anke
+-- CSCdi37618:  Multicast MIBs should be relocated to the IETF
+-- experimental space
+-- incorporate code review comment
+--
+-- Revision 2.2  1995/07/26  17:08:01  anke
+-- CSCdi37618:  Multicast MIBs should be relocated to the IETF
+-- experimental space
+-- igmpMIB, ipRouteMIB, and pimMIB were moved to experimental
+-- 59, 60, and 61 respectively.
+--
+-- Revision 2.1  1995/06/07  20:02:40  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+-- This mib was extracted from draft-ietf-idmr-pim-mib-00.txt.
+
+PIM-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, experimental,
+    Integer32, IpAddress, TimeTicks  FROM SNMPv2-SMI
+    RowStatus                        FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP  FROM SNMPv2-CONF;
+
+pimMIB MODULE-IDENTITY
+    LAST-UPDATED "9411041659Z"
+    ORGANIZATION "IETF IDMR Working Group."
+    CONTACT-INFO
+            " Keith McCloghrie
+              cisco Systems, Inc.
+              1525 O'Brien Dr.
+              Menlo Park, CA 94025
+              EMail: kzm@cisco.com"
+    DESCRIPTION
+            "The MIB module for management of PIM routers."
+    REVISION	"9411041659Z"
+    DESCRIPTION
+            "Initial version of this MIB module."
+    ::= { experimental 61 }
+
+pimMIBObjects OBJECT IDENTIFIER ::= { pimMIB 1 }
+
+pim           OBJECT IDENTIFIER ::= { pimMIBObjects 1 }
+
+
+pimMessageInterval OBJECT-TYPE
+    SYNTAX     Integer32
+    UNITS      "seconds"
+    MAX-ACCESS read-write
+    STATUS     current
+    DESCRIPTION
+
+            "The interval at which PIM sparse-mode messages are to be
+            sent."
+    ::= { pim 1 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- The PIM Interface Table
+
+pimInterfaceTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF PimInterfaceEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The (conceptual) table listing the router's PIM interfaces.
+            IGMP and PIM are enabled on all interfaces listed in this
+            table."
+    ::= { pim 2 }
+
+pimInterfaceEntry OBJECT-TYPE
+    SYNTAX     PimInterfaceEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry (conceptual row) in the pimInterfaceTable."
+    INDEX      { pimInterfaceIfIndex }
+    ::= { pimInterfaceTable 1 }
+
+PimInterfaceEntry ::= SEQUENCE {
+    pimInterfaceIfIndex            Integer32 (0..2147483647),
+    pimInterfaceAddress            IpAddress,
+    pimInterfaceNetMask            IpAddress,
+    pimInterfaceMode               INTEGER,
+    pimInterfaceDR                 IpAddress,
+    pimInterfaceQueryInterval      Integer32,
+    pimInterfaceStatus             RowStatus
+}
+
+pimInterfaceIfIndex OBJECT-TYPE
+    SYNTAX     Integer32 (0..2147483647)
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The ifIndex value of this PIM interface."
+    ::= { pimInterfaceEntry 1 }
+
+pimInterfaceAddress OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The IP address of the PIM interface."
+
+
+
+
+
+
+
+
+
+
+
+    ::= { pimInterfaceEntry 2 }
+
+pimInterfaceNetMask OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The network mask for the IP address of the PIM interface."
+    ::= { pimInterfaceEntry 3 }
+
+pimInterfaceMode OBJECT-TYPE
+    SYNTAX     INTEGER { dense(1), sparse(2) }
+    MAX-ACCESS read-create
+    STATUS     current
+    DESCRIPTION
+            "The configured mode of this PIM interface."
+    DEFVAL     { dense }
+    ::= { pimInterfaceEntry 4 }
+
+pimInterfaceDR OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The Designated Router on this PIM interface.  For point-
+            to-point interfaces, this object has the value 0.0.0.0."
+    ::= { pimInterfaceEntry 5 }
+
+pimInterfaceQueryInterval OBJECT-TYPE
+    SYNTAX     Integer32
+    UNITS      "seconds"
+    MAX-ACCESS read-create
+    STATUS     current
+    DESCRIPTION
+            "The frequency at which PIM Router-Query messages are
+            transmitted on this PIM interface."
+    DEFVAL     { 30 }
+    ::= { pimInterfaceEntry 6 }
+
+pimInterfaceStatus OBJECT-TYPE
+    SYNTAX     RowStatus
+    MAX-ACCESS read-create
+    STATUS     current
+    DESCRIPTION
+            "The status of this entry.  Creating the entry enables PIM
+
+
+
+
+
+
+
+
+
+
+
+            on the interface; destroying the entry disables PIM on the
+            interface."
+    ::= { pimInterfaceEntry 7 }
+
+
+-- The PIM Neighbor Table
+
+pimNeighborTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF PimNeighborEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The (conceptual) table listing the router's PIM neighbors."
+    ::= { pim 3 }
+
+pimNeighborEntry OBJECT-TYPE
+    SYNTAX     PimNeighborEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry (conceptual row) in the pimNeighborTable."
+    INDEX      { pimNeighborAddress }
+    ::= { pimNeighborTable 1 }
+
+PimNeighborEntry ::= SEQUENCE {
+    pimNeighborAddress      IpAddress,
+    pimNeighborIfIndex      Integer32,
+    pimNeighborUpTime       TimeTicks,
+    pimNeighborExpiryTime   TimeTicks,
+    pimNeighborMode         INTEGER
+}
+
+pimNeighborAddress OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The IP address of the PIM neighbor for which this entry
+            contains information."
+    ::= { pimNeighborEntry 1 }
+
+pimNeighborIfIndex OBJECT-TYPE
+    SYNTAX     Integer32
+    MAX-ACCESS read-only
+    STATUS     current
+
+
+
+
+
+
+
+
+
+
+
+    DESCRIPTION
+            "The value of ifIndex for the interface used to reach this
+            PIM neighbor."
+    ::= { pimNeighborEntry 2 }
+
+pimNeighborUpTime OBJECT-TYPE
+    SYNTAX     TimeTicks
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The time since this PIM neighbor (last) became a neighbor
+            of the local router."
+    ::= { pimNeighborEntry 3 }
+
+pimNeighborExpiryTime OBJECT-TYPE
+    SYNTAX     TimeTicks
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The minimum time remaining before this PIM neighbor will be
+            aged out."
+    ::= { pimNeighborEntry 4 }
+
+pimNeighborMode OBJECT-TYPE
+    SYNTAX     INTEGER { dense(1), sparse(2) }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The active PIM mode of this neighbor."
+    ::= { pimNeighborEntry 5 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- The PIM Group Table
+
+pimGroupTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF PimGroupEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The (conceptual) table listing PIM information for IP
+            multicast groups."
+    ::= { pim 4 }
+
+pimGroupEntry OBJECT-TYPE
+    SYNTAX     PimGroupEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry (conceptual row) in the pimGroupTable.  There is
+            one entry per IP multicast group."
+    INDEX      { pimGroupAddress }
+    ::= { pimGroupTable 1 }
+
+PimGroupEntry ::= SEQUENCE {
+    pimGroupAddress      IpAddress,
+    pimGroupRPcount      Integer32,
+    pimGroupRPreach      TimeTicks,
+    pimGroupMode         INTEGER
+}
+
+pimGroupAddress OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The IP multicast group address for which this entry
+            contains information."
+    ::= { pimGroupEntry 1 }
+
+pimGroupRPcount OBJECT-TYPE
+    SYNTAX     Integer32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The number of Rendezvous Points (RPs) for this multicast
+            group, known to this router.  If no RP is known, this object
+            has the value 0.0.0.0."
+
+
+
+
+
+
+
+
+
+
+
+    ::= { pimGroupEntry 2 }
+
+pimGroupRPreach OBJECT-TYPE
+    SYNTAX     TimeTicks
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The number of hundredths-of-a-seconds until the next time
+            this router will send RP-Reachable messages if this router
+            is one of the Rendezvous Points (RPs) for this multicast
+            group; or 0 if this router is not an RP."
+    ::= { pimGroupEntry 3 }
+
+pimGroupMode OBJECT-TYPE
+    SYNTAX     INTEGER { dense(1), sparse(2) }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The active PIM mode of this group, as learned by the
+            router."
+    ::= { pimGroupEntry 4 }
+
+
+-- The PIM RP Table
+
+pimRPTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF PimRPEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The (conceptual) table listing PIM information for the
+            Rendezvous Points (RPs) for IP multicast groups."
+    ::= { pim 5 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pimRPEntry OBJECT-TYPE
+    SYNTAX     PimRPEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry (conceptual row) in the pimRPTable.  There is one
+            entry per RP address for each IP multicast group."
+    INDEX      { pimRPGroupAddress, pimRPAddress }
+    ::= { pimRPTable 1 }
+
+PimRPEntry ::= SEQUENCE {
+    pimRPGroupAddress    IpAddress,
+    pimRPAddress         IpAddress,
+    pimRPState           INTEGER,
+    pimRPStateTimer      TimeTicks,
+    pimRPLastChange      TimeTicks,
+    pimRPRowStatus       RowStatus
+}
+
+pimRPGroupAddress OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The IP multicast group address for which this entry
+            contains information about an RP."
+    ::= { pimRPEntry 1 }
+
+pimRPAddress OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The IP multicast group address for which this entry
+            contains information about an RP."
+    ::= { pimRPEntry 2 }
+
+pimRPState OBJECT-TYPE
+    SYNTAX     INTEGER { up(1), down(2) }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The state of the RP."
+    ::= { pimRPEntry 3 }
+
+
+
+
+
+
+
+
+
+
+
+
+pimRPStateTimer OBJECT-TYPE
+    SYNTAX     TimeTicks
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The minimum time remaining before the next state change.
+            When pimRPState is up, this is the minimum time which must
+            expire until it can be declared down.  When pimRPState is
+            down, this is the time until it will be declared up (in
+            order to retry)."
+    ::= { pimRPEntry 4 }
+
+pimRPLastChange OBJECT-TYPE
+    SYNTAX     TimeTicks
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The value of sysUpTime at the time when the corresponding
+            instance of pimRPState last changed its value."
+    ::= { pimRPEntry 5 }
+
+pimRPRowStatus OBJECT-TYPE
+    SYNTAX     RowStatus
+    MAX-ACCESS read-create
+    STATUS     current
+    DESCRIPTION
+            "The status of this row, by which new entries may be
+            created, or old entries deleted from this table."
+    ::= { pimRPEntry 6 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- conformance information
+
+pimMIBConformance OBJECT IDENTIFIER ::= { pimMIB 2 }
+pimMIBCompliances OBJECT IDENTIFIER ::= { pimMIBConformance 1 }
+pimMIBGroups      OBJECT IDENTIFIER ::= { pimMIBConformance 2 }
+
+
+-- compliance statements
+
+pimMIBCompliance MODULE-COMPLIANCE
+    STATUS  obsolete  -- superseded by pimMIBComplianceV11R01
+    DESCRIPTION
+            "The compliance statement for the PIM MIB."
+    MODULE  -- this module
+        MANDATORY-GROUPS { pimMIBGroup }
+
+    ::= { pimMIBCompliances 1 }
+
+pimMIBComplianceV11R01 MODULE-COMPLIANCE
+    STATUS  current
+    DESCRIPTION
+            "The compliance statement for the PIM MIB."
+    MODULE  -- this module
+        MANDATORY-GROUPS { pimMIBGroupV11R01 }
+
+    ::= { pimMIBCompliances 2 }
+
+
+-- units of conformance
+
+pimMIBGroup OBJECT-GROUP
+    OBJECTS { pimMessageInterval, pimNeighborIfIndex,
+              pimNeighborUpTime, pimNeighborExpiryTime,
+              pimNeighborMode,
+              pimInterfaceAddress, pimInterfaceNetMask,
+              pimInterfaceMode, pimInterfaceDR,
+              pimInterfaceQueryInterval,
+              pimGroupRPcount, pimGroupRPreach,
+              pimGroupMode,
+              pimRPState, pimRPStateTimer,
+              pimRPLastChange, pimRPRowStatus
+            }
+    STATUS  obsolete -- superseded by pimMIBGroupV11R01
+    DESCRIPTION
+            "A collection of objects to support management of PIM
+            routers."
+    ::= { pimMIBGroups 1 }
+
+pimMIBGroupV11R01 OBJECT-GROUP
+    OBJECTS { pimMessageInterval, pimNeighborIfIndex,
+              pimNeighborUpTime, pimNeighborExpiryTime,
+              pimNeighborMode,
+              pimInterfaceAddress, pimInterfaceNetMask,
+              pimInterfaceMode, pimInterfaceDR,
+              pimInterfaceQueryInterval,
+              pimInterfaceStatus,
+              pimGroupRPcount, pimGroupRPreach,
+              pimGroupMode,
+              pimRPState, pimRPStateTimer,
+              pimRPLastChange, pimRPRowStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects to support management of PIM
+            routers."
+    ::= { pimMIBGroups 2 }
+
+END

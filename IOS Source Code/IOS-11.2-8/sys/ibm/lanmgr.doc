@@ -1,0 +1,603 @@
+
+[ New chapter ]
+
+Section: INTRODUCTION
+
+Lan Network Manager (LNM), formerly called Lan Manager, is an IBM
+product for managing a collection of source route bridged token rings.
+it directly manages its local token ring, and works in conjunction
+with the IBM bridge program to manage all other rings in the bridged
+network.  In this arrangement, the bridge provides a proxy /
+translation / information gathering service to the bridge.  Any time
+LNM wants information about a station somewhere on a token ring, it
+asks the question of one of the brides connected to that ring using a
+proprietary protocol.  The bridge either already knows the requested
+information, or it will query the station for the information using a
+protocol published in the 802.5 specification.  The responses, whether
+from internal information or an external station, is then wrapped up
+in the proprietary protocol and transmitted back to LNM.
+
+A good analogy to this would be a language translator who translates
+questions from French into German, and then translates the responses
+back from German into French.  If the translator already knows the
+answer to a question, then he does not bother asking the question in
+German, but simply answers with the information he already knows.
+
+Other capabilities present in the IBM Bridge Support for LNM include
+asynchronous notification of some events occurring on a token ring.
+Two examples of this would be the notification of a new station
+joining the token ring, or of the ring going into a failure mode known
+as beaconing.  Support is also provided for LNM to change the
+operating parameters in the bridge.  [For a complete description of
+Lan Network Manager, please refer to the product manual supplied by
+IBM with the Lan Network Manager program.
+
+This proprietary protocol used for LNM and the bridge to communicate
+is a non-routeable protocol based on top of an LLC2 connection.
+Because this protocol is non-routeable, LNM cannot monitor or manage
+anything behind a pure router.  It can see things behind a
+router/bridge, either by communicating with an IBM bridge behind the
+router/bridge, or by communicating with the router/bridge itself.
+This last case assumes that the router/bridge supports the LNM to
+Bridge protocol, and is currently configured as a source-route bridge.
+
+The cisco router now understands the proprietary protocol used for LNM
+and the bridge to communicate.  It will provide all of the functions
+currently provided by the IBM Bridge program.  This means that the LNM
+can "link" to a router as if it were an IBM Bridge, and manage or
+monitor any token ring connected to the cisco router.
+
+
+Section: CONFIGURING THE ROUTER
+
+Configuring a cisco router/bridge for LNM support is extremely simple.
+It happens automatically as a part of configuring the router to act as
+a source-route bridge.  There are several commands available to modify
+the behavior of the LNM support, but none of them are necessary for it
+to function.
+
+Because there is now more than one way to remotely change parameters
+in a cisco router, some way was needed to prevent them from
+detrimentally interacting with each other.  The global configuration
+command LNM SNMP-ONLY will prevent any LNM stations from modifying
+parameters in the cisco router.  It does not affect the ability of LNM
+to monitoring events, only to change things.  The syntax of this
+global command is:
+
+	lnm snmp-only
+	no lnm snmp-only
+
+LNM has a concept of reporting links, and reporting link numbers.  A
+reporting link is simply a connection (or potential connection)
+between a LRM and a Bridge.  A reporting link numbers is a unique
+number used to identify a reporting link.  An IBM bridge allows four
+simultaneous reporting links, numbered 0 through 3.  Only the LRM
+attached on the lowest number connection is allowed to change any
+parameters, and then only when that connection number falls below a
+certain configurable number.  In the default configuration, the LRM
+connected through link 0 is the only LRM allowed to change parameters.
+The interface subcommand to change this parameter is LNM ALTERNATE.
+The syntax for this interface subcommand is:
+
+	lnm alternate <number>
+	no lnm alternate
+
+The number parameter must be an integer between 0 and 3.  Setting
+number to 0 is the same as using the "no" form of the command, and is
+the default configuration.  Setting this parameter on one interface in
+a source route bridge will cause it to appear on the other interface
+of the bridge.  This is because the command applies to the bridge
+itself, and not to either of the interfaces.
+
+Each reporting link has its own password.  This is used not only to
+prevent unauthorized access from an LRM to a bridge, but also to
+control access to the different reporting links.  This is important
+because of the different abilities associated with the various
+reporting links.  The syntax of this interface subcommand is:
+
+	lnm password <number> <string>
+	no lnm password <number>
+
+The number parameter identifies which reporting link to apply the
+password command.  In order to maintain compatibility with LNM, the
+parameter string should be a six to eight character string containing
+only letters, numbers, or the characters @, #, $, or %.  The "no" form
+of this command returns the password to its default value of
+"00000000".
+
+
+SubSection: Configuring Servers
+
+As in an IBM bridge, the cisco router will provide several functions
+that gather information from a local token ring.  All of these
+functions are enabled by default, but may be disabled by a
+configuration command.  The syntax of these interface subcommands is
+as follows:
+
+	lnm crs
+	no lnm crs
+
+	lnm rem
+	no lnm rem
+
+	lnm rps
+	no lnm rps
+
+The first of these services is the Configuration Report Server (CRS).
+This services keeps track of the current logical configuration of a
+token ring, and reports any changes to LNM.  It also reports on
+various other activities such as the change of the Active Monitor on a
+token ring.
+
+The second service is the Ring Error Monitor (REM).  This services
+monitors errors reported by any station on the ring.  It also monitors
+whether the ring is in a functional state, or in a failure state.
+
+The third service is the Ring Parameter Server (RPS).  This service
+insures that all station on a ring are using a consistent set of
+reporting parameters, and reports to LNM when any new station joins a
+token ring.
+
+
+SubSection: Changing Reporting Timers
+
+The router will send a message to all attached LNMs whenever it begins
+to drop frames.  The threshold where this report is generated is a
+percentage of the number of frames dropped compared to the number of
+frames forwarded.  This threshold is configurable, and defaults to a
+value of 0.10%.  The threshold is entered as a single number
+expressing the percentage loss rate in hundreths of a percent.  The
+syntax of this interface subcommands is as follows:
+
+	lnm loss-threshold <number>
+	no lnm loss-threshold
+
+All stations on a token ring notify the Ring Error Monitor when they
+detect errors on the ring.  In order to prevent excessive messages,
+error reports are not sent immediately, but are accumulated for a
+short period of time and then reported.  A station will learns this
+value from a cisco router (configured as a source route bridge) when
+it first enters the ring.  This value is entered as the time interval
+in tens of milliseconds between error messages.  The negative form of
+the command restores the timer value to its default of 200, or 2
+seconds.  The syntax of this interface subcommands is as follows:
+
+	lnm softerr <number>
+	no lnm softerr
+
+
+
+Section: CONFIGURING LAN NETWORK MANAGER
+
+Configuring LNM is a fairly simple task, and is well covered in the
+LNM documentation.  What may not be so simple is figuring out what
+information to enter into LNM, especially when there is a virtual ring
+involved.  The basic problem extends from the fact that LNM is
+designed to only understand the concept of a two port bridge, and the
+cisco router with a virtual ring is a "multi-port" bridge.  The
+solution is to configure a virtual ring into LNM as a series of two
+port bridges.  The exec command SHOW LNM CONFIG will provide all the
+information necessary to configure these bridges into LNM.
+
+
+For example, you have a router with two token rings configured as a
+local source route bridge.  The configuration file, physical
+configuration, and logical configuration appear as follows.
+
+	!
+	interface TokenRing 0
+	source-bridge 1 2 3
+	!
+	interface TokenRing 1
+	source-bridge 3 2 1
+	!
+
+
+          ^     +---------+     ^   
+         / \  T0|         |T1  / \  
+        < 1 >---| router  |---< 3 >   	physical configuration
+         \ /    |         |    \ /  
+          v     +---------+     v   
+
+
+          ^     +-----+     ^
+         / \    |     |    / \
+        < 1 >---| SRB |---< 3 >	logical configuration
+         \ /    |  2  |    \ /
+          v     +-----+     v
+
+Entering the SHOW LNM CONFIG command will display the logical
+configuration of the bridge, including all the pertinent information
+for configuring this router into LNM.
+
+	Doomgiver#show lnm config
+
+	Bridge(s) currently configured:
+	
+	    From     ring 001, address 0000.3000.abc4
+	    Across bridge 002
+	    To       ring 003, address 0000.3000.5735
+	
+
+For a more complex example, you have a router with three token rings
+configured as a multiport bridge.  The configuration file, physical
+configuration, and logical configuration appear as follows.
+
+	!
+	source-bridge ring-group 8
+	!
+	interface TokenRing 0
+	source-bridge 1 1 8
+	!
+	interface TokenRing 1
+	source-bridge 2 2 8
+	!
+	interface TokenRing 2
+	source-bridge 3 3 8
+	!
+
+
+          ^     +---------+     ^   
+         / \  T0|         |T1  / \  
+        < 1 >---| router  |---< 2 > 
+         \ /    |         |    \ /  
+          v     +---------+     v   
+                     |T2	    
+                     |		    	physical configuration
+	             ^		    
+	            / \		    
+	           < 3 >	    
+	            \ /		    
+	             v		    
+
+
+          ^     +-----+     ^     +-----+     ^  
+         / \    |     |    / \    |     |    / \ 
+        < 1 >---| SRB |---< 8 >---| SRB |---< 2 >
+         \ /    |  1  |    \ /    |  2  |    \ / 
+          v     +-----+     v     +-----+     v  
+                            |                             
+                            |                             
+                         +-----+
+                         |     |
+                         | SRB |
+                         |  3  |	logical configuration
+                         +-----+
+			    |                             
+			    |                             
+			    ^                             
+			   / \                            
+			  < 3 >                           
+			   \ /                            
+			    v                             
+
+Entering the SHOW LNM CONFIG command will display the logical
+configuration of the bridge, including all the pertinent information
+for configuring this router into LNM.
+
+	Doomgiver#show lnm config
+	Bridge(s) currently configured:
+	
+	    From     ring 001, address 0000.0028.abcd
+	    Across bridge 001
+	    To       ring 008, address 4000.0028.abcd
+	
+	    From     ring 002, address 0000.3000.abc4
+	    Across bridge 002
+	    To       ring 008, address 4000.3000.abc4
+	
+	    From     ring 003, address 0000.3000.5735
+	    Across bridge 003
+	    To       ring 008, address 4000.3000.5735
+
+
+
+Section: MONITORING LNM SUPPORT
+
+SubSection: Displaying Bridge Information
+
+The command SHOW LNM BRIDGE will display all currently configured
+bridges, and all parameters that are related to the bridge as a whole,
+and not to one of its interfaces.  Enter this command at the EXEC
+prompt:
+
+	show lnm bridge
+
+The output of this command looks like the following.
+
+	Bridge 001-2-003, Ports 0000.3000.abc4, 0000.0028.abcd
+	Active Links:  0000.0000.0000  0000.0000.0000  0000.0000.0000  0000.0000.0000
+	Notification: 0 min, Threshold 00.10%
+
+In the display:
+
+	o The bridge field indicates the ring and bridge numbers of
+	  this bridge.
+
+	o ports entry shows the MAC addresses of the two interfaces of
+	  this bridge.
+
+	o Active Links entry shows any LNM stations that are currently
+	  connected to this bridge.  An entry preceded by an asterisk
+	  is the controlling LNM.
+
+	o notification entry is the current counter notification
+	  interval in minutes.
+
+	o threshold entry is the current loss threshold that will
+	  trigger a message to LNM.
+
+
+SubSection: Displaying LNM Configuration Information
+
+The command SHOW LNM CONFIG will display the logical configuration of
+all bridges configured in a router.  This information is needed to
+properly configure LNM for a cisco router.  This is especially
+important when using a virtual ring.  Enter this command at the EXEC
+prompt:
+
+	show lnm config
+
+The output of this command looks like the following.
+
+	Bridge(s) currently configured:
+	
+	    From     ring 001, address 0000.3000.abc4
+	    Across bridge 002
+	    To       ring 003, address 0000.0028.abcd
+
+In the display:
+
+	o The From field indicates the ring number and MAC address of
+	  the first interface in the two port bridge.
+
+	o The Across field indicates the bridge number assigned to
+	  this bride.
+
+	o The To field indicates the ring number and MAC address of
+	  the second interface in the two port bridge.
+
+
+SubSection: Displaying Token Ring Information
+
+The command SHOW LNM INTERFACE will display all LNM relevant
+information about a specific interface, or about all interfaces.  If a
+specific interface is requested, it will also display a list of all
+currently active stations on that interface.  Enter this command at
+the EXEC prompt:
+
+	show lnm interface [interface]
+
+The output of this command looks like the following.
+
+                                           nonisolating error counts
+interface   ring   Active Monitor   SET    dec   lost  cong.   fc  freq. token
+
+TokenRing1  0001*  1000.5a98.23a0  00200  00001  00000 00000 00000 00000 00002
+
+Notification flags: FE00, Ring Intensive: FFFF, Auto Intensive: FFFF
+Active Servers: LRM LBS REM RPS CRS
+Last NNIN:   never, from 0000.0000.0000.
+Last Claim:  never, from 0000.0000.0000.
+Last Purge:  never, from 0000.0000.0000.
+Last Beacon: never, 'none' from 0000.0000.0000.
+Last MonErr: never, 'none' from 0000.0000.0000.
+
+                                            isolating error counts
+    station      int  ring  loc.   weight   line  inter burst   ac  abort
+1000.5a98.23a0    T1  0001  0000   00 - N   00000 00000 00000 00000 00000
+1000.5a98.239e    T1  0001  0000   00 - N   00000 00000 00000 00000 00000
+1000.5a6f.bc15    T1  0001  0000   00 - N   00000 00000 00000 00000 00000
+0000.3000.abc4    T1  0001  0000   00 - N   00000 00000 00000 00000 00000
+1000.5a98.239f    T1  0001  0000   00 - N   00000 00000 00000 00000 00000
+
+In the display:
+
+	o interface is the interface about which information was
+	  requested.
+
+	o ring is the number assigned to that token ring
+
+	o the asterisk indicates that there stations with non-zero
+	  error counters present on this ring.
+
+	o Active Monitor is the address of the station that is
+	  currently providing "Active Monitor" functions to the ring.
+
+	o SET is the current soft error reporting time for the ring in
+	  units of tens of milliseconds.
+
+	o "nonisolating error counts: dec" is the rate at which the
+	  various counters of nonisolating error are being decreased.
+	  This number is in errors per 30 seconds.
+
+	o other nonisolating error counts are the current values of
+	  the five non-isolating error counters specified in the 802.5
+	  specification.  These are Lost Frame errors, Receiver
+	  Congestion errors, FC errors, Frequency errors, and Token
+	  errors.
+
+	o Notification flags is a representation of which types of
+	  ring errors are being reported to LNM.  The description of
+	  this number can be found in the IBM Architecture Reference
+	  Manual.
+
+	o Ring Intensive is a representation of which specific ring
+	  error messages are being reported to LNM when in the "Ring
+	  Intensive" reporting mode.  The description of this number
+	  can be found in the IBM Architecture Reference Manual.
+
+	o Auto Intensive is a representation of which specific ring
+	  error messages are being reported to LNM when in the "Auto
+	  Intensive" reporting mode.  The description of this number
+	  can be found in the IBM Architecture Reference Manual.
+
+	o Active Servers is a list of which services are currently
+	  active on this token ring.  The possible acronyms and their
+	  meanings are:
+
+		CRS - Configuration Report Server
+		LRM - LAN reporting Manager
+		LBS - LAN Bridge Server
+		REM - Ring Error Monitor
+		RPS - Ring Parameter Server
+
+	  The description of these servers can be found in the IBM
+	  Architecture Reference Manual.
+
+	o Last NNIN is the time since the last "Neighbor Notification
+	  Incomplete" frame was received, and the station that sent
+	  this message.
+
+	o Last Claim is the time since the last "Claim Token" frame
+	  was received, and the station that sent this message.
+
+	o Last Purge is the time since the last "Purge Ring" frame was
+	  received, and the station that sent this message.
+
+	o Last Beacon is the time since the last "Beacon" frame was
+	  received, the type of the last beacon frame, and the station
+	  that sent this message.
+
+	o Last MonErr is the time since the last "Report Active
+	  Monitor Error" frame was received, the type of the last
+	  monitor error frame, and the station that sent this message.
+
+See the SHOW LNM STATION command for a description of the fields in the
+bottom half of the command output.
+
+The same exact information can be obtained by specifying a the ring
+number assigned to a token ring instead of specifying the interface
+number.  To do this you would enter this command at the EXEC prompt:
+
+	show lnm ring [number]
+
+The output of this command is the same as the output of the show lnm
+interface command. 
+
+
+SubSection: Displaying Station Specific Information
+
+The command SHOW LNM STATION will display LNM relevant information
+about a specific station, or about all known stations on all rings.
+If a specific station is requested, it will also display a detailed
+list of that stations current MAC level parameters.  Enter this
+command at the EXEC prompt:
+
+	show lnm station [address]
+
+The output of this command looks like the following.
+
+                                            isolating error counts
+    station      int  ring  loc.   weight   line  inter burst   ac  abort
+1000.5a6f.bc15    T1  0001  0000   00 - N   00000 00000 00000 00000 00000
+
+Unique ID:  0000.0000.0000          NAUN: 0000.3000.abc4
+Functional: C000.0000.0000         Group: C000.0000.0000
+Physical Location:   00000        Enabled Classes:  0000
+Allowed Priority:    00000        Address Modifier: 0000
+Product ID:     00000000.00000000.00000000.00000000.0000
+Ucode Level:    00000000.00000000.0000
+Station Status: 00000000.0000
+Last transmit status: 00
+
+In the display:
+
+	o station is the MAC address of the given station on the token
+	  ring.
+
+	o int is the interface used to reach the given station
+
+	o ring is the number of the token ring where the given station
+	  is located
+
+	o loc is the physical location number of the given station
+
+	o weight is an weighted accumulation of the errors of the
+	  given station, and of its NAUN.  The three possible letters
+	  and their meanings are:
+
+		N - Not in a reported error condition
+
+		P - In a "pre-weight" error condition
+
+		W - In a "weight" error condition
+
+	  The description of these conditions can be found in the IBM
+	  Architecture Reference Manual.
+
+	o The isolating error counts are the current values of the
+	  five isolating error counters specified in the 802.5
+	  specification.  These are Line errors, Internal errors,
+	  Burst errors, AC errors, and Abort errors.
+
+Values below this point will be zero unless LNM has previously
+requested this information. 
+
+	o Unique ID is the uniquely assigned value for this station.
+
+	o NAUN is the MAC address of this stations "upstream"
+	  neighbor.
+
+	o Functional is the MAC level functional address currently in
+	  use by this station.
+
+	o Group is the MAC level group address currently in use by this
+	  station.
+
+	o Physical Location is the number assigned to this station as
+	  its "Physical Location" identifier.
+
+	o Enabled Classes is the functional classes that the station
+	  is allowed to transmit.
+
+	o Allowed Priority is the maximum access priority that the
+	  station may use when transmitting onto the token ring.
+
+	o Address Modifier a reserved field.
+
+	o Product ID is an encoded 18 byte string used to identify
+	  what hardware/software combination is running on this
+	  station.
+
+	o Ucode Level is a 10 byte EBCDIC string indicating the
+	  microcode level of the station.
+
+	o Station Status is an implementation dependent vector that is
+	  not specified anywhere.
+
+	o Last transmit status contains the strip status of the last
+	  "Report Transmit Forward" MAC frame forwarded by this
+	  interface.
+
+Section: DEBUGGING LNM SUPPORT
+
+Use the debugging commands in this section...
+
+    debug lanmgr-events
+
+	Display any unusual events that occur on a token ring.  This
+	includes such thins as stations reporting errors, error
+	thresholds being exceeded, etc.
+
+    debug lanmgr-llc
+
+	Display all communication between the cisco router/bridge and
+	the LNMs that have connections to it.  One line is displayed
+	for each message sent or received.
+
+    debug lanmgr-mac
+
+	Display all management communication between the cisco
+	router/bridge and all stations on the local token rings.  One
+	line is displayed for each message sent or received.
+
+
+
+Section: CAVEATS
+
+There are two parameters in an IBM bridge that have no corresponding
+parameter in the cisco router.  This means that any attempt to modify
+these parameters from LNM will fail with an error message.  The LNM
+names of these two parameters are the "route active status" and the
+"single route broadcast mode."

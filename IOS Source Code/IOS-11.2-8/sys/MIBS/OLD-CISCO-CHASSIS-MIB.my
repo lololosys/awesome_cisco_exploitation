@@ -1,0 +1,1065 @@
+-- $Id: OLD-CISCO-CHASSIS-MIB.my,v 3.16.10.24 1996/09/05 20:17:55 bstewart Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/OLD-CISCO-CHASSIS-MIB.my,v $
+-- *****************************************************************
+-- OLD-CISCO-CHASSIS-MIB.my:  Cisco Chassis MIB file
+--
+--%DNP%  NOTE WELL: The Cisco Assigned Numbers Authority (CANA)
+--%DNP%             controls all enumeration assignments in this MIB.
+--%DNP%             Do not add, delete, or modify this MIB without
+--%DNP%             explicit instructions from the CANA.  Requests for
+--%DNP%             new enumerations should be sent to cana@cisco.com
+--
+-- May 1994, Jeffrey T. Johnson
+--
+-- Copyright (c) 1994-1997 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: OLD-CISCO-CHASSIS-MIB.my,v $
+-- Revision 3.16.10.24  1996/09/05  20:17:55  bstewart
+-- CSCdi67459:  Need constant bit rate card types for Alien and Rhino
+--                 Corrected hierarchy
+-- Branch: California_branch
+--
+-- Revision 3.16.10.23  1996/09/05  19:54:18  bstewart
+-- CSCdi68155:  Need new cardIndex value
+-- Branch: California_branch
+--
+-- Revision 3.16.10.22  1996/09/04  21:33:45  bstewart
+-- CSCdi68073:  Need card type for ATM Lite
+-- Branch: California_branch
+--
+-- Revision 3.16.10.21  1996/08/29  20:26:28  bstewart
+-- CSCdi67459:  Need constant bit rate card types for Alien and Rhino
+--                 and then needed corrections.
+-- Branch: California_branch
+--
+-- Revision 3.16.10.20  1996/08/29  18:41:30  bstewart
+-- CSCdi67573:  Need chassisType for Latte
+-- Branch: California_branch
+--
+-- Revision 3.16.10.19  1996/08/29  17:20:46  bstewart
+-- CSCdi67459:  Need constant bit rate card types for Alien and Rhino
+-- Branch: California_branch
+--
+-- Revision 3.16.10.18  1996/08/28  13:39:31  bstewart
+-- CSCdi67330:  Need card types for MARS
+-- Branch: California_branch
+--
+-- Revision 3.16.10.17  1996/08/27  17:21:00  bstewart
+-- CSCdi67281:  Need chassis type for Corsica
+-- Branch: California_branch
+--
+-- Revision 3.16.10.16  1996/08/08  14:56:26  bstewart
+-- CSCdi64752:  Fix a port adapter name and add another
+-- Branch: California_branch
+--
+-- Revision 3.16.10.15  1996/07/26  20:32:11  ahh
+-- CSCdi63751:  extraneous comma in OLD-CISCO-CHASSIS-MIB.my (again)
+-- Branch: California_branch
+--
+-- Revision 3.16.10.14  1996/07/26  02:13:29  mordock
+-- CSCdi63751:  extraneous comma in OLD-CISCO-CHASSIS-MIB.my (again)
+-- Branch: California_branch
+-- chassisType enum was malformed after stripping out %DNP% lines
+--
+-- Revision 3.16.10.13  1996/07/26  01:09:08  feisal
+-- CSCdi61016:  Need to add CardType MIB definition for different flavors
+-- of 1FE PA
+-- Branch: California_branch
+--
+-- Revision 3.16.10.12  1996/07/18  21:23:51  bstewart
+-- CSCdi63394:  New products need MIB numbers
+-- Branch: California_branch
+--
+-- Revision 3.16.10.11  1996/07/18  16:57:39  bstewart
+-- CSCdi63235:  New product requires MIB numbers
+-- Branch: California_branch
+--
+-- Revision 3.16.10.10  1996/06/17  23:45:07  jjohnson
+-- CSCdi60664:  New product requires mib modification
+-- Branch: California_branch
+--
+-- Revision 3.16.10.9  1996/06/09  07:58:02  cheilek
+-- CSCdi52427:  VIP1/VIP2 cardType enumeration labels should be vip/vip2
+-- Branch: California_branch
+-- Change rvip to vip; svip to vip2.
+--
+-- Revision 3.16.10.8  1996/05/29  22:23:05  jjohnson
+-- CSCdi58976:  New product requires mib updates
+-- Add Volcano support
+--
+-- Revision 3.16.10.7  1996/04/23  06:13:10  jjohnson
+-- CSCdi55372:  YAPR (Yet Another Press Release): publish new product info
+-- Branch: California_branch
+--
+-- Revision 3.16.10.6  1996/04/22  05:31:42  jjohnson
+-- CSCdi55194:  New products require chassis mib update
+-- Branch: California_branch
+--
+-- Revision 3.16.10.5  1996/04/08  17:32:57  ssangiah
+-- CSCdi53822:  Need to deal with product name change.
+-- Fix some left over references to the old Predator product name.
+-- Branch: California_branch
+--
+-- Revision 3.16.10.4  1996/04/06  02:04:56  ssangiah
+-- CSCdi53822:  Need to deal with product name change.
+-- Make changes to deal with the change in the product name for Predator
+-- from c7100 to c7200.
+-- Branch: California_branch
+--
+-- Revision 3.16.10.3  1996/04/02  05:09:23  jjohnson
+-- CSCdi53342:  New product requires chassis mib update
+-- Branch: California_branch
+--
+-- Revision 3.16.10.2  1996/03/26  19:10:42  jjohnson
+-- CSCdi52474:  New adapters need cardType enumerations
+-- Branch: California_branch
+--
+-- Revision 3.16.10.1  1996/03/21  22:26:34  gstovall
+-- Branch: California_branch
+-- The ELC_branch now knows the joy of California dreaming.
+--
+-- Revision 3.3.2.8  1996/03/18  23:48:10  mbeesley
+-- Branch: ELC_branch
+-- Sync to V111_1_3
+--
+-- Revision 3.3.2.7  1996/02/15  19:44:31  dcarroll
+-- CSCdi49079:  Fix snmp platform support
+-- Branch: ELC_branch
+-- Pull down updates to chassis mib. Get platform snmp
+-- support working on c7100
+--
+-- Revision 3.3.2.6  1996/02/08  06:38:33  gstovall
+-- Branch: ELC_branch
+-- Sync to ELC_baseline_960205.
+--
+-- Revision 3.3.2.5  1996/01/26  22:52:00  wfried
+-- CSCdi47665:  Need to add new MIB definitions
+-- Branch: ELC_branch
+-- Add FDDI PA MIB id.
+--
+-- Revision 3.3.2.4  1996/01/15  07:58:26  dcarroll
+-- Branch: ELC_branch
+-- Sync ELC_branch between ELC_baseline_120995 and ELC_baseline_960110.
+--
+-- Revision 3.3.2.3  1995/12/13  20:04:50  dcarroll
+-- Branch: ELC_branch
+-- Add enumeration for predator io card.
+--
+-- Revision 3.3.2.2  1995/12/11  17:35:54  mbeesley
+-- Branch: ELC_branch
+-- Sync ELC_branch to ELC_baseline_120995.
+--
+-- Revision 3.3.2.1  1995/11/29  22:43:47  dcarroll
+-- Branch: ELC_branch
+--
+-- Revision 3.16  1996/02/26  19:02:50  jjohnson
+-- CSCdi49888:  New product requires MIB updates
+--
+-- Revision 3.15  1996/02/18  23:00:39  vdukki
+-- CSCdi47769:  need to distinguish 4700m model using snmp
+-- Modified the code to recognize the 4700m platform using snmp.
+--
+-- Revision 3.14  1996/02/14  22:42:27  dbath
+-- CSCdi38455:  HSA needs SNMP support
+-- Add the state of 'standby' to the CardOperStatus enum.
+-- (Be sure to do a "make dependancies" after you pick this us).
+--
+-- Revision 3.13  1996/02/13  00:53:03  rpratt
+-- CSCdi48766:  Chassis MIB cardSlotNumber description updated for parent
+-- cards
+--
+-- Revision 3.12  1996/02/12  00:09:23  jjohnson
+-- CSCdi48648:  New products require MIB update
+-- Satisfy outstanding requests from VIP, Predator, Brasil, and MARs
+--
+-- Revision 3.11  1996/02/06  10:01:08  jjohnson
+-- CSCdi48223:  Bad cardType enumerations in chassis mib
+-- Remove c7100-io1fe and fix pa-fddi
+--
+-- Revision 3.10  1996/01/26  22:49:34  wfried
+-- CSCdi47665:  Need to add new MIB definitions
+-- Add FDDI PA MIB id.
+--
+-- Revision 3.9  1996/01/24  23:41:16  schaefer
+-- CSCdi47457: publish RSP7000 MIB values
+--
+-- Revision 3.8  1995/12/15  03:13:44  rpratt
+-- CSCdi45651:  Chassis MIB enhancements made Port Ready
+--
+-- Revision 3.7  1995/12/13  22:31:11  thille
+-- CSCdi45542:  Another press release, publish some more oids...
+--
+-- Revision 3.6  1995/12/12  03:10:21  rpratt
+-- CSCdi45382:  Use CANA assigned pa-* cardTypes in Chassis MIB
+--
+-- Revision 3.5  1995/12/10  23:26:36  rpratt
+-- CSCdi45343:  Chassis MIB enhancements for VIP & port adapters
+--
+-- Revision 3.4  1995/12/04  20:15:22  schaefer
+-- CSCdi44946: add enums for new hardware
+-- publish rsp/1 & rsp/2, add rsp/4, rsp/7000, ci/7000 (unpublished)
+--
+-- Revision 3.3  1995/11/20  19:35:19  mbeesley
+-- CSCdi43065:  need to reserve cpu types for future development
+--
+-- Revision 3.2  1995/11/17  08:35:46  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:51:19  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.11  1995/10/23  17:53:52  ljiang
+-- CSCdi42394:  Add vendor codes for cisco partners
+--
+-- Revision 2.10  1995/10/07  00:53:17  jjohnson
+-- CSCdi41637:  need to distinguish between 4700 models via snmp
+-- add new cardTable enumeration
+--
+-- Revision 2.9  1995/10/07  00:33:54  jjohnson
+-- CSCdi41637:  need to distinguish between 4700 models via snmp
+--
+-- Revision 2.8  1995/09/15  21:04:41  thille
+-- CSCdi40470:  c1004, c1005, c4700 announced, need to publish OIDs
+--
+-- Revision 2.7  1995/08/31  19:03:17  thille
+-- CSCdi39653:  75xx family has been announced, it is time to publish OIDs
+--
+-- Revision 2.6  1995/08/21  20:33:12  thille
+-- CSCdi37883:  Mib changes needed to facilitate automatic publication
+-- Do a lot of MIB fixups.  Fix problems with negative indexes, fix
+-- problems where a SEQUENCE clause specifies one syntax and a SYNTAX
+-- statement specifies another for the same mib variable.  Fix other
+-- random bogosity.
+--
+-- Revision 2.5  1995/08/09  02:17:32  jjohnson
+-- CSCdi38462:  New products need sysObjectID assignments
+-- Add chassisType enumerations for raptor, cobra, and boa platforms
+--
+-- Revision 2.4  1995/07/31  23:28:46  thille
+-- CSCdi37883:  Mib changes needed to facilitate automatic publication
+-- Catch & %DNP% two more boards that snuck in on a recent commit.
+--
+-- Revision 2.3  1995/07/31  22:44:04  thille
+-- CSCdi37883:  Mib changes needed to facilitate automatic publication
+-- make sure mibs have current revision dates and revision clauses prior
+-- to publication.  Also add %DNP% comments for things that are not yet
+-- ready to be announced to the general public.
+--
+-- Revision 2.2  1995/07/31  21:08:46  sma
+-- CSCdi37935:  Add SSIP/SMIP support
+-- Add enumerations in use in 10.3
+--
+-- Revision 2.1  1995/06/07  20:01:56  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+--%DNP%  FYI:  Lines containing a comment starting with the "Do Not
+--%DNP%  Publish" prefix "%DNP%" (such as these) are automagicially
+--%DNP%  stripped from MIBS prior to publishing on ftp and cio, and
+--%DNP%  should be used for comments intended for cisco engineering
+--%DNP%  eyes only, or for new product identifiers that are not yet
+--%DNP%  announced.
+
+               OLD-CISCO-CHASSIS-MIB DEFINITIONS ::= BEGIN
+
+               IMPORTS
+                    TimeTicks
+                        FROM RFC1155-SMI
+                    OBJECT-TYPE
+			FROM RFC-1212
+		    TRAP-TYPE			--%DNP%
+			FROM RFC-1215	        --%DNP%
+                    DisplayString
+			FROM RFC1213-MIB
+		    temporary
+			FROM CISCO-SMI;
+          
+               chassis             OBJECT IDENTIFIER ::= { temporary 6 }
+
+               -- Temporary Chassis Section
+
+
+               -- (not the same as the IETF Chassis MIB)
+
+          -- This group is present in all products.
+
+               chassisType OBJECT-TYPE
+                   SYNTAX  INTEGER {
+                        unknown(1),
+                        multibus(2),
+                        agsplus(3),
+                        igs(4),
+                        c2000(5),
+                        c3000(6),
+                        c4000(7),
+                        c7000(8),
+                        cs500(9),
+                        c7010(10),
+                        c2500(11),
+                        c4500(12),
+			c2102(13),
+			c2202(14),
+			c2501(15),
+			c2502(16),
+			c2503(17),
+			c2504(18),
+			c2505(19),
+			c2506(20),
+			c2507(21),
+			c2508(22),
+			c2509(23),
+			c2510(24),
+			c2511(25),
+			c2512(26),
+			c2513(27),
+			c2514(28),
+			c2515(29),
+			c3101(30),
+			c3102(31),
+			c3103(32),
+			c3104(33),
+			c3202(34),
+			c3204(35),
+			accessProRC(36),
+			accessProEC(37),
+                        c1000(38),
+                        c1003(39),
+			c1004(40),
+			c2516(41),
+			c7507(42),
+			c7513(43),
+			c7506(44),
+			c7505(45),
+			c1005(46),
+			c4700(47),
+			c2517(48),
+			c2518(49),
+			c2519(50),
+			c2520(51),
+			c2521(52),
+			c2522(53),
+			c2523(54),
+			c2524(55),
+			c2525(56),
+			c4700S(57),
+			c7206(58),
+			c3640(59),
+			as5200(60),
+			c1601(61),
+			c1602(62),
+			c1603(63),
+			c1604(64),
+			c7204(65),
+			c3620(66)
+			,wsx5301(67)			--%DNP% until Feb 97, contact agalagh
+			,wsx3011(68)			--%DNP% until Nov 96, contact heluthra
+			,c3810(69)			--%DNP% until Mar 97, contact sdowler
+			,c3830(70)			--%DNP% until Mar 97, contact sdowler
+			,c3880(71)			--%DNP% until Mar 97, contact sdowler
+			,c1503(72)
+			,as5300(73)			--%DNP% until Aug 97, contact rmeadows
+			,as2509RJ(74)
+			,as2511RJ(75)
+			,c3800(76)			--%DNP% until Mar 97, contact jgehman
+			,c2501FRAD-FX(77)
+			,c2501LANFRAD-FX(78)
+			,c2502LANFRAD-FX(79)
+			,wsx5302(80)			--%DNP% until Jun 97, contact bbenson
+			,c1605(81)			--%DNP% until Oct 97, contact gverissimo
+			,c12000(82)			--%DNP% until Jun 97, contact smaniyar
+			,c4800(83)			--%DNP% until Aug 97, contact vdukki
+                   }
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Chassis type."
+                   ::= { chassis 1 }
+
+               chassisVersion OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Chassis hardware revision level, or an empty
+                           string if unavailable."
+                   ::= { chassis 2 }
+
+               chassisId OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-write
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Unique ID string. Defaults to chassis serial
+                           number if available, otherwise empty. Can
+                           also be set with 'snmp-server chassis-id'."
+                   ::= { chassis 3 }
+
+               romVersion OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "ROM monitor version."
+                   ::= { chassis 4 }
+
+               romSysVersion OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "ROM system software version, or an empty
+                           string if unavailable."
+                   ::= { chassis 5 }
+
+               processorRam OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Bytes of RAM available to CPU."
+                   ::= { chassis 6 }
+
+               nvRAMSize OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Bytes of non-volatile configuration memory."
+                   ::= { chassis 7 }
+
+               nvRAMUsed OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Bytes of non-volatile configuration memory
+                           in use."
+                   ::= { chassis 8 }
+
+               configRegister OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Value of configuration register."
+                   ::= { chassis 9 }
+
+               configRegNext OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Value of configuration register at next
+                           reload."
+                   ::= { chassis 10 }
+
+               cardTable OBJECT-TYPE
+                   SYNTAX  SEQUENCE OF CardTableEntry
+                   ACCESS  not-accessible
+                   STATUS  mandatory
+                   DESCRIPTION
+                            "Chassis card table."
+                   ::= { chassis 11 }
+
+               cardTableEntry OBJECT-TYPE
+                   SYNTAX CardTableEntry
+                   ACCESS  not-accessible
+                   STATUS  mandatory
+                   DESCRIPTION
+                            "Chassis card table."
+                   INDEX { cardIndex }
+               ::= { cardTable 1 }
+
+               CardTableEntry ::=
+                   SEQUENCE {
+                       cardIndex
+                           INTEGER,
+                       cardType
+                           INTEGER,
+                       cardDescr
+                           DisplayString,
+                       cardSerial
+                           INTEGER,
+                       cardHwVersion
+                           DisplayString,
+                       cardSwVersion
+                           DisplayString,
+                       cardSlotNumber
+                           INTEGER,
+                       cardContainedByIndex
+                           INTEGER,
+                       cardOperStatus
+                           INTEGER,
+                       cardSlots
+                           INTEGER
+                   }
+
+
+          -- The following section describes the components of the
+          -- table.
+
+               cardIndex OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Index into cardTable (not physical chassis
+                           slot number)."
+                   ::= { cardTableEntry 1 }
+
+--	1-19,25-39:	cpu-type cards			%DNP%
+--	20-24,40-120:	csc cards			%DNP%
+--	121-149:	more cpu-type cards		%DNP%
+--	150-199:	c7xxx cards			%DNP%
+--	200-229:	c4xxx nims			%DNP%
+--	230-259:	c4700 & VIP port adapters	%DNP%
+--	260-289:	MARs cards			%DNP%
+--	290-309:	as5200 cards			%DNP%
+--	310-329:	as5200 port adapters		%DNP%
+--	330-359:	25xx cards			%DNP%
+--	360-389:	16xx & 36xx cards		%DNP%
+--	400-429:	more c4700 & VIP port adapters	%DNP%
+--	430-459:	c38xx cards			%DNP%
+--	460-479:	as5300 port adapters		%DNP%
+--	480-499:	as5300 cards			%DNP%
+--	500-529:	voice cards			%DNP%
+--	530-559:	BFR cards			%DNP%
+
+               cardType OBJECT-TYPE
+                   SYNTAX  INTEGER {
+--	1-19,25-39:	cpu-type cards			%DNP%
+                        unknown(1),
+                        csc1(2),
+                        csc2(3),
+                        csc3(4),
+                        csc4(5),
+                        rp(6),
+                        cpu-igs(7),
+                        cpu-2500(8),
+                        cpu-3000(9),
+                        cpu-3100(10),
+                        cpu-accessPro(11),
+                        cpu-4000(12),
+                        cpu-4000m(13),
+                        cpu-4500(14),
+                        rsp1(15),
+                        rsp2(16),
+			cpu-4500m(17),
+			cpu-1003(18),
+			cpu-4700(19),
+                        csc-m(20),
+                        csc-mt(21),
+                        csc-mc(22),
+                        csc-mcplus(23),
+                        csc-envm(24),
+			chassisInterface(25),
+			cpu-4700S(26),
+			cpu-7200-npe100(27),
+			rsp7000(28),
+			chassisInterface7000(29),
+			rsp4(30),			--%DNP%
+			cpu-3600(31),
+			cpu-as5200(32),
+			c7200-io1fe(33),
+			cpu-4700m(34),
+			cpu-1600(35),
+			c7200-io(36),
+			cpu-1503(37),
+			cpu-1502(38),
+			cpu-as5300(39),			--%DNP% until Jun 97, contact rmeadows
+--	20-24,40-120:	csc cards			%DNP%
+                        csc-16(40),
+                        csc-p(41),
+                        csc-a(50),
+                        csc-e1(51),
+                        csc-e2(52),
+                        csc-y(53),
+                        csc-s(54),
+                        csc-t(55),
+                        csc-r(80),
+                        csc-r16(81),
+                        csc-r16m(82),
+                        csc-1r(83),
+                        csc-2r(84),
+                        sci4s(56),
+                        sci2s2t(57),
+                        sci4t(58),
+                        mci1t(59),
+                        mci2t(60),
+                        mci1s(61),
+                        mci1s1t(62),
+                        mci2s(63),
+                        mci1e(64),
+                        mci1e1t(65),
+                        mci1e2t(66),
+                        mci1e1s(67),
+                        mci1e1s1t(68),
+                        mci1e2s(69),
+                        mci2e(70),
+                        mci2e1t(71),
+                        mci2e2t(72),
+                        mci2e1s(73),
+                        mci2e1s1t(74),
+                        mci2e2s(75),
+                        csc-cctl1(100),
+                        csc-cctl2(101),
+                        csc-mec2(110),
+                        csc-mec4(111),
+                        csc-mec6(112),
+                        csc-fci(113),
+                        csc-fcit(114),
+                        csc-hsci(115),
+                        csc-ctr(116),
+--	121-149:	more cpu-type cards		%DNP%
+			cpu-7200-npe150(121),		--%DNP% until Jul 97, contact jasonc
+			cpu-7200-npe200(122),		--%DNP% until Jul 97, contact jasonc
+			cpu-wsx5302(123),		--%DNP% until Jun 97, contact bbenson
+			gsr-rp(124),			--%DNP% until Jun 97, contact smaniyar
+			cpu-4800m(125),			--%DNP% until Aug 97, contact vdukki
+--	150-199:	c7xxx cards			%DNP%
+                        sp(150),
+                        eip(151),
+                        fip(152),
+                        hip(153),
+                        sip(154),
+                        trip(155),
+                        fsip(156),
+                        aip(157),
+                        mip(158),
+                        ssp(159),
+			cip(160),
+			srs-fip(161),
+			srs-trip(162),
+			feip(163),
+			vip(164),
+			vip2(165),
+			ssip(166),
+			smip(167),
+			posip(168),
+			feip-tx(169),
+			feip-fx(170),
+			cbrt1(178),			--%DNP% until Mar 97, contact rgoguen
+			cbr120e1(179),			--%DNP% until Mar 97, contact rgoguen
+			cbr75e(180),			--%DNP% until Mar 97, contact rgoguen
+			vip3(181),			--%DNP% until Aug 97, contact amu
+			feip2(182),			--%DNP% until Apr 97, contact etrehus
+			acip(183),			--%DNP% until Jul 97, contact apalmer
+--	200-229:	c4xxx nims			%DNP%
+                        npm-4000-fddi-sas(200),
+                        npm-4000-fddi-das(201),
+                        npm-4000-1e(202),
+                        npm-4000-1r(203),
+                        npm-4000-2s(204),
+                        npm-4000-2e1(205),
+                        npm-4000-2e(206),
+                        npm-4000-2r1(207),
+                        npm-4000-2r(208),
+                        npm-4000-4t(209),
+                        npm-4000-4b(210),
+                        npm-4000-8b(211),
+                        npm-4000-ct1(212),
+                        npm-4000-ce1(213),
+                        npm-4000-1a(214),
+     	                npm-4000-6e(215),
+			npm-4500-2t16s(216),		--%DNP%
+			npm-4000-1fe(217),
+			npm-4000-1hssi(218),		--%DNP% until Apr 97, contact vdukki
+--	230-259:	c4700 & VIP port adapters	%DNP%
+			pa-1fe(230),
+                        pa-8e(231),
+                        pa-4e(232),
+			pa-5e(233),
+                        pa-4t(234),
+			pa-4r(235),
+			pa-fddi(236),
+			sa-encryption(237),
+			pa-ah1t(238),
+			pa-ah2t(239),
+			pa-a4t(240),			--%DNP%
+			pa-a8t-v35(241),
+			pa-1fe-tx-isl(242),
+			pa-1fe-fx-isl(243),
+			pa-1fe-tx-nisl(244),
+			sa-compression(245),
+			pa-atm-lite-1(246),		--%DNP% until Dec 96, contact jzbinovi
+			pa-ct3(247),			--%DNP% until Feb 97, contact dkhurana
+			pa-oc3sm-mux-cbrt1(248),	--%DNP% until Mar 97, contact abudin
+			pa-oc3sm-mux-cbr120e1(249),	--%DNP% until Mar 97, contact abudin
+			pa-oc3sm-mux-cbr75e1(250),	--%DNP% until Mar 97, contact abudin
+			pa-oc3mm-mux-cbrt1(251),	--%DNP% until Mar 97, contact abudin
+			pa-oc3mm-mux-cbr120e1(252),	--%DNP% until Mar 97, contact abudin
+			pa-oc3mm-mux-cbr75e1(253),	--%DNP% until Mar 97, contact abudin
+			pa-ds3sm-mux-cbrt1(254),	--%DNP% until Mar 97, contact abudin
+			pa-e3sm-mux-cbr120e1(255),	--%DNP% until Mar 97, contact abudin
+			pa-e3sm-mux-cbr75e1(256),	--%DNP% until Mar 97, contact abudin
+			pa-8b-st(257),			--%DNP% until Jan 97, contact dkhurana
+			pa-4b-u(258),			--%DNP% until Jan 97, contact dkhurana
+			pa-fddi-fd(259),		--%DNP% until Nov 97, contact izhu
+--	260-289:	MARs cards			%DNP%
+			pm-cpm-1e2w(260),
+			pm-cpm-2e2w(261),
+			pm-cpm-1e1r2w(262),
+			pm-ct1-csu(263),
+			pm-2ct1-csu(264),
+			pm-ct1-dsx1(265),
+			pm-2ct1-dsx1(266),
+			pm-ce1-balanced(267),
+			pm-2ce1-balanced(268),
+			pm-ce1-unbalanced(269),
+			pm-2ce1-unbalanced(270),
+			pm-4b-u(271),
+			pm-4b-st(272),
+			pm-8b-u(273),
+			pm-8b-st(274),
+			pm-4as(275),
+			pm-8as(276),
+			pm-4e(277),
+			pm-1e(278),
+			pm-4r(279),			--%DNP% date to be decided, contact scottb
+			pm-m4t(280),
+			pm-16a(281),
+			pm-32a(282),
+			pm-c3600-1fe(283),
+			pm-c3600-compression(284),
+			pm-dmodem(285),			--%DNP% until Sep 97, contact scottb
+			pm-8admodem(286),		--%DNP% until Oct 97, contact scottb
+			pm-16admodem(287),		--%DNP% until Oct 97, contact scottb
+
+--	290-309:	as5200 cards			%DNP%
+			as5200-carrier(290),
+			as5200-2ct1(291),
+			as5200-2ce1(292),
+--	310-329:	as5200 port adapters		%DNP%
+			pm-as5xxx-12m(310),
+			pm-as5xxx-12m-56k(311),		--%DNP% until May 97, contact jhernand
+			pm-as5xxx-12m-v110(312),	--%DNP% until Jun 97, contact howang
+--	330-359:	25xx cards			%DNP%
+			wm-c2500-5in1(330),
+			wm-c2500-t1-csudsu(331),
+			wm-c2500-sw56-2wire-csudsu(332),
+			wm-c2500-sw56-4wire-csudsu(333),
+			wm-c2500-bri(334),
+			wm-c2500-bri-nt1(335),
+--	360-389:	16xx cards			%DNP%
+			wic-serial-1t(360),
+			wic-serial-2t(361),			--%DNP%
+			wic-csu-dsu-2(362),			--%DNP%
+			wic-csu-dsu-4(363),			--%DNP%
+			wic-s-t-3420(364),
+			wic-s-t-2186(365),
+			wic-u-3420(366),
+			wic-u-2091(367),
+			wic-u-2091-2081(368),
+--	400-429:	more c4700 & VIP port adapters	%DNP%
+			pa-jt2(400),			--%DNP% until Mar 97, contact rramacha
+			pa-posdw(401),
+			pa-4me1-bal(402),		--%DNP% until Apr 97, contact rramacha
+			pa-2ce1-balanced(403),		--%DNP% until Jan 97, contact scheer
+			pa-2ct1(404),			--%DNP% until Jan 97, contact scheer
+			pa-1vg(405),			--%DNP% until Jan 97, contact dlindert
+			pa-atmdx-ds3(406),		--%DNP% until Jan 98, contact jzbinovi
+			pa-atmdx-e3(407),		--%DNP% until Jan 98, contact jzbinovi
+			pa-atmdx-sml-oc3(408),		--%DNP% until Q1/98, contact jzbinovi
+			pa-atmdx-smi-oc3(409),		--%DNP% until Q1/98, contact jzbinovi
+			pa-atmdx-mm-oc3(410),		--%DNP% until Q1/98, contact jzbinovi
+			pa-a8t-x21(414),
+			pa-a8t-rs232(415)
+			,pa-4me1-unbal(416)		--%DNP% until Apr 97, contact rramacha
+			,pa-4r-fdx(417)			--%DNP% until Feb 97, contact klambert
+			,pa-1e3(418)			--%DNP% until Jun 97, contact paking
+			,pa-2e3(419)			--%DNP% until Jun 97, contact paking
+			,pa-1t3(420)			--%DNP% until Jun 97, contact paking
+			,pa-2t3(421)			--%DNP% until Jun 97, contact paking
+			,pa-2ce1-unbalanced(422)	--%DNP% until Jan 97, contact scheer
+			,pa-14e-switch(423)		--%DNP% until Aug 97, contact feisal
+--	430-459:	c38xx cards			%DNP%
+			,c3800-vdm(430)			--%DNP% until Mar 97, contact sdowler
+			,c3800-vdm-dc-2t1e1(431)	--%DNP% until Mar 97, contact sdowler
+			,c3800-vdm-dc-1t1e1-enet(432)	--%DNP% until Mar 97, contact sdowler
+			,pa-2fe-tx(433)			--%DNP% until Nov 97, contact gstager
+			,pa-2fe-fx(434)			--%DNP% until Nov 97, contact gstager
+--	460-479:	as5300 port adapters		%DNP%
+-- 460 available
+			,pm-dtd-6m(461)			--%DNP% until Jun 97, contact styang
+--	480-499:	as5300 cards			%DNP%
+			,as5300-4ct1(480)		--%DNP% until Aug 97, contact rmeadows
+			,as5300-4ce1(481)		--%DNP% until Aug 97, contact rmeadows
+			,as5300-carrier(482)		--%DNP% until Aug 97, contact rmeadows
+			,as5300-compression(483)	--%DNP% until Jun 97, contact jhernand
+			,as5300-dtd-carrier(484)	--%DNP% until Jun 97, contact styang
+--	500-529:	voice cards			%DNP%
+			,vic-em(500)			--%DNP% until Jun 97, contact hshih
+			,vic-fxo(501)			--%DNP% until Jun 97, contact hshih
+			,vic-fxs(502)			--%DNP% until Jun 97, contact hshih
+			,vpm-2v(503)			--%DNP% until Jun 97, contact hshih
+			,vpm-4v(504)			--%DNP% until Jun 97, contact hshih
+--	530-549:	BFR cards			%DNP%
+			,pos-qoc3-mm(530)		--%DNP% until Jun 97, contact smaniyar
+			,pos-qoc3-sm(531)		--%DNP% until Jun 97, contact smaniyar
+			,pos-oc12-mm(532)		--%DNP% until Jun 97, contact smaniyar
+			,pos-oc12-sm(533)		--%DNP% until Jun 97, contact smaniyar
+			,atm-oc12-mm(534)		--%DNP% until Jun 97, contact smaniyar
+			,atm-oc12-sm(535)		--%DNP% until Jun 97, contact smaniyar
+			,pos-oc48-mm-l(536)		--%DNP% until Jun 97, contact smaniyar
+			,pos-oc48-sm-l(537)		--%DNP% until Jun 97, contact smaniyar
+			,gsr-sfc(538)			--%DNP% until Jun 97, contact smaniyar
+			,gsr-csc(539)			--%DNP% until Jun 97, contact smaniyar
+                   }
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Functional type of this card."
+                   ::= { cardTableEntry 2 }
+
+               cardDescr OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Text description of this card."
+                   ::= { cardTableEntry 3 }
+
+               cardSerial OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "The serial number of this card, or zero if
+                           unavailable."
+                   ::= { cardTableEntry 4 }
+
+               cardHwVersion OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Hardware revision level of this card, or an
+                           empty string if unavailable."
+                   ::= { cardTableEntry 5 }
+
+               cardSwVersion OBJECT-TYPE
+                   SYNTAX  DisplayString
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Version of the firmware or microcode
+                           installed on this card, or an empty string if
+                           unavailable."
+                   ::= { cardTableEntry 6 }
+
+               cardSlotNumber OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Slot number relative to the containing card or 
+                           chassis, or -1 if neither applicable nor 
+                           determinable."
+                   ::= { cardTableEntry 7 }
+
+               cardContainedByIndex OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "cardIndex of the parent card which
+                           directly contains this card, or 0 if
+                           contained by the chassis, or -1 if not
+                           applicable nor determinable."
+                   ::= { cardTableEntry 8 }
+
+               cardOperStatus OBJECT-TYPE
+                   SYNTAX  INTEGER {
+                          not-specified(1), 
+                          up(2),
+                          down(3),
+                          standby(4)
+                      }
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "The operational status of the card.
+                           cardOperStatus is up when a card is
+                           recognized by the device and is enabled for
+                           operation. cardOperStatus is down if the
+                           card is not recognized by the device, or if
+                           it is not enabled for operation.
+                           cardOperStatus is standby if the card is
+                           enabled and acting as a standby slave"
+                   ::= { cardTableEntry 9 }
+
+               cardSlots OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Number of slots on this card, or 0 if no
+                           slots or not applicable, or -1 if not 
+			   determinable."
+                   ::= { cardTableEntry 10 }
+
+               -- End of table
+
+
+               chassisSlots OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Number of slots in this chassis, or -1 of
+                           neither applicable nor determinable."
+                   ::= { chassis 12 }
+
+               cardIfIndexTable OBJECT-TYPE
+                   SYNTAX  SEQUENCE OF CardIfIndexEntry
+                   ACCESS  not-accessible
+                   STATUS  mandatory
+                   DESCRIPTION
+                            "Chassis card table."
+                   ::= { chassis 13 }
+
+               cardIfIndexEntry OBJECT-TYPE
+                   SYNTAX CardIfIndexEntry
+                   ACCESS  not-accessible
+                   STATUS  mandatory
+                   DESCRIPTION
+                            "Chassis card table."
+                   INDEX { cardIfIndex }
+               ::= { cardIfIndexTable 1 }
+
+               CardIfIndexEntry ::=
+                   SEQUENCE {
+                       cardIfIndex
+                           INTEGER,
+                       cardIfSlotNumber
+                           INTEGER,
+                       cardIfPortNumber
+                           INTEGER,
+                       cardIfCardIndex
+                           INTEGER,
+                       cardIfConnectorTypeEnabled
+                           INTEGER
+                   }
+
+               cardIfIndex OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "matches RFC1213 ifTable IfIndex"
+                   ::= { cardIfIndexEntry 1 }
+
+               cardIfSlotNumber OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Chassis slot number, or -1 if neither
+                           applicable nor determinable."
+                   ::= { cardIfIndexEntry 2 }
+
+               cardIfPortNumber OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Chassis port number, unique per port on a 
+                            given card if available."
+                   ::= { cardIfIndexEntry 3 }
+
+               cardIfCardIndex OBJECT-TYPE
+                   SYNTAX  INTEGER
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "cardIndex of the card in the Chassis 
+			   cardTable which contains this interface."
+                   ::= { cardIfIndexEntry 4 }
+
+               cardIfConnectorTypeEnabled OBJECT-TYPE
+                   SYNTAX  INTEGER {
+                           not-specified(1), 
+                           none (2),
+                           rj-45 (3),
+                           db-40 (4),
+                           db-15 (5)
+                   }
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Interface connector type currently
+                           enabled. Value will be 1 if not known or not
+                           used, or 2 if none of this ports' interface
+                           connectors are enabled."
+                   ::= { cardIfIndexEntry 5 }
+
+	       -- End of table
+
+               chassisPartner OBJECT-TYPE
+                   SYNTAX  INTEGER {
+                        cisco(1),
+                        synoptics(2),
+                        chipcom(3),
+                        cabletron(4),
+                        dec(5),
+                        ncr(6),
+                        usrobotics(7),
+                        alcatel(8),
+                        nec(9),
+                        dsc(10),
+                        microcom(11),
+                        oki(12), --%DNP% do not publish til 01jul96, contact ceagan
+                        ubn(13), --%DNP% do not publish til 01feb96, contact ceagan
+                        hp(14),
+			samsung(15)
+                   }
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Used to determine if this is a partner 
+                            variant of a product."
+                   ::= { chassis 14 }
+
+               sysUpTimeAtLastChassisChange OBJECT-TYPE
+                   SYNTAX  TimeTicks
+                   ACCESS  read-only
+                   STATUS  mandatory
+                   DESCRIPTION
+                           "Time in seconds/100 from the last cold
+                           start to the last change in the chassis'
+                           configuration. This value will be updated
+                           whenever the chassis experiences a change
+                           in the count, type, or slot position of
+                           a card in cardTable."
+                   ::= { chassis 15 }
+
+--%DNP% not implemented (yet).
+--%DNP%
+--%DNP% TRAP DEFINITIONS
+--%DNP%
+
+               chassisTraps OBJECT IDENTIFIER		--%DNP%
+                   ::= { chassis 16 }			--%DNP%
+
+               chassisChangeTrap TRAP-TYPE		--%DNP%
+                   ENTERPRISE { chassisTraps }		--%DNP%
+                   VARIABLES {				--%DNP%
+                             cardType,			--%DNP%
+                             cardDescr,			--%DNP%
+                             cardSerial			--%DNP%
+                   }					--%DNP%
+                   DESCRIPTION				--%DNP%
+                           "This trap is issued when the value of	--%DNP%
+                           sysUpTimeAtLastChassisChange has been	--%DNP%
+                           updated due to the addition or removal of	--%DNP%
+                           a card, which is identified by the variables."--%DNP%
+
+                   ::= 1		--%DNP%
+
+
+               END
+      

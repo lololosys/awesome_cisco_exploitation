@@ -1,0 +1,10 @@
+
+llc2_chain.c,254
+#define ALTERNATE 88,3055
+#define ALTERNATE 97,3212
+#define ALTERNATE 106,3372
+#define ALTERNATE 115,3535
+void llc2_parser_init 139,4172
+#define LLC2_UI_MAJVERSION 149,4409
+#define LLC2_UI_MINVERSION 150,4438
+#define LLC2_UI_EDITVERSION 151,4467

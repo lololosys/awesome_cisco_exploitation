@@ -1,0 +1,16 @@
+# $Id: make.features,v 1.1 1996/09/12 21:35:32 yoko Exp $
+# $Source: /release/112/cvs/Xsys/obj-4k-c3640/make.features,v $
+#------------------------------------------------------------------
+# make.features - Make the GAIA based features for 4k-c3640
+#
+# September 1996, Yoko Izumi
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.features,v $
+# Revision 1.1  1996/09/12  21:35:32  yoko
+# placeholder files
+#
+#------------------------------------------------------------------
+# $Endlog$

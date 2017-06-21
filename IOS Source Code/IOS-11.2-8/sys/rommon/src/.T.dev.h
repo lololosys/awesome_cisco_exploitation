@@ -1,0 +1,22 @@
+
+dev.h,610
+#define __DEV_H__29,814
+struct devstruct devstruct34,873
+#define DEV_IS_SIZED 46,1474
+#define DEV_LIB_LOADED 47,1511
+#define DEV_FS_CAPABLE 48,1548
+#define DEV_IS_MEMORY 49,1585
+#define DEV_IS_BITSWAPPED 50,1622
+#define DEVSEPARATOR 53,1741
+#define DEV_KMEMU_ID 56,1827
+#define DEV_KMEM0_ID 57,1862
+#define DEV_KMEM1_ID 58,1897
+#define DEV_MEM_ID 59,1932
+#define DEV_NVRAM_ID 60,1964
+#define DEV_EPROM_ID 61,1998
+#define DEV_FLASH_ID 62,2032
+#define DEV_BOOTFLASH_ID 63,2066
+#define DEV_NETWORK_ID 64,2104
+#define DEV_PCMCIA1_ID 65,2136
+#define DEV_SLOT0 66,2167
+#define DEV_SLOT1 67,2201

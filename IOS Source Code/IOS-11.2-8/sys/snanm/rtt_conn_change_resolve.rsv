@@ -1,0 +1,43 @@
+/* $Id: rtt_conn_change_resolve.rsv,v 3.1.4.1 1996/05/17 11:42:22 ppearce Exp $
+ * $Source: /release/112/cvs/Xsys/snanm/rtt_conn_change_resolve.rsv,v $
+ *------------------------------------------------------------------
+ * SNA Network Management Connection Change resolution
+ *
+ * Jan 96, Larry Metzger
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: rtt_conn_change_resolve.rsv,v $
+# Revision 3.1.4.1  1996/05/17  11:42:22  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.1  1996/03/22  19:03:06  lmetzger
+# Initial Version of Response Time Reporter
+#
+# Revision 3.1  1996/03/20  17:54:58  lmetzger
+# Placeholder for IbuMod_Calif_branch
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+static const struct  // Loss of Resource - Unable to communicate with Remote Node
+  rttMonConnectionChangeNotification_Resolve_junk ##RTTMONCONNCHNGRESOLVEJUNK { ?,07,3305
+  , {2003} // Actual Causes 
+  , // No Users Causes
+  , // No Install Causes
+  , // No Failure Causes
+	// Next is the Resource Hierarchy
+  , {05, {108009,cpRhName:8,20F408,appRhName:7,4040}} 
+	// Incident Id
+  , {4A, {0101,netID:8,cpIIdName:8,appIIdName:8,epochTime:8}}
+	// Next is the Unknown Causes Field:
+	//  Actions "Contact Network Adminstrator
+	//     and  "Verify"
+	//  Detail Data "Destination" String
+	//     with value Protocol Type - Address
+	//     (address Size MAX_rttMonTargetAddress)
+  , {97, {864000}} 
+  }
+

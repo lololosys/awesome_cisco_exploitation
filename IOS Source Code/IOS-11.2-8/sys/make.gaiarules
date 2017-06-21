@@ -1,0 +1,260 @@
+# $Id: make.gaiarules,v 3.1.2.1 1996/09/14 05:23:25 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/make.gaiarules,v $
+#------------------------------------------------------------------
+# Makefile definitions and rules for GAIA builds
+#
+# September, 1996   Rich Livingston
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.gaiarules,v $
+# Revision 3.1.2.1  1996/09/14  05:23:25  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1  1996/09/03  15:01:48  richl
+# Placeholder.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+######################################################################
+#
+#       GAIA Images - Prototyping building & identifying images
+#	This is for information only, please do not modify
+#
+######################################################################
+
+
+###############################################################################
+#
+# Test area - used for development of:
+#	
+#	- identification of features in an image
+#	- mapping of features to object files
+#	- creation of files documenting features
+#	- creation of files documenting feature to key mapping
+#	- creation of modular images for feature criteria
+#	- creation of special rule on each platform to allow 
+#	  link of arbitrary feature lists into images
+#
+###############################################################################
+
+MG = $($*_FEATURE) $($*_GNMIB)
+
+
+%_feature_id:
+	 echo $@: Building cisco-feature-$*.o for $($*_DESCRIPTION) ; \
+	 ID=cisco-feature-$*.c ; \
+	 echo "static char f_begin[]=\"F_BEGIN\$\" \"-feature-$*\$\"; " > $$ID; \
+ 	 echo "static char f_feature[]=\"$*\$\" \"$($*_DESCRIPTION)\$\"; " >> $$ID; \
+	 echo "static char f_end[] = \"F_END\$\" \"-feature-$*\$\"; " >> $$ID; \
+	 $(CC) $(CFLAGS) -nostdinc -nostdlib -I../h -D$(PLATFORM) -O -c $$ID ; \
+	 echo "$@: Created & compiled $$ID "
+
+# Targets that build the feature information files (and delete first)
+#%_feature_data: $(FEATURE_OBJDIR).softpackage_dirs %_feature_map \
+
+%_feature_data: %_feature_map \
+	%_feature_size %_feature_info %_feature_ui %_nm_ui
+	@echo "$@: Created feature data files for $* "
+
+%_demo_data: %_demo_ui %_demo_unmanaged
+	@echo "$@: Created demo data files for $* "
+
+%_feature_map:
+	@MAP_FILE=$(SOFTPACKAGE_MAP)/$(FEATURE_OBJDIR)/$* ; \
+         echo "# Object files for $* ($($*_DESCRIPTION)) in `pwd`" >  \
+          $$MAP_FILE; \
+         echo "$($*_ABBREV)" >> $$MAP_FILE ; \
+         echo "$($*_DESCRIPTION)" >> $$MAP_FILE ; \
+         echo "$($*_FEATURE)" >> $$MAP_FILE ; \
+         echo "MIBS: $($*_GNMIB)" >> $$MAP_FILE ; \
+	 echo "$@: Created Map $$MAP_FILE " \
+
+%_feature_size:
+	@SIZE_FILE=$(SOFTPACKAGE_SIZE)/$(FEATURE_OBJDIR)/$* ; \
+         echo "# Object file sizes for $* ($($*_DESCRIPTION)) in `pwd`" >  \
+          $$SIZE_FILE; \
+         $(SIZE) $($*_FEATURE) >> $$SIZE_FILE ; \
+	 echo "$@: Created Size $$SIZE_FILE "
+
+%_feature_info:
+	@INFO_FILE=$(SOFTPACKAGE_INFO)/$(FEATURE_OBJDIR)/$* ; \
+         echo "# Feature information for $* ($($*_DESCRIPTION)) in `pwd`" >  \
+          $$INFO_FILE; \
+         echo "# This is an example of an information file" >> $$INFO_FILE ; \
+         echo "# Use HTML, JPEG to describe features." >> $$INFO_FILE ; \
+	 echo "$@: Created Info $$INFO_FILE "
+
+%_feature_ui:
+	@HTML_FILE=$(SOFTPACKAGE_UI)/$(FEATURE_OBJDIR)/$*.html ; \
+         echo "<INPUT TYPE=\"checkbox\" NAME=\"$*\" VALUE=\"$($*_FEATURE)\">$*: $($*_DESCRIPTION)<br> " >  $$HTML_FILE; \
+	 echo "$@: Created Html $$HTML_FILE "
+
+# Combine the html fragments from %_feature_ui into a test form
+platform_ui:
+	@HTML_FILE=$(SOFTPACKAGE_UI)/$(FEATURE_OBJDIR)/platform_features ; \
+         echo "<FORM>" >  $$HTML_FILE; \
+         echo "<h1>User Interface Demo Form</h1><p>" >>  $$HTML_FILE; \
+         echo "Check the source to this form, and note that" >>  $$HTML_FILE; \
+         echo "the name/values pairs associated with each" >>  $$HTML_FILE; \
+         echo "checkbox contain the .o files associated" >>  $$HTML_FILE; \
+         echo "with each feature." >>  $$HTML_FILE; \
+	 cat $(SOFTPACKAGE_UI)/$(FEATURE_OBJDIR)/*.html >> $$HTML_FILE; \
+         echo "</FORM>" >>  $$HTML_FILE; \
+         mv $$HTML_FILE $$HTML_FILE.html; \
+	 echo "$@: Created $$HTML_FILE.html "
+
+%_nm_ui:
+	@GN_HTML_FILE=$(SOFTPACKAGE_NM_UI)/$(FEATURE_OBJDIR)/$*-managed.html ; \
+         echo "<INPUT TYPE=\"checkbox\" NAME=\"$*\" VALUE=\"$(MG)\">$*: $($*_DESCRIPTION)<br> " >  $$GN_HTML_FILE; \
+	 echo "$@: Created Managed Html $$GN_HTML_FILE "
+
+# Combine the html fragments from %_feature_ui into a test form
+platform_nm_ui:
+	@GN_HTML_FILE=$(SOFTPACKAGE_NM_UI)/$(FEATURE_OBJDIR)/managed_platform_features ; \
+         echo "<FORM>" >  $$GN_HTML_FILE; \
+         echo "<h1>User Interface Demo Form</h1><p>" >>  $$GN_HTML_FILE; \
+         echo "Check the source to this form, and note that" >>  $$GN_HTML_FILE; \
+         echo "the name/values pairs associated with each" >>  $$GN_HTML_FILE; \
+         echo "checkbox contain the .o files associated" >>  $$GN_HTML_FILE; \
+         echo "with each feature." >>  $$GN_HTML_FILE; \
+         echo "These are managed features. The MIBS are included" >>  $$GN_HTML_FILE; \
+	 cat $(SOFTPACKAGE_NM_UI)/$(FEATURE_OBJDIR)/*.html >> $$GN_HTML_FILE; \
+         echo "</FORM>" >>  $$GN_HTML_FILE; \
+         mv $$GN_HTML_FILE $$GN_HTML_FILE.html; \
+	 echo "$@: Created Managed $$GN_HTML_FILE.html "
+
+
+%_demo_ui:
+	@GN_HTML_FILE=$(SOFTPACKAGE_NM_UI)/$(FEATURE_OBJDIR)/$*-managed.html ; \
+         echo "<NAME=\"$*\" VALUE=\"$(MG)\">$*: $($*_DESCRIPTION)<br> " >  $$GN_HTML_FILE; \
+
+%_demo_unmanaged:
+	@HTML_FILE=$(SOFTPACKAGE_UI)/$(FEATURE_OBJDIR)/$*.html ; \
+         echo "<NAME=\"$*\" VALUE=\"$(MG)\">$*: $($*_DESCRIPTION)<br> " >  $$HTML_FILE; \
+	 echo "$@: Created Demo Html $$HTML_FILE "
+#
+# The main for the MODULAR builds
+# Note that we test for completeness of required subsystems before deleting the
+# image.
+#
+# Food for thought: You can create an image with a group of features
+# by 
+#	- cd'ing to the platform directory
+#	- making all the feature id files (make IP_feature_id) 
+#	- making the image id (make cool_image_id)
+#	- making the image (make "image-cool-m=$(GAIA) $(IP_FEATURE) $(UTIL)" gs-cool-m)
+# 
+# 
+# 
+
+%_$(MOTHER_IMAGE_NAME)_id:
+	@HWSWNAME=gaia-$* COMP="$(CC) $(CFLAGS)" \
+	flock $(SYSROOT)/version $(SYSROOT)/cisco.sh \
+	"cisco Software gaia-based" "$@" $(PLATFORM) "$(CC) $(CFLAGS)" TRUE
+
+main-feature:
+	$(REMAKE) SWFLAGS=lxbs HWFLAGS=$(HWFLAGS) OBJNAME=$@ main
+
+%_$(MOTHER_IMAGE_NAME): main-feature $(SYS_START_FILE) feature-%.lego \
+			%_feature_id %_$(MOTHER_IMAGE_NAME)_id
+	@echo "$@: Making Gaia with $* to test modularity"
+	$(QUIET_CC)$(LD) $(RAM_LDFLAGS) -o $@ $(SYS_START_FILE) \
+	Main_main-feature.o cisco-gaia-$*.o cisco-feature-$*.o \
+        $(filter-out shl_%.a, $(sort $(image-feature-$*))) $(UTIL) $(UCODE)
+	@echo "$@: Gaia with $* - modularity image"
+	@echo "$@: Size of `ls -la $@`"
+	@ls -la $@ > $(SOFTPACKAGE_SIZE)/$(FEATURE_OBJDIR)/$@
+	@rm -f $@
+	@rm -f cisco-gaia-$*.o cisco-feature-$*.o
+	@rm -f cisco-gaia-$*.c cisco-feature-$*.c
+
+%-withdotos:
+	@echo "$*:$($*_FEATURE)" >>features_no_mibs
+	@echo "$*:$($*_FEATURE) $($*_GNMIB)" >>features_with_mibs
+
+####################################################################
+#
+#       New GAIA lego rules
+#
+####################################################################
+
+#
+# Make_Fbi_Common_Objects
+#
+# This takes the $(feature-based-images-$*) definition, strips everything
+# but the shr_foo.o subsystem names out of it and converts them to sub_foo.o.
+# It then kicks a build off in the common directory with those names.
+# When that's finished, it relinks all the softlinks from the local
+# directory to common one.
+ 
+define Make_Fbi_Common_Objects
+$(QUIET_COM)echo Building Common Objects...
+$(MAKE) $(MAKEFLAG-J) --no-print -C ../$(OBJECTS) \
+$(patsubst shl_%.a,lib%.a,$(filter shl_%.a,$(feature-based-images-$*))) \
+$(patsubst shr_%.o,sub_%.o,$(filter shr_%.o,$(feature-based-images-$*)))
+$(foreach subsys,$(filter shr_%.o,$(feature-based-images-$*)),$(Relink_Fbi_Common_Objects))
+$(foreach subsys,$(filter shl_%.a,$(feature-based-images-$*)),$(Relink_Fbi_Common_Libraries))
+endef
+
+#
+# Make_Fbi_Platform_Objects
+#
+# This is quite simple. It takes $(feature-based-images-$*), strips all of
+#  the shr_foo.o subsystem names out and builds the rest of the objects
+#
+
+define Make_Fbi_Platform_Objects
+$(QUIET_COM)echo Building Platform Objects...
+$(MAKE) $(MAKEFLAG-J) --no-print \
+  $(filter-out shr_%.o, $(filter-out shl_%.a, $(feature-based-images-$*)))
+
+endef
+ 
+#
+# Relink_Fbi_Common_Objects
+#
+# This is used by Make_Fbi_Common_Objects to do the ln -s relinking 
+#                                                               
+                                                                
+define Relink_Fbi_Common_Objects                                    
+$(QUIET_CMD)rm -f $(subsys)                                     
+$(QUIET_CMD)ln -s ../$(OBJECTS)/$(patsubst shr_%.o,sub_%.o,$(subsys)) $(subsys)
+                                                                
+endef                                                           
+                                                                
+define Relink_Fbi_Common_Libraries                                  
+$(QUIET_CMD)rm -f $(subsys)                                     
+$(QUIET_CMD)ln -s ../$(OBJECTS)/$(patsubst shl_%.a,lib%.a,$(subsys)) $(subsys)
+                                                                
+endef
+
+ifeq ($(OBJECTS),)
+
+# %.fbilego  -- Vanilla implicit rule for building the partial image from
+#            various assorted building block objects without Common Objects
+#
+%.fbilego:
+	$(QUIET_COM)echo Building $@...
+	$(QUIET_CMD)$(MAKE) $(MAKEFLAG-J) --no-print $(feature-based-images-$*)
+
+else
+
+# %.fbilego  -- Implicit rule for building the partial image from various
+#            assorted building block objects with Common Objects
+#
+%.fbilego:
+	$(QUIET_COM)echo Building $@...
+	$(QUIET_CMD)$(Make_Fbi_Platform_Objects)
+	$(QUIET_CMD)$(Make_Fbi_Common_Objects)
+
+endif
+
+####################################################################
+#
+#       End of GAIA
+#
+######################################################################

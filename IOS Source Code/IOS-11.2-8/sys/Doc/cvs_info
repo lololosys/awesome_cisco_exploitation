@@ -1,0 +1,952 @@
+# $Id: cvs_info,v 3.1 1995/11/09 10:49:01 shaker Exp $
+
+          Title: General CVS usage information
+           Date: 24-Jan-1995
+	 Author: David S.A. Stine
+        Version: 1.0
+
+Copyright (c) 1995 by cisco Systems, Inc.
+
+This document briefly explains the mechanics of how CVS works in the cisco
+engineering environment. This is not meant as a tutorial on how to use CVS;
+that is in a different document.
+
+======================================================================
+
+Background
+==========
+
+CVS stands for Concurrent Version System. It is a source-code control
+system built on top of RCS, which allows you to manipulate the source in a
+repository in a more convenient way than on a file-by-file basis. 
+
+In the cisco environment, the CVS repository (ie, the central directory
+hierarchy where the master RCS files are kept) are located on a NFS server.
+In the current situation (as of the writing of this document and in the
+past), this NFS server has been a Sun 4/690 machine which is typically used
+to hold several s/w releases. Development work (ie, modification, compiling
+and manipulation of source) is typically being done on Solbourne and
+SparcCenter 2000 servers. The significance of this is that the development
+machines have far greater NFS throughput than the machines on which the CVS
+repositories are currently stored. The operational significance of this
+will be explained later.
+
+
+Terminology
+===========
+
+1. "check out a copy..."	(verb)
+
+In the cisco environment, when the words "check out a copy" are used in the
+context of "you should check out a copy of the 10.2 code" or similar
+reference, we are referring to the CVS checkout operation. For example, to
+check out a copy of the 10.2 code, you would enter the following command in
+a directory you have created for your work on the server/workstation where
+you are going to be doing your development work:
+
+shell$ cvs -d /release/102/cvs checkout newworld
+
+(where the word "newworld" is a module keyword that cisco engineering uses
+to denote a) all the router code and b) all the boot ROM code, microcode
+and other ancillary code which might be referenced by the system).
+
+Unlike some other SCM system or raw RCS itself, when you do a checkout in
+CVS, you are no preventing other people from checking in files which you
+are going to modify. You are simply pulling a copy of the most recent state
+of the repository.
+
+2. "commit", "check in"		(verb)
+
+When you are done modifying source code in your private copy of the source,
+you have tested it and you are ready to commit your changes back to the
+central repository, you "commit" or "check in" your changes. In the CVS
+environment, the word "commit" is more accurate; "check in" is a holdover
+from the days of RCS, however, the intent is exactly the same.
+
+3. "tag"			(noun and verb)
+
+
+A "tag" in CVS parlance is an overloaded word. A "tag" (what RCS calls a
+"sybol") is technically a sybolic name for a particular version of one or
+more files in the CVS repository. In the cisco environment, when a tag is
+created, it usually applies to no fewer files than an entire functional
+group of files in the repository; most commonly, a tag applies to *all*
+files in the repository, allowing us to reference all files in the database
+as their individual versions existed at the time the tag was taken.
+
+The operation of creating a tag in the repository is known as "tagging."
+
+Tags are used for several purposes. Their most common usage is to create a
+"snapshot" of the state of the repository at the time when the tag was
+created. This makes it possible to check out a copy of any or all of the
+files in the repository as they were when the tag was created. This is
+useful, for instance, when you want to see what the source code looked like
+at release 10.2(2.1) and the current repository state reflects release
+10.2(6.4). In cisco development, we take a tag at each maintenance release
+point; ie, you will find a tag in the repository every time release builds
+a interim release (eg, 10.2(1.3)), so that you can recover the state of the
+source code at maintenance interim release points. [Hint: this is why you
+want to get Customers to run at least a maintanence interim release and not
+a special development engineering release]
+
+4. "branch"			(noun and verb)
+
+The second most common usage for tags is to facilitate "branches", which
+are departures in the development of features in the system. Conceptually,
+a development branch looks like this:
+
+
+                   /------Foobar branch----------------------->
+                  /
+                 /
+---------10.2(1)+---------------10.2(2)-----------10.2(3)----->
+
+
+At the "+" sign, the developers who wish to create the "Foobar" branch will
+tag the repository. This is called the "branch point tag." A branch point
+tag is functionally the same as the tags that we use to tag a maintenance
+release in the repository. Then you will create a "branch tag." A branch
+tag is not like the "branch point tag" or a version tag in that you use a
+branch tag to refer to the branch at the current state of the branch. It is
+unfortunate that the word "tag" is overloaded to express these two very
+different concepts, so if you start to get confused about which tag someone
+is telling you to use, it is recommended that you ask to which tag they are
+referring. 
+
+Branches should not be created just for giggles. They are useful tools in
+how we get product and features to market within cisco engineering, but
+they require a high level of involvement on the part of developers.
+
+To further complicate things, you may make a branch of a branch. A branch
+which is taken off a branch of the repository conceptually look like this:
+
+                                                /---------Bletch branch--->
+                                               /
+                                              /
+                                             /
+                   /------Foobar branch-----+----------------->
+                  /
+                 /
+---------10.2(1)+---------------10.2(2)-----------10.2(3)----->
+
+The "bletch branch" is treated exactly the same as the Foobar branch by
+CVS; however, it is commonly called a "twig" to indicate that it is derived
+from a branch and not the main line of evolution in the repository. Think
+long and hard before you create twigs. You will see why below.
+
+
+5. "sync"			(noun and verb)
+
+In the development cycle of using a branch to keep features apart from the
+code for a shipping release, you want to keep the source for the the branch
+up-to-date with respect to the main line of development, which is adding
+bug fixes and other small features during the evolution of the code in your
+branch. Doing this requires that you "sync" your branch with the main
+repository line of evolution; conceptually, this looks as follows:
+
+                      /------Foobar branch----------------------->
+                     /            ^                 ^
+                    /             |                 |
+                   /              | sync            | sync
+                  /               |                 |
+                 /                |                 |
+---------10.2(1)+---------------10.2(2)-----------10.2(3)-----> Main branch
+
+What a sync is doing is dovetailing all the changes which have occured in
+the "main branch" into the Foobar branch in the repository, so that people
+doing development on private trees checked out from the Foobar branch of
+the repository can gain all the bugfixes and enhancements committed into
+the main branch by simply updating their Foobar-derived trees.
+
+A sync is not a simple operation if lots of changes have occured in both
+the main branch in the Foobar branch. Experience and judgement is needed in
+areas where there are conflicting changes found during the sync operation.
+Should someone who is sync'ing the Foobar branch make a mistake and omit a
+change from the main branch into the Foobar branch or mis-resolve a conflict
+between the two lines of development, serious are the consequences when the
+Foobar branch changes are merged back into the main branch.
+
+6. "merge"			(noun and verb)
+
+A merge is the operation when you want to commit all the changes which have
+been made in a branch of a repository back into the "main line" of that
+repository. Conceptually, this looks like this:
+
+
+               /------Foobar branch----------------------
+              /             ^                 ^       ^ |  ^ == sync
+             /              |                 |       | | 
+            /               | sync            | sync  | |  v == merge
+           /                |                 |       | v
+---10.2(1)+---------------10.2(2)-----------10.2(3)-------> Main branch
+
+When you are ready to commit all the changes from Foobar branch back into
+the main line of evolution in the repository, you must first sync the
+Foobar branch with the current state of the main branch, then you commit
+the changes from the Foobar branch into the main line. From that point
+forward, the Foobar branch usually become inoperative and while it is still
+technically present in the CVS repository, the tags which define the Foobar
+branch are no longer used.
+
+At this point, it should be obvious why developers should think carefully
+about when they are going to create a branch and even harder about creating
+a twig. The maintenance overhead of branches is non-trivial and errors in
+the sync operations pose the possibility of actually removing code from the
+main branch when the Foobar branch is merged back.
+
+
+
+
+The Mechanics of CVS Locks
+==========================
+
+When you are performing various operations with CVS on the repository, CVS
+needs to insure that you are the only one reading or writing to a directory
+in the repository at that time until the operation is done. The following
+is an explanation of which CVS operations create locks, which type of locks
+and how CVS actually creates locks.
+
+
+The following operations create locks:
+
+- add		- no locks
+
+- "admin"	- read locks
+		control function on repository -- operates directly
+		on the repository.
+		(ie, you don't need a checked-out tree)
+
+- "checkout"	- read locks
+
+- "commit"	- write locks
+
+- "diff"	- read locks
+
+- "export"	- read locks (this is basically a checkout)
+
+- "history"	- no locks
+
+- "import"	- might lock -- I can't seem to find the lock
+		  raised in the code.
+
+- "log"		- no locks
+
+- "remove"	- read locks
+
+- "status"	- read locks
+
+- "rtag"	- read lock
+
+- "tag"		- read lock
+
+- "update"	- read lock
+
+"cvs update" creates read locks unless you use "cvs -n update", but if
+you use "cvs -n update", it doesn't update your files, it only tells
+you what files it would update and what the results would be if it
+did. 
+
+"cvs commit" creates write locks.
+
+Read locks allow other concurrent reads and read locks to be created, but
+blocks write operations to the directory and prevents write locks from
+being created.
+
+A write lock in a directory blocks both read and write operations.
+
+Before we can discuss how CVS actually locks a directory, we need to
+discuss how Unix deals with file/directory locking.
+
+Unlike other operating systems which have more complicated file systems and
+real file locking on a per-file basis, in Unix the only way of create a
+lock which is a) portable and b) mandatory is to create a file. File
+creates using creat() in Unix are atomic -- ie, if you were successful
+creating a file with name "foobar" in any given directory, you are assured
+that no one else beat you to creating that file with that name. This is
+true for NFS mounted file systems as well.
+
+So CVS uses file creation to create a "lock file."
+
+When CVS wants to lock a directory, it creates an empty file (ie,
+zero-length) with the name taking the form:
+
+	#cvs.wfl.<hostname>.pid			for write locks
+	#cvs.rfl.<hostname>.pid			for read locks
+
+Now, when CVS starts an operation, it does a recursive descent and locks
+all directories necessary to complete its operation.
+
+For instance, if you say:
+
+	cvs commit h iprouting xns vines
+
+cvs will create a sorted (by file lookup order) list of directories it has
+to lock, ie,
+
+	sys/h sys/iprouting sys/vines sys/xns
+
+(ie, it will have sorted the list, etc, etc). If in fact you have
+something to write back to the repository, then CVS now tries to create
+a write lock in each directory in recursive descent order. 
+
+**********************************************************************
+If you're dozing off right about now, go get a cup of coffee, sit up and
+pay attention:
+**********************************************************************
+
+When CVS tries to create a write-lock, it checks first to see if there
+is any other write lock and then if there are any read locks in the
+directory. 
+
+If there is ANY other read or write lock file in a directory where CVS
+wants to create a write lock, CVS will clean up ANY locks it has already
+taken out, back up to the start of the list, wait for 30 seconds and
+then start trying to grab locks starting at the head of the recursive
+decent.
+
+For those who need an example to see why this is significant, allow me
+to explain:
+
+If you entered that "cvs commit" command up above, ie
+
+	cvs commit h iprouting xns vines
+
+And the sorted recursive-decent list comes out like thus:
+
+	sys/h sys/iprouting sys/vines sys/xns
+
+CVS will create a lock file in sys/h, sys/iprouting, sys/vines and...
+
+and if someone was doing a "cvs update xns" just before you tried to
+create a lock file in the sys/xns directory, CVS will now BACK OUT
+all previously created write lock files. ie, even tho you successfully
+locks all the other directories, CVS will raise an error condition,
+climb up out of the locking code back into the high-level lock code and
+will now clean up any and all write lock files already created.
+
+You now wait for 30 seconds while CVS sits on a sleep() call. Odds are,
+you're going to be waiting for more than one 30 second cycle.
+
+And when you wake up from the sleep() call, you start trying to take out
+locks starting at the first directory on the list of directories you
+need to lock.
+
+Now, let's examine what happens if, while you were waiting for that 30
+seconds, all the read locks in the directories you need to lock are
+cleaned up (people finished their updates, etc) and someone else starts
+a commit in sys/h.
+
+You get to wait on the newly created write lock. There was nothing to
+stop them from taking out a lock; you relinquished all your locks.
+
+Similarly, anyone else who starts an update on any of the directories to
+which you need to write, you will run into their lock and get to sit on
+the sidelines for *another* 30 seconds.
+
+
+So, if you have alot of directories to write into and the repository is
+very busy, it might behoove you to commit from "top level" ie., you cd
+to "your-tree-name/sys" and cvs commit from there. This might seem
+antisocial to some, but it is currently about the only way to get a
+write lock in edgewise -- during the 10.2 integration cycle, I was
+trying to commit to a few directories and it took me upwards of 90
+minutes to get my write locks in about 8 directories. It is much easier
+to try to grab a lock on the top level, thereby preventing read locks
+from getting ahead of you, and do your commit quickly.
+
+If you are committing to only a few directories and the repository isn't
+especially busy, specify the individual directories. 
+
+It is generally best not to specify individual files in a directory by
+pathname; eg
+
+cvs commit h/interface.h
+
+Instead, either let CVS figure out what files you want to commit by:
+
+cvs commit h		(note that you want to omit the trailing slash)
+
+		and CVS will see that interface.h has been touched
+
+or:
+
+cd sys/h
+commit interface.h
+
+If you must specify individual files in different directories it is
+EXTREMELY IMPORTANT that you DO NOT MIX directories and files.  CVS
+version 1.3 ("cvs -v" to check version) has a bug which can cause your
+commit to be mishandled and the repository to be left in an
+inconsistent state if you do so.
+
+A few examples may make this more clear:
+
+preferred method:
+
+	cvs commit h ip os util
+
+Acceptable, but not recommended method:
+
+	cvs commit h/globs.h ip/tftp.c os/boot.c util/tree.c
+
+VERBOTEN, breaks the world method: (DO NOT DO THIS UNDER ANY CIRCUMSTANCES!!!)
+                                   ==========================================
+	cvs commit h ip os/boot.c util/tree.c
+
+
+
+The Mechanics of Branching
+==========================
+
+Branches in CVS are *not* maintained as seperate files. They are not
+maintained as a seperate tree, in a different directory or anything like
+that.
+
+A development branch in CVS is maintained by tagging all the files which
+are in the branch and then carrying around all the diff's to the file
+from the point at which the branch was initially tagged.
+
+Tags are maintained by carrying them around in the file which contains
+the source; these are known as the "comma V" files. (from the ",v"
+appended to the end of the filename). The fastest way to illustrate what
+I'm talking about is to simply include a comma-V file from a repository.
+In this case, I'll try to make it a short file, without too many tags.
+
+This is the file sys/atalk/at_api.h,v, from the 9.21 release repository:
+(I'm being VERY serious when I say that this is a SHORT ,v file)
+
+(start of file)
+head	1.3;
+access;
+symbols
+	V921_8_THROTTLE_BRANCH:1.3.0.38
+	V921_7:1.3
+	V921_6_3:1.3
+	V921_7_THROTTLE_BRANCH:1.3.0.36
+	V921_6_2:1.3
+	V921_6_2_rerun:1.3
+	V921_6_1:1.3
+	V921_6:1.3
+	V921_5_6:1.3
+	V921_5_5:1.3
+	V921_6_THROTTLE_BRANCH:1.3.0.34
+	V921_5_4:1.3
+	V921_5_3:1.3
+	V921_5_2:1.3
+	V921_5_1:1.3
+	V921_5:1.3
+	V921_4_5:1.3
+	V921_5_THROTTLE_BRANCH:1.3.0.32
+	V921_4_4:1.3
+	V921_4_3:1.3
+	V921_4_2:1.3
+	V921_4_1:1.3
+	NMT-cs500-hw-check:1.3
+	V921_4:1.3
+	V921_3_5:1.3
+	V921_4_THROTTLE_BRANCH:1.3.0.30
+	V921_3_4:1.3
+	V921_3_3:1.3
+	V921_3_2:1.3
+	V921_3_0:1.3
+	V921_2_8:1.3
+	V921_2_6:1.3
+	V921_3_THROTTLE_BRANCH:1.3.0.28
+	V921_2_5:1.3
+	V921_2_4:1.3
+	V921_2_3:1.3
+	V921_2_2:1.3
+	V921_2_1_CIDR:1.3
+	V921_2_1:1.3
+	V921_2_0:1.3
+	V921_1_7:1.3
+	CIDR_baseline_940310:1.3
+	CIDR_postsync_940308:1.3
+	CIDR_baseline_940308:1.3
+	CIDR_baseline_940303:1.3
+	CIDR_branch:1.3.0.26
+	CIDR_baseline_940301:1.3
+	V921_1_6:1.3
+	V921_2_THROTTLE_BRANCH:1.3.0.24
+	BGP4_baseline_940216:1.3
+	BGP4_baseline_940215_a:1.3
+	V921_1_5:1.3
+	BGP4_baseline_940210_a:1.3
+	V921_1_4:1.3
+	V921_1_3:1.3
+	BGP4_baseline_940202_a:1.3
+	BGP4_baseline_940202:1.3
+	V921_1_2:1.3
+	BGP4_baseline_940123:1.3
+	V921_1_0:1.3
+	V921_1_1:1.3
+	IBM_premerge_940114:1.3
+	BGP4_baseline_940112:1.3
+	V921_0_140:1.3
+	Atalk_postsync_940106:1.3.8.1
+	IBM_baseline_940109:1.3
+	Atalk_baseline_940106:1.3
+	Atalk_presync_940106:1.3
+	V921_0_139:1.3
+	BGP4_V921_0_138:1.3
+	V921_0_138:1.3
+	V921_1_THROTTLE_BRANCH:1.3.0.22
+	V921_0_137:1.3
+	BGP4_baseline_931222:1.3
+	BGP4_baseline_931217:1.3
+	BGP4_baseline_931215:1.3
+	V921_0_136:1.3
+	CS_branch_921:1.3.0.20
+	V921_Nac0_repository_split_931212:1.3
+	NAC0HW_presync_931210:1.3
+	NAC0HW_baseline_931210:1.3
+	IBM_baseline_931210:1.3
+	BGP4_postsync_931210:1.3
+	IBM_presync_931210:1.3
+	BGP4_baseline_931210:1.3
+	NAC0_Spinnaker_Clean:1.3
+	Sierra_presync_931209:1.3
+	Atalk_postsync_931203:1.3
+	Sierra_baseline_931209:1.3
+	V921_0_135:1.3
+	BGP4_baseline_931207:1.3
+	NAC0HW_baseline_931206:1.3
+	Vines_baseline_931206:1.3
+	NAC0HW_presync_931206:1.3
+	Vines_presync_931206:1.3
+	V921_BGP4_931204:1.3
+	BGP4_baseline_931204:1.3
+	Atalk_baseline_931203:1.3
+	Atalk_presync_931203:1.3
+	BGP4_branch:1.3.0.18
+	BGP4_baseline_931201:1.3
+	V921_0_134:1.3
+	Vines_baseline_931124:1.3
+	Vines_postsync_931124:1.3
+	IBM_postsync_931124:1.3
+	V922_0_133:1.3
+	IBM_baseline_931123:1.3
+	IBM_branch_psync931123:1.3
+	NAC0HW_postsync_931120:1.3
+	IBM_baseline_931121:1.3
+	IBM_presync_931121:1.3
+	NAC0HW_presync_931120:1.3
+	NAC0HW_baseline_931120:1.3
+	Atalk_postsync_931116:1.3
+	V922_0_132:1.3
+	Atalk_baseline_931116:1.3
+	Mip_postsync_931111:1.3
+	Atalk_presync_931116:1.3
+	NAC0HW_SSE_Clean:1.3
+	Vines_presync_931114:1.3
+	Vines_baseline_931114:1.3
+	Mip_baseline_931111:1.3
+	Mip_presync_931111:1.3
+	NAC0HW_ATM_Clean:1.3
+	Sierra_presync_931111:1.3
+	Sierra_baseline_931111:1.3
+	Vines_presync_931110:1.3
+	Vines_baseline_931110:1.3
+	V922_0_131:1.3
+	NAC0HW_branch:1.3.0.16
+	NAC0HW_baseline_931110:1.3
+	Atalk_postsync_931104:1.3
+	IBM_branch:1.3.0.2
+	IBM_baseline_931107:1.3
+	Atalk_baseline_931104:1.3
+	Atalk_presync_931104:1.3
+	V922_0_130:1.3
+	V922_0_2:1.3
+	Sierra_postsync_931026:1.3
+	Atalk_postsync_931025:1.3
+	Sierra_presync_931026:1.3
+	Sierra_baseline_931026:1.3
+	Atalk_presync_931025:1.3
+	Atalk_baseline_931025:1.3
+	Atalk_postsync_931014:1.3
+	Atalk_presync_931014:1.3
+	Atalk_baseline_931014:1.3
+	Sierra_postsync_931012:1.3
+	Mip_presync_931013:1.3
+	Mip_baseline_931013:1.3
+	Sierra_presync_931012:1.3
+	Atalk_postsync_931011:1.3
+	Sierra_baseline_931012:1.3
+	Atalk_presync_931011:1.3
+	Atalk_baseline_931011:1.3
+	Atalk_postARA:1.3
+	Atalk_preARA:1.3
+	postV921_0_26:1.3
+	preV921_0_26:1.3
+	Atalk_postsync_930929:1.3
+	atalk/CVS:1.3
+	Atalk_presync_930929:1.3
+	Atalk_baseline_930929:1.3
+	Sierra_postsync_930927:1.3
+	Sierra_presync_930927:1.3
+	Sierra_baseline_930927:1.3
+	Mip_branch:1.3.0.14
+	Mip_baseline_930927:1.3
+	Atalk_postsync_930922:1.3
+	Atalk_presync_930922:1.3
+	Atalk_baseline_930922:1.3
+	Sierra_postsync_930920:1.3
+	Sierra_presync_930920:1.3
+	Sierra_baseline_930920:1.3
+	IPX_branch:1.3.0.12
+	IPX_baseline_930915:1.3
+	Sierra_postsync_930914:1.3
+	Sierra_baseline_930914:1.3
+	Sierra_presync_930914:1.3
+	Molson_baseline_930910:1.3
+	Molson_presync_930910:1.3
+	Sierra_postsync_930907:1.3
+	Atalk_postsync_930908:1.3
+	Atalk_presync_930908:1.3
+	Atalk_baseline_930908:1.3
+	Sierra_presync_930907:1.3
+	Sierra_baseline_930907:1.3
+	Molson_baseline_930904:1.3
+	Molson_presync_930901:1.3
+	Molson_baseline_930901:1.3
+	Sierra_postsync_930830:1.3
+	Atalk_postsync_930830:1.3
+	Atalk_presync_930830:1.3
+	Atalk_baseline_930830:1.3
+	Sierra_presync_930830:1.3
+	Sierra_baseline_930830:1.3
+	postV921_0_20:1.3
+	preV921_0_20:1.3
+	Vines_branch:1.3.0.10
+	Atalk_postsync_930823:1.3
+	Sierra_postsync_930823:1.3
+	Atalk_presync_930823:1.3
+	Atalk_baseline_930823:1.3
+	Sierra_presync_930823:1.3
+	Sierra_baseline_930823:1.3
+	postV921_0_19:1.3
+	preV921_0_19:1.3
+	Atalk_branch:1.3.0.8
+	Atalk_baseline_930819:1.3
+	postV921_0_18:1.3
+	preV921_0_18:1.3
+	Sierra_postsync_930816:1.3
+	Sierra_presync_930816:1.3
+	Sierra_baseline_930816:1.3
+	Molson_postsync_930809:1.3
+	Sierra_postsync_930809:1.3
+	Sierra_presync_930809:1.3
+	Sierra_baseline_930809:1.3
+	Molson_presync_930810:1.3
+	Molson_baseline_930810:1.3
+	postV921_0_17:1.3
+	Sierra_postsync_930802:1.3
+	Sierra_presync_930802:1.3
+	Sierra_baseline_930802:1.3
+	Sierra_branch:1.3.0.6
+	Sierra_baseline_930728:1.3
+	Molson_postsync_930723:1.3
+	Molson_baseline_930723:1.3
+	Molson_branch2:1.3.0.4
+	presync_930719:1.3
+	ronnie_930719:1.3
+	ronnie_930713:1.3
+	preV921_0_10:1.3
+	lougheed_930422:1.3
+	V925_0_01:1.3
+	V921_0_1:1.3
+	post_idb_split:1.2
+	pre_idb_split:1.2
+	kph-1691-99:1.1
+	ARAPX1:1.1
+	Old_Parser:1.1
+	lemonade-90-5836-102:1.1
+	post-ppp-vj:1.1
+	pre-ppp-vj:1.1
+	v9_1_freeze:1.1
+	encrypt:1.1
+	Initial:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	93.04.01.00.35.20;	author dstine;	state Exp;
+branches
+	1.3.8.1;
+next	1.2;
+
+1.2
+date	93.01.18.23.35.56;	author pst;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.03.09.08.14.15;	author hampton;	state Exp;
+branches;
+next	;
+
+1.3.8.1
+date	94.01.07.22.59.48;	author slin;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@- remove all use of 'ipaddrtype' where 'ataddrtype' was meant
+- corrected use of error messages
+- removed unused error messages
+@
+text
+@/* Id: at_api.h,v 1.2 1993/01/18 23:35:56 pst Exp 
+ * $Source: /swtal/cherf.111/ios/sys/Doc/cvs_info,v $
+ *------------------------------------------------------------------
+ * at_api.h -- definitions for Appletalk API interface
+ *
+ * September 1991, David Edwards
+ * 
+ * <copyright removed to shut pre-commit up>
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * Log: at_api.h,v 
+ * Revision 1.2  1993/01/18  23:35:56  pst
+ * Update legal notices
+ *
+ * Revision 1.1  1992/03/09  08:14:15  hampton
+ * Initial conversion from RCS to CVS.
+ *
+ *------------------------------------------------------------------
+ * Endlog
+ */
+
+#ifndef __AT_API_H__
+#define __AT_API_H__
+
+typedef enum {
+    apiSysInfo=1,
+    apiTraffic=2,
+    apiTrafficInfo=3,
+    apiPortInfo=4
+} apiFunctions;
+
+extern const ushort apiIntfVersion;
+
+typedef struct apiCommand_ {
+    ushort func;
+    ushort vers;
+    ulong reqid;
+    ulong  arg1;
+    ulong  arg2;
+} apiCommand;
+
+typedef struct apiSysInfoReply_ {
+    apiCommand cmd;
+    ushort numberOfPorts;
+    ushort majorVersion;
+    ushort minorVersion;
+    ushort trafficSize;
+    str32 hostname;
+    str32 version;
+    boolean checksumming;	/* if ddp checksums desired */
+    boolean strictRTMP;	/* if strict checks are used on RTMP */
+    boolean testToolCompat;	/* if supporting test tool */
+    boolean ignoreVerifyErrs;	/* if kludge for dumb admins is desired */
+    boolean permitPartialZones; /* If enabled then propogate a zone if any net permits */
+    boolean routeZones;	/* if enabled then routes need zones */
+    ulong rtmpUpdateTime;	/* timers used for routing */
+    ulong rtmpValidTime;
+    ulong rtmpInvalidTime;
+    ulong zipQueryInterval;
+    boolean extendedInternet; /* if we have seen range > 1 OR >1 zone */
+    boolean obsoleteRouterActive; /* if we have a phase 1 neighbor */
+    boolean obsoleteRouterDetected; /* if we had a phase 1 neighbor */
+} apiSysInfoReply;
+
+typedef struct apiTrafficReply_ {
+    apiCommand cmd;
+    ulong version;
+    ulong uptime;
+    ulong data[ATALK_MAXTRAFFIC];
+} apiTrafficReply;
+
+typedef struct apiTrafficInfoReply_ {
+    apiCommand cmd;
+    ulong version;
+    ulong uptime;
+    ulong value;
+    ushort trafficGroup;
+    ushort trafficReserved;
+    str32 name;
+} apiTrafficInfoReply;
+
+typedef struct apiPortInfoReply_ {
+    apiCommand cmd;
+    ulong uptime;
+    str32 name;				/* Physical name of port */
+    ushort hwtype;			/* Physical hardware type */
+    str32 atalk_PrimaryZone;		/* Primary zone for port */
+    boolean atalk_enabled;		/* TRUE if AppleTalk enabled */
+    boolean atalk_operational; 		/* TRUE if operational */
+    boolean atalk_fastokay;		/* TRUE if fast switching enabled */
+    boolean atalk_discovery;		/* TRUE if discovery is desired */
+    boolean atalk_ifinit;		/* TRUE if idb->reset() done */
+    boolean atalk_compatibility;	/* TRUE if ATp1 RTMP should be used */
+    boolean atalk_sendroutes;		/* TRUE if we want routes sent */
+    boolean atalk_glean; 		/* TRUE if we want gleaning */
+    ulong atalk_inputerrs;		/* Number of interface input errors */
+    ulong atalk_outputerrs;		/* Number of interface output errors */
+    int atalk_routecache; 		/* !0 if fast switching desired */
+    int atalk_enctype;			/* encaps to use for AppleTalk */
+    int atalk_accesslist;	        /* Access list id */
+    short atalk_gzlfilter; 		/* Access list for GetZoneList filtering */
+    short atalk_route_filter;		/* Access list RTMP in */
+    short atalk_route_filter_in;	/* Access list RTMP out */
+    int atalk_status;			/* code why we are not operational */
+    ushort atalk_cablestart;		/* Start of cable range */
+    ushort atalk_cableend;		/* End of cable range, 0 = phase 1 */
+    ataddrtype atalk_address;		/* This nodes address */
+    ataddrtype atalk_confaddr;		/* Address of config/verify host */
+    ushort atalk_zonecount;	        /* count of zone for interface */
+    uchar atalk_zone_multicast[6]; 	/* zone multicast address */
+    int aarp_enctype;			/* encaps to use for Apple AARP */
+    int aarp_tentative;			/* state of address assignment */
+}
+
+#endif __AT_API_H__
+@
+
+
+1.3.8.1
+log
+@Branch: Atalk_branch
+Sync Atalk_branch.
+@
+text
+@d1 2
+a2 2
+/* Id: at_api.h,v 1.3 1993/04/01 00:35:20 dstine Exp 
+ * Source: /release/921/cvs/Xsys/atalk/at_api.h,v 
+d8 1
+a8 1
+ * <copyright removed to shut pre-commit check up>
+a11 5
+ * Revision 1.3  1993/04/01  00:35:20  dstine
+ * - remove all use of 'ipaddrtype' where 'ataddrtype' was meant
+ * - corrected use of error messages
+ * - removed unused error messages
+ *
+@
+
+
+1.2
+log
+@Update legal notices
+@
+text
+@d1 1
+a1 1
+/* Id: at_api.h,v 1.1 1992/03/09 08:14:15 hampton Exp 
+d12 3
+d107 2
+a108 2
+    ipaddrtype atalk_address;		/* This nodes address */
+    ipaddrtype atalk_confaddr;		/* Address of config/verify host */
+@
+
+
+1.1
+log
+@Initial conversion from RCS to CVS.
+@
+text
+@d1 2
+a2 2
+/* Id: 
+ * Source: 
+d8 1
+a8 1
+ * <copyright remove to shut up pre-commit check>
+d11 4
+a14 1
+ * Log
+@
+
+(end of file)
+
+Remember way the hell up there where I said that I was going to use a
+file without that many tags? This is a relatively short file. If you
+look at a file like interface.h from the 10.3 release, the list of tags
+at the top of the file goes on *forever*.
+
+Now, notice how RCS (the revision control system), which is used by CVS
+to maintain the actual change history to each file in a CVS repository,
+maintains the most recent main-line version of the file after all the
+tags (which are implemented by RCS symbols) at the top of the file. This
+makes checking out the most recent version of the file as fast as
+possible when you want to checkout a new tree or update your tree to the
+most recent version.
+
+Then below that are the diffs required to the most recent main-line
+version of the file to "derive" (for lack of a better word) past
+versions of the file on the main-line or versions of the file back on
+a branch. Look for the tag "Atalk_branch" to see what I mean. Then to
+see how branches are implemented, look just below the list of all tag
+names at the top of the file -- you'll see the "line of decent" to any
+particular version -- this gives instructions to RCS on how to go about
+applying which sets of diffs at the bottom of the RCS file to the most
+recent mainline version to create the version you want.
+
+This, then, is the  reason why locks are not on a per-branch basis:
+because the branch is merely more "stuff" in the same file you are
+committing to, regardless of which branch you are working in. And since
+CVS isn't even doing locking on a per-file basis, it is an even bigger
+problem to lock on a per-branch basis.
+
+
+Further Reading
+===============
+
+Folks, the best way to REALLY understand CVS and what is REALLY going on
+is to follow the CVS easy-step program:
+
+0. Read the CVS FAQ, to become familiar with terms and common questions
+   about CVS and RCS.
+
+1. Start out reading the man pages on RCS. CVS is basically built on
+   top of RCS and uses RCS primitives to effect the change tracking,
+   version numbering, etc. One you understand what RCS does and
+   how it works and how RCS stores the differences between one version
+   of a file and the baseline, how the rcs tags and symbolically names
+   things, etc. 
+
+   Before we imported all the code into CVS, cisco s/w engineering used
+   RCS for all change and version control. We had no branches, we had
+   no tagging (in the current sense) and checking in changes was 
+   a very labor-intensive process, depending on what you did.
+
+2. Now, once you understand how RCS works, the terms used in the CVS
+   man page and the CVS FAQ start making alot more sense. Look at 
+   the files in the ./CVS subdirectory under each directory in
+   your private tree. Look at the pre-commit and post-commit scripts
+   to see how we have CVS set up here at cisco. Suddenly, all those 
+   warnings about making sure that your trees are based on the proper
+   repository after repository splits will make MUCH more sense to you.
+
+3. Work out on paper just how, mechanically, a branch and a tag are
+   created and what the represent. Once you understand the relationship
+   between branches, tags, how they are similar but yet different,
+   you're well on your way to understanding...
+
+4. Sync's and merges. Once you understand what a branch is, what a tag
+   is, and the underlying mechanics of CVS and RCS when maintaining file
+   revisions and branches, you can now completely understand what is
+   going  during a sync and/or a merge. The FAQ has some useful
+   information, but noodling out for yourself on paper what is
+   going on will really increase the "ah-ha!" factor.
+
+

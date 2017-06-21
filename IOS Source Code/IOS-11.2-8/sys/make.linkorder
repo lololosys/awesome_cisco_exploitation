@@ -1,0 +1,18 @@
+# $Id: make.linkorder,v 3.1 1996/09/03 15:01:48 richl Exp $
+# $Source: /release/112/cvs/Xsys/make.linkorder,v $
+#------------------------------------------------------------------
+# Makefile definitions and rules for GAIA builds
+#
+# September, 1996   Rich Livingston
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.linkorder,v $
+# Revision 3.1  1996/09/03  15:01:48  richl
+# Placeholder.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+

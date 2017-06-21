@@ -1,0 +1,27 @@
+
+alc.h,895
+#define PAN_MAXDGRAM	79,2913
+#define BRIDGECODE_BYTES 81,2979
+#define MAX_RING	86,3057
+#define MAX_TXRING_BIG	91,3140
+#define MAX_RXRING_BIG	92,3166
+#define MAX_TXRING_LARGE	93,3193
+#define MAX_RXRING_LARGE 94,3220
+#define MAX_TXRING_HUGE	95,3254
+#define MAX_RXRING_HUGE	96,3281
+#define RXBOOT_MAX_TXRING	98,3309
+#define RXBOOT_MAX_RXRING	99,3337
+#define	PRIV_NUM_BUF(PRIV_NUM_BUF103,3429
+#define	PRIV_NUM_CACHE(PRIV_NUM_CACHE104,3473
+#define	ALC_INTR_CONS	109,3556
+#define	ALC_INTR_BRG	110,3609
+#define	ALC_INTR_TSAR	111,3646
+#define	ALC_INTR_RSAR	112,3670
+#define	ALC_INTR_LCPT	113,3694
+#define	ALC_INTR_LCPR	114,3718
+#define	ALC_INTR_NTC	115,3742
+#define	ALC_MAX_INTER	116,3765
+#define	SIZ_INTR_ARRY	118,3820
+#define	LOG2_INTR_ARRY	119,3876
+struct interrupt_array interrupt_array122,3923
+typedef struct interrupt_array interrupt_array_t;interrupt_array_t128,4067

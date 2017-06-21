@@ -1,0 +1,61 @@
+
+if_c4000_mk5025.h,2226
+#define I8254_BCD 37,1253
+#define I8254_MODE_MASK 38,1283
+#define I8254_MODE_SHIFT 39,1313
+#define I8254_CH_0 40,1343
+#define I8254_CH_1 41,1373
+#define I8254_CH_2 42,1403
+#define I8254_READ_BACK 43,1433
+#define I8254_MODE_0 45,1464
+#define I8254_MODE_1 46,1494
+#define I8254_MODE_2 47,1524
+#define I8254_MODE_3 48,1554
+#define I8254_MODE_4 49,1584
+#define I8254_MODE_5 50,1614
+#define I8254_RL_LATCH 52,1645
+#define I8254_RL_LSB 53,1675
+#define I8254_RL_MSB 54,1705
+#define I8254_RL_LSB_MSB 55,1735
+typedef struct i8254 i8254_t;i8254_t57,1766
+struct i8254 i825458,1796
+typedef struct mk5025_regs mk5025_hw_reg_t;mk5025_hw_reg_t72,2213
+struct mk5025_regs mk5025_regs73,2257
+typedef struct xx_dsim_regs xx_dsim_regs_t;xx_dsim_regs_t80,2476
+struct xx_dsim_regs xx_dsim_regs81,2520
+#define STATUS_FLAGSTAT 102,3038
+#define STATUS_MAIL020	103,3116
+#define STATUS_PC2	104,3192
+#define STATUS_CABLE	106,3265
+#define STATUS_CABLE_SHIFT 107,3332
+#define STATUS_CABLE_V35 108,3397
+#define STATUS_CABLE_232 109,3452
+#define STATUS_CABLE_449 110,3510
+#define STATUS_CABLE_NONE 111,3578
+#define DSIM_PORT_A_ENABLE 116,3677
+#define DSIM_PORT_A_RESET 117,3718
+#define DSIM_PORT_B_ENABLE 118,3774
+#define DSIM_PORT_B_RESET 119,3815
+#define DSIM_CONTROL_INTR_EN 128,3991
+#define DSIM_CONTROL_DTE_DTR 133,4061
+#define DSIM_CONTROL_DTE_CTS 134,4102
+#define DSIM_CONTROL_DTE_DCD 135,4143
+#define DSIM_CONTROL_DTE_DSR 136,4184
+#define DSIM_CONTROL_DCE_DCD 141,4254
+#define DSIM_CONTROL_DCE_DSR 142,4295
+#define DSIM_CONTROL_DCE_RTS 143,4336
+#define DSIM_CONTROL_DCE_LTST 144,4377
+#define DSIM_CONTROL_DCE_DTR 145,4418
+#define DSIM_CONTROL_RS232 150,4486
+#define DSIM_CONTROL_RS449 151,4527
+#define DSIM_CONTROL_CABLE_MASK 153,4569
+#define DSIM_CONTROL_DTE_DCE_SEL 158,4647
+#define DSIM_CONTROL_DTE_TI_TXC 159,4688
+#define DSIM_CONTROL_DCE_TXC_SCTE 160,4729
+#define DSIM_CONTROL_DTE_LTST 161,4770
+#define DSIM_CABLE_TYPE(DSIM_CABLE_TYPE164,4813
+typedef struct xxclocktype_ xxclocktype_169,4966
+} xxclocktype;xxclocktype172,5030
+#define NXXCLOCKS 174,5046
+typedef struct mk5025_instance mk5025_instance_t;mk5025_instance_t176,5068
+struct mk5025_instance mk5025_instance177,5118

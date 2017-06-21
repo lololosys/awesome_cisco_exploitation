@@ -1,0 +1,233 @@
+
+if_as5200_modem.h,10328
+#define __IF_AS5200_MODEM_H__65,2597
+#define MODEM_BITMAP_SIZE 67,2628
+#define MODEM_PORT_OFFSET(MODEM_PORT_OFFSET68,2666
+#define MODEM_PORT_BITMAP(MODEM_PORT_BITMAP69,2727
+#define MAX_MODEM_BITMAP(MAX_MODEM_BITMAP70,2795
+#define MAX_SLOTS 72,2866
+#define MAX_M32_PER_SLOT 73,2903
+#define MAX_MODEM_MODULE_PER_SLOT 74,2940
+#define MAX_AM_SLOTS	75,2977
+#define MAX_MODEM_PER_SLOT 76,3004
+#define MAX_DIGIT_COLLECT_PER_SLOT 77,3043
+#define MAX_MODEM_BITMAP_PER_SLOT 78,3080
+#define MAX_TOTAL_M32 79,3152
+#define MAX_TOTAL_SIGNAL_CHANNEL 80,3218
+#define MAX_TOTAL_MODEM 81,3298
+#define MAX_TOTAL_DIGIT_COLLECT 82,3366
+#define MAX_PHONE_NUM_LEN 83,3442
+#define DEFAULT_FREE_MODEM_THRESHOLD 84,3502
+#define OOB_PORTS_PER_SLOT	85,3543
+#define AT_CMD_ANSWER_CALL 86,3575
+#define CSM_EVENT_QUEUE_SIZE 87,3618
+#define CFG_MODEM_STATUS_POLL 92,3784
+#define CFG_MODEM_DC_SESSION 93,3824
+#define CFG_MODEM_DEBUG_OOB 94,3864
+#define CFG_MODEM_DEBUG_CSM 95,3904
+#define CFG_MODEM_BAD 96,3944
+#define CFG_MODEM_HOLD_RESET 97,3984
+#define CFG_MODEM_DEBUG_TRACE 98,4024
+#define CFG_MODEM_SHUTDOWN 99,4064
+#define CFG_MODEM_CONFIG_DEFAULT 101,4106
+#define BRASIL_MODEM 102,4146
+#define CSM_MODEM_UNIT(CSM_MODEM_UNIT107,4214
+#define CSM_MODEM_INFO(CSM_MODEM_INFO108,4282
+#define CSM_MODEM_INFO_OR_NULL(CSM_MODEM_INFO_OR_NULL109,4366
+#define CSM_MODEM_SLOT(CSM_MODEM_SLOT112,4581
+#define CSM_MODEM_PORT(CSM_MODEM_PORT113,4648
+#define CSM_MODEM_ADDRESS(CSM_MODEM_ADDRESS114,4718
+#define CSM_MODEM_ADDR_TO_PORT(CSM_MODEM_ADDR_TO_PORT115,4794
+#define CSM_MODEM_POOL_CHECK_TIME 117,4861
+#define CSM_PERIODICAL_BACKGROUND_CHECK_TIME 118,4917
+#define CSM_DEFAULT_WATCH_DOG_TIME_OUT 119,4997
+#define CSM_MODEM_RESET_MINIMUM_TIME 120,5055
+#define PARK_ONLY_MODEM_TX 122,5129
+#define PARK_BOTH_MODEM_TX_RX 123,5169
+#define RC_SUCCESS 125,5209
+#define RC_FAILURE 126,5248
+#define CSM_BUSYOUT_DSX0 128,5289
+#define CSM_UNBUSYOUT_DSX0 129,5327
+#define BITS(BITS131,5367
+#define BITL(BITL132,5426
+#define CSM_STATUS_NONE 133,5484
+#define CSM_STATUS_UNLOCKED 134,5520
+#define CSM_STATUS_ACTIVE_WDT 135,5556
+#define CSM_STATUS_ACTIVE_CALL 136,5628
+#define CSM_STATUS_BUSYOUT_REQ 137,5710
+#define CSM_STATUS_BAD_MODEM 144,6268
+#define CSM_STATUS_BACK2BACK_TEST 145,6335
+#define CSM_STATUS_MODEM_RESET 146,6423
+#define CSM_STATUS_DOWNLOAD_FILE 147,6498
+#define CSM_STATUS_DOWNLOAD_FAIL 148,6586
+#define CSM_STATUS_SHUTDOWN 149,6667
+#define CSM_STATUS_BUSY 150,6748
+#define CSM_STATUS_MAX_LENGTH 151,6819
+#define CSM_IS_IDLE_STATE(CSM_IS_IDLE_STATE153,6857
+#define CSM_IS_CONNECTED_STATE(CSM_IS_CONNECTED_STATE154,6943
+#define CSM_IS_IC_STATE(CSM_IS_IC_STATE155,7085
+#define CSM_IS_OC_STATE(CSM_IS_OC_STATE156,7168
+#define CSM_IS_IC_OC_STATE(CSM_IS_IC_OC_STATE157,7251
+#define CSM_IS_UNLOCKED(CSM_IS_UNLOCKED158,7351
+#define CSM_IS_LOCKED(CSM_IS_LOCKED159,7421
+#define CSM_IS_ACTIVE_WDT(CSM_IS_ACTIVE_WDT160,7490
+#define CSM_IS_ACTIVE_CALL(CSM_IS_ACTIVE_CALL161,7583
+#define CSM_IS_BUSY_OUT(CSM_IS_BUSY_OUT162,7677
+#define CSM_IS_MODEM_BAD(CSM_IS_MODEM_BAD163,7771
+#define CSM_IS_BACK2BACK_TEST(CSM_IS_BACK2BACK_TEST164,7863
+#define CSM_IS_MODEM_RESET(CSM_IS_MODEM_RESET165,7960
+#define CSM_IS_DOWNLOAD_FILE(CSM_IS_DOWNLOAD_FILE166,8054
+#define CSM_IS_DOWNLOAD_FAIL(CSM_IS_DOWNLOAD_FAIL167,8150
+#define CSM_IS_SHUTDOWN(CSM_IS_SHUTDOWN168,8246
+#define CSM_IS_BUSY(CSM_IS_BUSY169,8337
+#define CSM_IS_MODEM_DEAD(CSM_IS_MODEM_DEAD174,8470
+#define CSM_IS_MODEM_ALIVE(CSM_IS_MODEM_ALIVE178,8823
+#define CSM_IS_IDLE_READY(CSM_IS_IDLE_READY180,8899
+#define CSM_IS_IDLE_LOCKED(CSM_IS_IDLE_LOCKED182,9055
+#define CSM_IS_BUSY_OUT_READY(CSM_IS_BUSY_OUT_READY184,9209
+#define CSM_IS_BUSY_OUT_PENDING(CSM_IS_BUSY_OUT_PENDING186,9365
+#define CSM_DEBUG_ENABLED(CSM_DEBUG_ENABLED189,9525
+#define CSM_FLAG_USE_AT_CMD_ANSWER 194,9652
+#define CSM_FLAG_USE_PRI_LINE 195,9702
+#define CSM_FLAG_V110_MODEM 196,9752
+#define CSM_FLAG_FAST_RING 197,9802
+#define CSM_USE_AT_CMD_ANSWER(CSM_USE_AT_CMD_ANSWER198,9852
+#define CSM_USE_PRI_LINE(CSM_USE_PRI_LINE199,9947
+#define CSM_USE_CT1_LINE(CSM_USE_CT1_LINE200,10036
+#define CSM_IS_V110_MODEM(CSM_IS_V110_MODEM201,10128
+#define CSM_IS_FAST_RING(CSM_IS_FAST_RING202,10215
+#define MODEM_TTY_IN_USE(MODEM_TTY_IN_USE209,10367
+#define MODEM_CTRL_USE_ROUND_ROOBIN 216,10597
+#define MODEM_CTRL_PRE_INIT_DONE 217,10647
+#define NO_CAUSE 222,10759
+#define INVALID_B_CHANNEL 223,10788
+#define UNKNOWN_B_CHANNEL 224,10817
+#define CSM_PRI_SLOT 225,10849
+} dc_event_t;dc_event_t234,11025
+} csm_cause_t;csm_cause_t244,11244
+typedef enum csm_state_t_ csm_state_t_246,11260
+    CSM_IDLE_STATE = BITS(BITS247,11288
+typedef enum csm_event_t_ csm_event_t_264,11935
+} csm_event_t;csm_event_t312,12879
+} csm_fail_reason_code_t;csm_fail_reason_code_t327,13267
+} csm_event_log_t;csm_event_log_t331,13347
+} ring_state_t;ring_state_t338,13443
+} digit_collect_state_t;digit_collect_state_t344,13555
+} free_modem_list_index_t;free_modem_list_index_t350,13704
+} signal_event_t;signal_event_t372,14270
+typedef ushort (*csm_state_function_t)csm_state_function_t378,14422
+typedef ushort (*csm_state_function_t) (modem_info_t*modem_info_t378,14422
+typedef volatile ushort io_reg16_t;io_reg16_t379,14478
+#define MDB_CNTL1_MDB_ENABLE 381,14515
+#define MDB_CNTL1_ENABLE_BYTE_ACCESS 382,14565
+#define MDB_CNTL1_CODEC_AU_LAW 383,14615
+#define MDB_CNTL1_MDB1_LED 384,14665
+#define MDB_CNTL1_MDB2_LED 385,14715
+#define MDB_ISR1_INTERRUPT_PENDING 387,14766
+#define MDB_ISR1_MDB1_INTERRUPT_PENDING 388,14816
+#define MDB_ISR1_MDB2_INTERRUPT_PENDING 389,14866
+#define RTEN_MDB1_ENABLE_20HZ_RING_PULSE 391,14917
+#define RTEN_MDB2_ENABLE_20HZ_RING_PULSE 392,14967
+typedef struct csm_event_queue_t_ csm_event_queue_t_394,15018
+} csm_event_queue_t;csm_event_queue_t398,15138
+typedef struct modem_reg_t_{modem_reg_t_400,15160
+} modem_reg_t;modem_reg_t426,16105
+#define VENDOR_BANNER_CHARLEN	428,16121
+#define MODEM_MODULE_VER_NUM_LEN 429,16156
+#define MODEM_MODULE_VENDER_CODE_LEN 430,16206
+#define MAX_MODEM_MODULE_COOKIE_LEN 431,16256
+#define VENDOR_CODEC_U_LAW_HIGH	435,16416
+typedef struct modem_carrier_cookie_ modem_carrier_cookie_437,16456
+} modem_carrier_cookie_t;modem_carrier_cookie_t442,16594
+typedef struct modem_module_cookie_ modem_module_cookie_444,16621
+} modem_module_cookie_t;modem_module_cookie_t451,16888
+typedef struct modem_cookie_ modem_cookie_453,16914
+} modem_cookie_t;modem_cookie_t456,17018
+#define MAI_USER_INPUT_STRLEN	461,17071
+#define MAI_MAX_MODEM_LIST	462,17104
+#define MAI_MODEM_RSPLEN	463,17159
+#define MAI_REPLYSTRGLEN	465,17245
+#define MAI_MAX_RUNS	470,17324
+#define MAI_TIMEOUT_CHECK_INTERVAL	471,17349
+#define MAI_TIMEOUT_ATD_ATA_CONNECT	472,17395
+#define MAI_TIMEOUT_ATA_HEADSTART	473,17443
+#define MAI_TIMEOUT_B2B_DATA_TRANSFER	474,17488
+#define MAI_TIMEOUT_DL_WAIT_RETRY	475,17537
+#define MAI_TIMEOUT_DL_TX_COMPLETE	476,17582
+#define MAI_TIMEOUT_NORMAL_AT_CMD	478,17630
+#define MAI_TIMEOUT_NOT_CONNECTED_AT_CMD	479,17675
+#define MAI_TIMEOUT_WAIT_NEXTSTEP	480,17727
+#define MAI_TIMEOUT_QUICK_WAIT	482,17771
+#define MAI_TIMEOUT_ECHO_RESPONSE	483,17832
+#define MAI_TIMEOUT_INTER_CHAR	484,17875
+#define MAI_AT_MAX_RETRY	486,17919
+#define MAI_AT_DL_MAX_RETRY 487,17946
+#define MAI_DL_MAX_RETRY 488,17980
+#define MAI_AT_AFTER_RESET	489,18014
+#define MAI_ATP_MAX_RETRY	490,18044
+#define MAI_MAX_DUMMYDATA	496,18167
+#define MAI_MAX_BUFFSIZE	503,18350
+#define MAI_MAX_DLBUFFERS	504,18396
+typedef enum mai_cmd_ mai_cmd_510,18457
+} mai_cmd_t;mai_cmd_t518,18645
+#define MAI_COMMON_TASK	520,18659
+typedef enum mai_state_ mai_state_525,18725
+} mai_state_t;mai_state_t554,19275
+#define MAI_STP_BEGIN	557,19319
+#define MAI_USER_BUSYOUT	560,19372
+#define MAI_MAINTN_PENDING	561,19404
+#define MAI_RX_SIGNAL_REQ 562,19438
+#define MAI_B2B_ATD	563,19504
+#define MAI_B2B_ATA	564,19550
+#define MAI_FAILED_LAST_B2B 565,19604
+#define MAI_PWRON_B2B_SUCCESS 566,19674
+#define MAI_STRAY_QUEUE_EVENT 567,19753
+typedef struct mai_range_ mai_range_569,19829
+} mai_range_t;mai_range_t572,19975
+typedef struct mai_dl_buffer_ mai_dl_buffer_575,20031
+} mai_dl_buffer_t;mai_dl_buffer_t579,20151
+typedef struct mai_dl_info_ mai_dl_info_586,20290
+} mai_dl_info_t;mai_dl_info_t592,20442
+typedef struct modem_q_info_t_ modem_q_info_t_597,20490
+} modem_q_info_t;modem_q_info_t601,20604
+typedef struct modem_vendor_defs_ modem_vendor_defs_606,20660
+} modem_vendor_defs_t;modem_vendor_defs_t612,20889
+#define IS_BRASIL_PLATFORM 615,20977
+#define MODEM_VENDOR_NAME(MODEM_VENDOR_NAME617,21089
+#define MODEM_X2444_DI	622,21201
+#define MODEM_X2444_DO	623,21232
+#define MODEM_X2444_SK	624,21263
+#define X2444_CE_CARRIER	625,21294
+#define X2444_CE_MODEMBD1	626,21326
+#define X2444_CE_MODEMBD2	627,21359
+#define MAX_WORDS_PER_X2444	629,21393
+#define X2444_NUM_CMDBITS_OUT	630,21424
+#define X2444_NUM_DATABITS_IN	631,21456
+#define X2444_NO_DATABITS_IN	632,21489
+typedef enum modem_vendor_type modem_vendor_type634,21521
+} modem_vendor_type_t;modem_vendor_type_t640,21661
+typedef union modem_dl_counters_t_ modem_dl_counters_t_646,21800
+} modem_dl_counters_t;modem_dl_counters_t655,22368
+#define MCOM_MODEM_CTR(MCOM_MODEM_CTR657,22392
+typedef struct dchan_info_t_ dchan_info_t_663,22559
+} dchan_info_t;dchan_info_t679,23122
+typedef struct digit_collect_t_ digit_collect_t_681,23139
+} digit_collect_t;digit_collect_t687,23373
+struct modem_info_t_ modem_info_t_689,23393
+#define tty_hwidb	692,23473
+typedef struct modem_slot_t_ modem_slot_t_850,28279
+} modem_slot_t;modem_slot_t871,29221
+struct modem_pool_t_ modem_pool_t_873,29238
+typedef struct modem_group modem_group_t;modem_group_t944,31817
+struct modem_group modem_group945,31859
+#define MGMT_STATUS_GOOD_DATA	951,31969
+#define MGMT_STATUS_NO_ERROR	952,32001
+#define MGMT_STATUS_CRC_ERROR 953,32032
+#define MGMT_STATUS_DATA_ERROR 954,32066
+#define MGMT_STATUS_NO_DATA	955,32100
+#define MGMT_OK	957,32131
+#define MGMT_FAIL	958,32170
+#define MAI_B2B_MAX_WAIT	960,32213
+#define MGMT_MODEM_MODULE_0_OK 962,32260
+#define MGMT_MODEM_MODULE_1_OK 963,32299
+static inline modem_vendor_type_t get_modem_vendor_type_inline 965,32339

@@ -1,0 +1,47 @@
+# $Id: make.68k,v 1.2 1996/10/23 03:38:51 jchlin Exp $
+# $Source: /cscka/t1_neat/src/common/make.68k,v $
+#------------------------------------------------------------------
+# Makefile defines the platform specific cross compiler's options
+#
+# October 1996, Chiung-Hsi Jonathan Lin
+#
+# Copyright (c) 1996-1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.68k,v $
+# Revision 1.2  1996/10/23 03:38:51  jchlin
+# o       Restructure the respository so that T1 and E1 codes can share
+#         common code.
+# o       Restructure the makefile so that it adapts new tree structures
+#         and also rewrite the makefile for automatically generating the
+#         dependancies. The old one doesn't work properly.
+#
+# Revision 1.1  1996/10/23  02:50:13  jchlin
+# Create commonly shared sub makefiles.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#####################################################################
+# 68k compiler options
+#
+HEADER_DIR      = -I$(COMMON_DIR) -I$(SRC_DIR)
+TOOLS_VER	= 95q1
+CC		= gcc.$(TOOLS_VER).68k -m68020
+LD		= gld.$(TOOLS_VER).68k 
+DEBUG		= -DDEBUG -g
+OPT		= -O
+CFLAGS1		= $(OPT) $(DEBUG) $(PRODUCTION) $(HEADER_DIR) -nostdlib -pipe -fno-builtin -I. -Werror -mnobitfield
+CFLAGS		= $(BOARDTYPE) $(CFLAGS1) -Wall
+LDFLAGSRAM	= ../common/ldflags.srec
+LDFLAGAOUT	= ../common/ldflags.aout
+LISFLAGS	= "asm=1" "targ=m68k"
+
+# assembler sw version is (in bytes) VERSION REVISION 0 0
+VSTR		= $(NEAT)$(VERSION)-$(REVISION)
+AVSTR		= $(ANEAT)$(VERSION-$(REVISION)
+SYM_FILE	= $(VSTR).sym
+ASYM_FILE	= $(AVSTR).sym
+RELEASE_FILES	= $(SYM_FILE)
+LOCAL_FINAL_DIR	= dirt:/tftpboot/$(USER)
+ASMFLAGS	= -DASM 

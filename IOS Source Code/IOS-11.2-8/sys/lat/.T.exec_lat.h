@@ -1,0 +1,8 @@
+
+exec_lat.h,177
+#define	LAT_NONE_SET	35,1281
+#define	LAT_NODE_SET	36,1304
+#define	LAT_PORT_SET	37,1330
+#define	LAT_DEBUG_SET	38,1356
+#define	LAT_EOL_SET	39,1383
+#define	ALTERNATE	84,2819

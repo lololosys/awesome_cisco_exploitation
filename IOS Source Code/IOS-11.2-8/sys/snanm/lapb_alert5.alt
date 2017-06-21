@@ -1,0 +1,36 @@
+/* $Id: lapb_alert5.alt,v 3.2 1995/11/17 18:56:00 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/lapb_alert5.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management LAPB Alert5
+ *      Local station sent SABME, received DM
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: lapb_alert5.alt,v $
+# Revision 3.2  1995/11/17  18:56:00  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:14:37  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:46:51  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct LapbAlert5 ##LAPBALERT5 { ?,01,3320
+  , {2051,230B,3500}
+  ,
+  , 
+  , {2006
+    , ACT = 3302,3107,32A0
+    , DET = {82215811,localDTEAddress:0F}
+    }
+  , {52, {07,LCSLinkAttributes:4}}
+  , {05, {108009,adapter:8,002109,port:8,003F}}
+  }
+

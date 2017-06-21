@@ -1,0 +1,813 @@
+: # use perl -*-Perl-*-
+eval 'exec perl5 -S $0 ${1+"$@"}'
+    if 0;
+# $Id: mkbndl2,v 3.1.2.1 1996/08/29 18:03:05 drowell Exp $
+# $Source: /release/112/cvs/Xsys/scripts/mkbndl2,v $
+#------------------------------------------------------------------
+# mkbndl2 - Generate a bundle of ucode and output an ELF object
+#           containing the ucode and a C file containing the table
+#           of contents.
+#
+# August 1996, David Rowell
+#
+# Copyright (c) 1996, 1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: mkbndl2,v $
+# Revision 3.1.2.1  1996/08/29  18:03:05  drowell
+# CSCdi46093:  bundling the ucode is way to slow
+# Branch: California_branch
+# New mkbndl to directly generate ELF object files and allow selection
+# of ucode based on flags.
+#
+# Revision 3.1  1996/08/29  17:58:00  drowell
+# Committing placeholder.
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+eval 'exec perl -S $0 ${1+"$@"}'
+	if 0;
+
+$version = 'mkbndl2 1.00';
+
+# These four filesname variables are used for pointed to active temporary
+# files which need to be cleaned up on an error.
+$compressedFilename = '';
+$bundleFilename = '';
+$objectFilename = '';
+$tocFilename = '';
+
+($dependOnly, $flags, $listFilename, $objectFilename, $tocFilename) =
+    &ParseCommandLine();
+
+open(listFile, "<$listFilename") || 
+    &Error("Can't open ucode list file $listFilename: $!\n");
+
+# Select a random temporary filename to use for the concatenation of the
+# bundle ucode. Since we append each ucode section to the file, make sure there
+# isn't an old one hanging around.
+$bundleFilename = "/tmp/mkbndl2.$$";
+if (-e $bundleFilename) {
+    unlink($bundleFilename) || die "Unable to remove $bundleFilename";
+}
+
+while (<listFile>) {
+    ($empty, $orgFilename, $compress, $flash, $skip) =
+	&ParseListLine($_, @flags);
+    if (!$empty) {
+	if (!$skip) {
+	    if ($dependOnly) {
+		push(@dependencies, $orgFilename);
+	    } else {
+		if ($compress) {
+		    $compressedFilename = &CompressFile($orgFilename);
+		    $objFilename = $compressedFilename;
+		} else {
+		    $objFilename = $orgFilename;
+		}
+		if (!$flash) {
+		    &AddFileToBundle($orgFilename, $objFilename,
+				     $bundleFilename);
+		} else {
+		    &AddFileToFlash($orgFilename, $flashTOC);
+		}
+		if ($compress) {
+		    unlink($compressedFilename);
+		    $compressedFilename = '';
+		}
+	    }
+	} else {
+	    if (!$dependOnly) {
+		print("   Skipping $orgFilename\n");
+	    }
+	}
+    }
+}
+
+if (!$dependOnly) {
+    print("\nTotal bundle size = $bundleIndex\n");
+
+    &WriteELFFile($objectFilename, $bundleFilename, $bundleIndex);
+
+    unlink($bundleFilename);
+    $bundleFilename = '';
+
+    &WriteTOCFile($tocFilename, $bundleFiles, $flashTOC, $bundleTOC, 
+		  $bundleIndex);
+} else {
+    print(join(' ', @dependencies), "\n");
+}
+
+exit(0);
+
+#
+#	ParseCommandLine
+#	    This routine parses the command line, extracting flags and
+#	    file names.
+#
+
+sub ParseCommandLine
+{
+    local($USAGE) =
+	"Usage: $0 [+<flag> ...] <ucode list file> <object file> <C file>\n".
+	"       $0 [+<flag> ...] -depend <ucode list file>\n";
+    local($arg);
+    local($firstArgChar);
+    local($flag);
+    local($flags);
+    local($listFilename, $objectFilename, $tocFilename);
+    local($dependOnly) = 0;
+    local($filesGiven) = 0;
+
+    while (scalar(@ARGV)) {
+	$arg = shift(@ARGV);
+	$firstArgChar = substr($arg, 0, 1);
+	if ($firstArgChar eq '-') {
+	    if ($arg eq '-depend') {
+		$dependOnly = 1;
+	    } else {
+		&Error("Unknown argument $arg\n$USAGE");
+	    }
+	} elsif ($firstArgChar eq '+') {
+	    $flag = substr($arg,1);
+	    (length($flag) > 0) ||
+		&Error("Unrecognized argument $arg\n$USAGE");
+	    push(@flags, $flag);
+	} else {
+	    if ((scalar(@ARGV) == 2) && !$dependOnly) {
+		$listFilename = $arg;
+		$objectFilename = shift(@ARGV);
+		$tocFilename = shift(@ARGV);
+		if (!&ValidFilename($listFilename) ||
+		    !&ValidFilename($objectFilename) ||
+		    !&ValidFilename($tocFilename)) {
+		    &Error($USAGE);
+	        }
+		$filesGiven = 1;
+	    } elsif ((scalar(@ARGV) == 0) && $dependOnly) {
+		$listFilename = $arg;
+		if (!&ValidFilename($listFilename)) {
+		    &Error($USAGE);
+		}
+		$filesGiven = 1;
+	    } else {
+	        &Error($USAGE);
+	    }
+	}
+    }
+
+    if (!$filesGiven) {
+	&Error($USAGE);
+    }
+
+    if (!$dependOnly) {
+	print("The following flags were defined :\n");
+	print("    ", join("\n    ", @flags), "\n");
+
+	print("Writing bundle to $objectFilename\n");
+	print("Writing bundle TOC to $tocFilename\n");
+    }
+
+    return ($dependOnly, $flags, $listFilename, $objectFilename, $tocFilename);
+}
+
+
+#
+#	ValidFilename
+#	    Returns true iff the given filename is valid (not starting with a
+#	    "+" or a "-".
+#
+
+sub ValidFilename
+{
+    local($filename) = @_;
+
+    return ($filename !~ /^[\+\-]/);
+}
+
+
+#
+#	ParseListLine
+#	    This routine implements a simple parser for the lines in the
+#	    ucode list file.
+#	    The routine returns :
+#		Flag indicating the line was empty.
+#		Name of the specified file.
+#		Flag indicating the file needs to be compressed.
+#		Flag indicating the file goes in flash.
+#		Flag indicating the file should be skipped.
+#
+
+sub ParseListLine
+{
+    local($originalLine, $flags) = @_;
+    local($line);
+    local($orgFilename, $compress, $flash, $skip);
+    local($flag);
+
+    chop($originalLine);		# remove end of line
+    $originalLine =~ s/#.*//;		# strip out comments
+    @line = split(' ', $originalLine);
+
+    if (scalar(@line) > 0) {
+	$orgFilename = shift(@line);
+	$compress = 0;
+	$flash = 0;
+	$skip = 0;
+
+	while (scalar(@line) > 0) {
+	    $flag = shift(@line);
+	    if ($flag eq "COMPRESS") {
+		$compress = 1;
+	    } elsif ($flag eq "FLASH") {
+		$flash = 1;
+	    } elsif (substr($flag,0,1) eq '~') {
+		if (&FlagSet(substr($flag,1), $flags)) {
+		    $skip = 1;
+		}
+	    } else {
+		if (!(&FlagSet($flag, $flags))) {
+		    $skip = 1;
+		}
+	    }
+	}
+	return (0, $orgFilename, $compress, $flash, $skip);
+    }
+    return (1, '', 0, 0, 0);
+}
+
+
+#
+#	FlagSet
+#	    This routine takes a list of flags and an individual flag and
+#	    returns true iff the individual flag is in the list.
+#
+
+sub FlagSet
+{
+    local($flag, $flags) = @_;
+    local($flagMatch);
+
+    $flagMatch = (scalar(grep($_ eq $flag, @flags)) > 0);
+
+    return $flagMatch;
+}
+
+
+#
+#	CompressFile
+#	    This routine compresses a microcode file to a temporary file,
+#	    returning the temp file name.
+#
+
+sub CompressFile
+{
+    local($orgFilename) = @_;
+    local($compressedFilename);
+    local($orgFileSize);
+    local($compFileSize);
+    local($compressionRate);
+    local($dev,$ino,$mode,$nlink,$uid,$gid,$redev);
+
+    print "   Compressing $orgFilename";
+
+    ($dev,$ino,$mode,$nlink,$uid,$gid,$redev,$orgFileSize) = 
+	stat($orgFilename);
+    ($orgFileSize > 0) || &Error("$orgFilename is empty!\n");
+
+    if ($orgFileSize > $maxUncompressedSize) {
+	$maxUncompressedSize = $orgFileSize;
+    }
+
+    # Strip off the ucode path and put on a path to the tmp directory and
+    # add the process ID to avoid conflicts with other jobs.
+    $compressedFilename = $orgFilename;
+    $compressedFilename =~ s/.*\///;
+    $compressedFilename = "/tmp/$compressedFilename.$$";
+
+    !system("compress -c -b12 $orgFilename > $compressedFilename") ||
+	&Error("Could not compress $orgFilename to $compressedFilename\n");
+
+    ($dev,$ino,$mode,$nlink,$uid,$gid,$redev,$compFileSize) = 
+	stat($compressedFilename);
+
+    $compressionRate = (($orgFileSize - $compFileSize) * 100) / $orgFileSize;
+    printf("\t%2.2f%%\n", $compressionRate);
+
+    return $compressedFilename;
+}
+
+
+#
+#	AddFileToBundle
+#	    This routine adds a ucode file to the non flash bundle. The routine
+#	    is passed the name of the original ucode file, the name of the
+#	    possibly compressed ucode file and the name of the bundle file.
+#	    The original file name is added to the global bundleFiles list.
+#	    A new TOC entry is added to the global bundleTOC list.
+#	    The global bundle index is incremented by the file size.
+#
+
+sub AddFileToBundle
+{
+    local($orgFilename, $objFilename, $bundleFilename) = @_;
+    local($skip, $version, $fwRev, $requiredHWVer, $hwType, $description);
+    local($fileSize);
+    local($tocEntry);
+    local($dev,$ino,$mode,$nlink,$uid,$gid,$redev,$fileSize);
+
+    print("     Adding $orgFilename to ucode bundle\n");
+
+    # Read the header of the original object file to get versions for the
+    # table of contents.
+    open(orgFile, $orgFilename) ||
+	&Error("Can't open ucode object file $orgFilename: $!\n");
+    read(orgFile, $ucodeHeader, 32) ||
+	&Error("Can't read header for object file $orgFilename: $!\n");
+    close(orgFile);
+
+    ($skip, $version, $fwRev, $requiredHWVer, $hwType, $description) =
+	unpack("C C S S C a25", $ucodeHeader);
+    # The unpack sets the description length to the last non-Nil character,
+    # but we really want the first Nil character - 1;
+    $description = substr($description, 0, index($description,"\0"));
+
+    ($skip != 0x24) ||
+	&Error("ucode file $orgFilename does not have a header\n");
+    ($skip == 0x85) || &Error("ucode file $orgFilename has a funny header\n");
+    ($version == 1) ||
+	&Error("ucode file $orgFilename is an invalid version\n");
+
+    ($dev,$ino,$mode,$nlink,$uid,$gid,$redev,$fileSize) = stat($objFilename);
+
+    push(@bundleFiles, $orgFilename);
+    $tocEntry = sprintf("{%luL, %luL, 0x%x, 0x%x, 0x%x, \"%s\", %d, %d}",
+			$bundleIndex, $fileSize, $fwRev, $requiredHWVer,
+			$hwType, $description, $compress, $compress);
+    push(@bundleTOC, $tocEntry);
+
+    !system("cat $objFilename >> $bundleFilename") ||
+	&Error("Could not add $objFilename to $bundleFilename\n");
+
+    $bundleIndex += $fileSize;
+}
+
+
+#
+#	AddFileToFlash
+#	    This routine adds a ucode file to the flash TOC. The routine
+#	    is passed the name of the original ucode file, and an array of
+#           flash TOC entries.
+#
+
+sub AddFileToFlash
+{
+    local($orgFilename, $flashTOC) = @_;
+    local($name);
+    local($version);
+    local($flashEntry);
+
+    print("     Adding $orgFilename to ucode flash default\n");
+    $name = $orgFilename;
+    $name =~ s,.*/,,;		# strip off the path
+    $version = $name;
+    $version =~ s/[a-zA-Z-]*//;	# strip off name, leaving the version
+    $flashEntry = "{\"$version\", \"$name\"}";
+
+    push(@flashTOC, $flashEntry);
+}
+
+
+# Elf Identification format
+#    unsigned char    : File identification byte
+#    unsigned char[3] : "ELF" id
+#    unsigned char    : File class
+#    unsigned char    : Data encoding
+#    unsigned char    : File version
+#    unsigned char[9] : Padding
+sub elfIdentFormat { "C a3 C C C C9"; }
+
+# First byte of elf magic number
+sub ELFMAGICNUMBER { 0x7f; }
+
+# File classes
+sub ELFCLASSNONE { 0; }       # Invalid
+sub ELFCLASS32   { 1; }       # 32-bit objects
+sub ELFCLASS64   { 2; }       # 64-bit objects
+
+# Data encoding
+sub ELFDATANONE { 0; }        # Invalid
+sub ELFDATA2LSB { 1; }        # Two's complement with LSB in first byte
+sub ELFDATA2MSB { 2; }        # Two's complement with MSB in first byte
+
+# Elf version
+sub EV_NONE    { 0; }         # Invalid
+sub EV_CURRENT { 1; }         # Current version
+
+
+# Elf Header format (Assumes already written ID
+#    Elf32_Half       : Object file type
+#    Elf32_Half       : Machine architecture
+#    Elf32_Word       : File format version
+#    ELF32_Addr       : Executable entry point
+#    Elf32_Off        : Offset to program header table
+#    Elf32_Off        : Offset to section header table
+#    Elf32_Word       : Processor specific flags
+#    Elf32_Half       : ELF header size in bytes
+#    Elf32_Half       : Program header size
+#    Elf32_Half       : Number of program headers
+#    Elf32_Half       : Section header size
+#    Elf32_Half       : Number of section headers
+#    Elf32_Half       : Index of the string section for section names
+sub elfHeaderFormat { "S S I I I I I S S S S S S"; }
+sub elfHeaderSize { 52; }    # includes indentification
+
+# Object file types
+sub ET_NONE   { 0; }          # No file type
+sub ET_REL    { 1; }          # Relocatable file
+sub ET_EXEC   { 2; }          # Executable file
+sub ET_DYN    { 3; }          # Shared object file
+sub ET_CORE   { 4; }          # Core file
+sub ET_LOPROC { 0xff00; }     # Processor-specific
+sub ET_HIPROC { 0xffff; }     # Processor-specific
+
+# Machine types
+sub EM_NONE   { 0; }          # No machine
+sub EM_M32    { 1; }          # AT&T WE 32100
+sub EM_SPARC  { 2; }          # SPARC
+sub EM_386    { 3; }          # Intel 80386 - Barf
+sub EM_68K    { 4; }          # Motorola 68000
+sub EM_88K    { 5; }          # Motorola 88000
+sub EM_860    { 7; }          # Intel 80860
+sub EM_MIPS   { 8; }          # MIPS RS3000
+sub EM_PARSIC { 15; }         # HPPA
+sub EM_PPC    { 20; }         # PowerPC
+
+
+# ELF Section header format
+#    Elf32_Word       : Section name string index
+#    Elf32_Word       : Section type
+#    Elf32_Word       : Flags
+#    Elf32_Addr       : Address of section in memory image
+#    Elf32_Off        : Offset in file to first byte
+#    Elf32_Word       : Size of the section in bytes
+#    Elf32_Word       : Section header table index link
+#    Elf32_Word       : Special section info field
+#    Elf32_Word       : Section address alignment constraint
+#    Elf32_Word       : Fixed size entry count
+sub sectionHeaderFormat { "I I I I I I I I I I"; }
+sub sectionHeaderSize { 40; }
+
+# Section types
+sub SHT_NULL     { 0; }
+sub SHT_PROGBITS { 1; }
+sub SHT_SYMTAB   { 2; }
+sub SHT_STRTAB   { 3; }
+sub SHT_RELA     { 4; }
+sub SHT_HASH     { 5; }
+sub SHT_DYNAMIC  { 6; }
+sub SHT_NOTE     { 7; }
+sub SHT_NOBITS   { 8; }
+sub SHT_REL      { 9; }
+sub SHT_SHLIB    { 10; }
+sub SHT_DYNSYM   { 11; }
+sub SHT_LOPROC   { 0x70000000; }
+sub SHT_HIPROC   { 0x7fffffff; }
+sub SHT_LOUSER   { 0x80000000; }
+sub SHT_HIUSER   { 0xffffffff; }
+
+# Section attribute flags
+sub SHF_WRITE     { 0x1 };    # Section is writable at run time
+sub SHF_ALLOC     { 0x2 };    # Section occupies memory during execution
+sub SHF_EXECINSTR { 0x4 };    # Section contains executable machine language
+sub SHF_MASKPROC  { 0xf0000000 };  # Reserved for processor specific
+
+
+# ELF Symbol Table Entry format
+#    Elf32_Word       : Symbol string offset
+#    Elf32_Addr       : Value of the symbol
+#    Elf32_Word       : Object size
+#    unsigned char    : Info
+#    unsigned char    : Other
+#    Elf32_Half       : Section of symbol
+sub symbolFormat { "I I I C C S"; }
+sub symbolSize { 16; }
+
+# Symbol table bindings
+sub STB_LOCAL  { 0 };
+sub STB_GLOBAL { 1 };
+sub STB_WEAK   { 2 };
+sub STB_LOPROC { 12 };
+sub STB_HIPROC { 15 };
+
+# Symbol types
+sub STT_NOTYPE  { 0 };
+sub STT_OBJECT  { 1 };
+sub STT_FUNC    { 2 };
+sub STT_SECTION { 3 };
+sub STT_FILE    { 4 };
+sub STT_LOPROC  { 13 };
+sub STT_HIPROC  { 15 };
+
+# Subroutine to combine a symbol table binding and a symbol type into a info
+# field
+sub ST_INFO
+{
+    local($bind, $type) = @_;
+
+    return ($bind << 4) | ($type & 0x0f);
+}
+
+
+#
+#	DefineELFHeaderContents
+#	    This routine builds "constants" replesenting the contents of a
+#	    mininal ELF header.
+#
+
+sub DefineELFHeaderContents
+{
+    $numberSections = 9;
+
+    $localSymbols = 7;
+    $globalSymbols = 1;
+    $numberSymbols = $localSymbols + $globalSymbols;
+    $symbolTableOffset = &elfHeaderSize + ($numberSections *
+					   &sectionHeaderSize);
+    $symbolTableSize = &symbolSize * $numberSymbols;
+
+    # Section name string table
+    $symtabString = ".symtab";
+    $strtabString = ".strtab";
+    $shstrtabString = ".shstrtab";
+    $textString = ".text";
+    $dataString = ".data";
+    $bssString = ".bss";
+    $rodataString = ".rodata";
+    $commentString = ".comment";
+    $sectionNames = join("\0", '', $symtabString, $strtabString,
+			 $shstrtabString, $textString, $dataString,
+			 $bssString, $rodataString, $commentString, '');
+    $symtabStringOffset = 1;
+    $strtabStringOffset = $symtabStringOffset + length($symtabString) + 1;
+    $shstrtabStringOffset = $strtabStringOffset + length($strtabString) + 1;
+    $textStringOffset = $shstrtabStringOffset + length($shstrtabString) + 1;
+    $dataStringOffset = $textStringOffset + length($textString) + 1;
+    $bssStringOffset = $dataStringOffset + length($dataString) + 1;
+    $rodataStringOffset = $bssStringOffset + length($bssString) + 1;
+    $commentStringOffset = $rodataStringOffset + length($rodataString) + 1;
+
+    $sectionNamesSize = length($sectionNames);
+    $sectionNamesOffset = $symbolTableOffset + $symbolTableSize;
+
+    # Symbol name string table
+    $fileNameString = "bundle.c";
+    $bundleNameString = "bundle";
+    $symbolNames = join("\0", '', $fileNameString, $bundleNameString, '');
+    $fileNameStringOffset = 1;
+    $bundleNameStringOffset = $fileNameStringOffset +
+			      length($fileNameString) + 1;
+
+    $symbolNamesSize = length($symbolNames);
+    $symbolNamesOffset = $sectionNamesOffset + $sectionNamesSize;
+
+    $rodataOffset = $symbolNamesOffset + $symbolNamesSize;
+
+    $comment = "\0$version\0";
+    $commentSize = length($comment);
+}
+
+
+#
+#	WriteELFFile
+#	    This routine writes the bundled ucode to an ELF file. The
+#	    parameters are the output object filename, the name of the file
+#	    containing the concatenated ucode and the size of the bundled
+#	    ucode.
+#
+
+sub WriteELFFile
+{
+    local($objectFilename, $bundleFilename, $bundleSize) = @_;
+    local($elfIdent);
+    local($elfHeader);
+    local($sectionHeader);
+    local($symbol);
+    local($len);
+    local($data);
+
+    &DefineELFHeaderContents();
+
+    open(elfFile, ">$objectFilename") || 
+	&Error("Can't open bundle object file $objectFilename: $!\n");
+
+    $elfIdent = pack(&elfIdentFormat, &ELFMAGICNUMBER, "ELF", &ELFCLASS32,
+		     &ELFDATA2MSB, &EV_CURRENT);
+    print(elfFile $elfIdent);
+
+    $elfHeader = pack(&elfHeaderFormat, &ET_REL, &EM_MIPS, &EV_CURRENT, 0, 0,
+		      &elfHeaderSize, 0, &elfHeaderSize, 0, 0,
+		      &sectionHeaderSize, $numberSections, 1);
+    print(elfFile $elfHeader);
+
+    # Write Null section header
+    $sectionHeader = pack(&sectionHeaderFormat, 0, &SHT_NULL, 0, 0, 0, 0, 0,
+			  0, 0, 0);
+    print(elfFile $sectionHeader);
+
+    # Write section string table section header
+    $sectionHeader = pack(&sectionHeaderFormat, $shstrtabStringOffset,
+			  &SHT_STRTAB, 0, 0, $sectionNamesOffset,
+			  $sectionNamesSize, 0, 0, 1, 0);
+    print(elfFile $sectionHeader);
+
+    # Write symbol table section header
+    $sectionHeader = pack(&sectionHeaderFormat, $symtabStringOffset,
+			  &SHT_SYMTAB, 0, 0, $symbolTableOffset,
+			  $symbolTableSize, 3, $localSymbols, 4, &symbolSize);
+    print(elfFile $sectionHeader);
+
+    # Write symbol table string section header
+    $sectionHeader = pack(&sectionHeaderFormat, $strtabStringOffset,
+			  &SHT_STRTAB, 0, 0, $symbolNamesOffset,
+			  $symbolNamesSize, 0, 0, 1, 0);
+    print(elfFile $sectionHeader);
+
+    # Write text section header
+    $sectionHeader = pack(&sectionHeaderFormat, $textStringOffset,
+			  &SHT_PROGBITS, &SHF_ALLOC | &SHF_EXECINSTR, 0,
+			  $rodataOffset, 0, 0, 0, 1, 0);
+    print(elfFile $sectionHeader);
+
+    # Write data section header
+    $sectionHeader = pack(&sectionHeaderFormat, $dataStringOffset,
+			  &SHT_PROGBITS, &SHF_WRITE | &SHF_ALLOC, 0,
+			  $rodataOffset, 0, 0, 0, 1, 0);
+    print(elfFile $sectionHeader);
+
+    # Write bss section header
+    $sectionHeader = pack(&sectionHeaderFormat, $bssStringOffset, &SHT_NOBITS,
+			  &SHF_WRITE | &SHF_ALLOC, 0, $rodataOffset, 0, 0, 0,
+			  1, 0);
+    print(elfFile $sectionHeader);
+
+    # Write rodata section header
+    $sectionHeader = pack(&sectionHeaderFormat, $rodataStringOffset,
+			  &SHT_PROGBITS, &SHF_ALLOC, 0, $rodataOffset,
+			  $bundleSize, 0, 0, 8, 0);
+    print(elfFile $sectionHeader);
+
+    # Write comment section header
+    $sectionHeader = pack(&sectionHeaderFormat, $commentStringOffset,
+			  &SHT_PROGBITS, 0, 0, $rodataOffset + $bundleSize,
+			  $commentSize, 0, 0, 1, 0);
+    print(elfFile $sectionHeader);
+
+    # Write Null symbol
+    $symbol = pack(&symbolFormat, 0, 0, 0, &ST_INFO(&STB_LOCAL, &STT_NOTYPE),
+		   0, 0);
+    print(elfFile $symbol);
+
+    # Write file name symbol
+    $symbol = pack(&symbolFormat, $fileNameStringOffset, 0, 0,
+		   &ST_INFO(&STB_LOCAL, &STT_FILE), 0, 0xfff1);
+    print(elfFile $symbol);
+
+    # Write gcc bizarre symbols
+    $symbol = pack(&symbolFormat, 0, 0, 0, &ST_INFO(&STB_LOCAL, &STT_SECTION),
+		   0, 4);
+    print(elfFile $symbol);
+    $symbol = pack(&symbolFormat, 0, 0, 0, &ST_INFO(&STB_LOCAL, &STT_SECTION), 
+		   0, 5);
+    print(elfFile $symbol);
+    $symbol = pack(&symbolFormat, 0, 0, 0, &ST_INFO(&STB_LOCAL, &STT_SECTION), 
+		   0, 6);
+    print(elfFile $symbol);
+    $symbol = pack(&symbolFormat, 0, 0, 0, &ST_INFO(&STB_LOCAL, &STT_SECTION),
+		   0, 7);
+    print(elfFile $symbol);
+    $symbol = pack(&symbolFormat, 0, 0, 0, &ST_INFO(&STB_LOCAL, &STT_SECTION),
+		   0, 8);
+    print(elfFile $symbol);
+
+    # Write bundle symbol
+    $symbol = pack(&symbolFormat, $bundleNameStringOffset, 0, $bundleSize,
+		   &ST_INFO(&STB_GLOBAL, &STT_OBJECT), 0, 7);
+    print(elfFile $symbol);
+
+    # Write out the section name strings section
+    print(elfFile $sectionNames);
+
+    # Write out the symbol name strings section
+    print(elfFile $symbolNames);
+
+    # Write out the read only data segment
+    # Note that it is dangerous to do a syswrite to the same file handle as a
+    # print so we need to close and reopen the file.
+    close(elfFile) || &Error("Error writing file $objectFilename : $!\n");
+    open(elfFile, ">>$objectFilename") ||
+ 	&Error("Can't open bundle object file $objectFilename: $!\n");
+    open(bundleFile, $bundleFilename) ||
+ 	&Error("Could not bundle object to $objectFilename\n");
+    while (($len = sysread(bundleFile, $data, 8192)) > 0) {
+	syswrite(elfFile, $data, $len) ||
+	    &Error("Error writing file $objectFilename : $!\n");
+    }
+    close(bundleFile);
+
+    # Write out the comment segment
+    syswrite(elfFile, $comment, length($comment)) ||
+	&Error("Error writing file $objectFilename : $!\n");
+
+    close(elfFile);
+}
+
+
+#
+#	WriteTOCFile
+#	     This routine writes a C file containing the table of contents
+#	     information for the bundle.
+#
+
+sub WriteTOCFile
+{
+    local($tocFilename, $bundleFiles, $flashTOC, $bundleTOC, $bundleSize) = @_;
+    local($date);
+    local($user);
+    local($numBundleFiles) = scalar(@bundleFiles);
+    local($numFlashFiles) = scalar(@flashTOC);
+    local($file);
+    local($name);
+
+    local(@monthNames) = ('Jan','Feb','Mar','Apr','May','Jun',
+			  'Jul','Aug','Sep','Oct','Nov','Dec');
+    local($seconds, $minutes, $hours, $day, $month, $year) = localtime(time);
+    $year += 1900;
+    $date = sprintf("%d-%s-%d", $day, $monthNames[$month], $year);
+    $user = (getpwuid($<))[0] || 'Anonymous';        # get user's login name
+
+    open(tocFile, ">$tocFilename") ||
+	&Error("Can't open bundle TOC file $tocFilename: $!\n");
+
+    print(tocFile "/* This file is generated from $listFilename\n");
+    print(tocFile " * Do not attempt to edit it\n");
+    print(tovFile " *", "-" x 69, "\n");
+    print(tocFile " * $tocFilename -- Microcode Bundle\n");
+    print(tocFile " *\n");
+    print(tocFile " * $date, $version ($user)\n");
+    print(tocFile " *\n");
+    print(tocFile " * Copyright");
+    print(tocFile " (c) $year by cisco Systems, Inc.\n");
+    print(tocFile " * All rights reserved.\n");
+    print(tocFile " *\n");
+    print(tovFile " *", "-" x 69, "\n");
+    print(tocFile " */\n\n");
+
+    print(tocFile "#include \"master.h\"\n");
+    print(tocFile "#include \"ucode.h\"\n\n");
+
+    print(tocFile "const ulong bundle_size = ", $bundleSize, "L;\n");
+    print(tocFile "const ulong max_ucode_uncompressed = ",
+	  $maxUncompressedSize, "L;\n");
+    print(tocFile "const int bundled_files = $numBundleFiles;");
+    print(tocFile "\t/* No. of files in bundle */\n\n");
+
+    print(tocFile "const bundle_toc_t bundle_toc[$numBundleFiles] = {");
+    print(tocFile "\t/* bundle table of contents */\n");
+    print(tocFile "   ", join(",\n   ", @bundleTOC), "\n");
+    print(tocFile "};\n\n");
+
+    print(tocFile "#ifdef BUNDLE_TESTING\n\n");
+    print(tocFile "char *bundle_filenames[$numBundleFiles] = {\n");
+    print(tocFile "   \"", join("\",\n   \"", @bundleFiles), "\"\n");
+    print(tocFile "};\n\n");
+    print(tocFile "#endif\n\n");
+
+    print(tocFile "const int flash_default_files = $numFlashFiles;");
+    print(tocFile "\t/* No. of default from flash */\n\n");
+
+    print(tocFile "const flash_toc_t flash_toc[$numFlashFiles] = {");
+    print(tocFile "\t/* flash default table of contents */\n");
+    print(tocFile "   ", join(",\n   ", @flashTOC), "\n");
+    print(tocFile "};\n\n");
+
+    close(tocFile);
+}
+
+
+#
+#	Error
+#	     This routine removes any temporary file or output files so we
+#	     don't leave any junk in /tmp or give imcomplet output results.
+#
+
+sub Error
+{
+    foreach $file ($compressedFilename, $bundleFilename, $objectFilename,
+		   $tocFilename) {
+	unlink($file) if ($file ne '');
+    }
+    die(@_);
+}

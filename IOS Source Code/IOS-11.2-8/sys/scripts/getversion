@@ -1,0 +1,41 @@
+: # use perl -*-Perl-*-
+eval 'exec perl5 -S $0 ${1+"$@"}'
+    if 0;
+# $Id: getversion,v 3.1 1996/02/26 21:48:26 rchiao Exp $
+# $Source: /release/111/cvs/Xsys/scripts/getversion,v $
+#------------------------------------------------------------------
+# Script to collect the value in version file for image header.
+#
+# February 1996, Scott Cherf
+#
+# Copyright (c) 1996, 1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: getversion,v $
+# Revision 3.1  1996/02/26  21:48:26  rchiao
+# CSCdi49917:  makefile changes for ClearCase, part II
+# Please see 'Description' for a more detailed explanation.
+# This script is need by sys/makefile.
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+# This program expects to get a C macro name as an argument as well as 
+# getting the header file on stdin which defines that macro name. It
+# then extracts the numeric version of that macro and prints it as output.
+
+{
+    if ((scalar(@ARGV) != 1) && (scalar(@ARGV) != 2)) {
+      print STDERR "Usage: $0 C_MACRO_NAME headerfile.h\n";
+      exit(1);
+    }
+    $version = shift (@ARGV);
+    while (<>) {
+	if (/^#define\s$version\s(\d+)\s*.*$/) {
+	    print "$1\n";
+	    exit(0);
+	}
+    }
+    print STDERR "$0: Failed to fine $version macro in input\n";
+    exit(1);
+}

@@ -1,0 +1,35 @@
+/* $Id: ether_alert8.alt,v 3.2 1995/11/17 18:55:17 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/ether_alert8.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management Ethernet Alert8
+ *     Continuous carrier, isolated to local adapter 
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: ether_alert8.alt,v $
+# Revision 3.2  1995/11/17  18:55:17  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:14:11  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:46:19  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct Ether8 ##ETHER8 { ?,01,3220
+  , {3322}
+  ,
+  ,
+  , {3322,3722  
+    , ACT = 2010,3102
+    }
+  , {51, {03,macAddr:6}}
+  , {05, {108009,cpName:8,00F409,lanName:8,0039}}
+  }
+

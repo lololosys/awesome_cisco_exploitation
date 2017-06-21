@@ -1,0 +1,27 @@
+
+target_unix.h,874
+#define __TARGET_UNIX_H__59,2098
+#define LEVEL_CONSOLE 81,2379
+#define GET_CLOCKADDR	85,2491
+#define GET_HCLOCKADDR	86,2524
+#define WASTETIME(WASTETIME88,2560
+#define DELAY(DELAY89,2602
+#define ALIGN_DATAGRAM94,2676
+#define ONESEC 96,2700
+#define ONEMIN 97,2747
+#define ONEHOUR 98,2798
+#define REFRESHTIME 100,2849
+#define NMI_FREQ_NUMERATOR 101,2925
+#define NMI_FREQ_DENOMINATOR 102,2985
+#define RAMBASE	108,3090
+#define CRASH_INFO 117,3509
+#define CONSOLE_LINENUM 123,3589
+#define PLATFORM_MAXLINES 127,3663
+#define pak_set_dirty(pak_set_dirty133,3749
+#define pak_ignore_inputq(pak_ignore_inputq138,3830
+#define pak_has_particles(pak_has_particles143,3918
+#define PLATFORM_ALL_DISABLE 149,3991
+#define PLATFORM_TTY_DISABLE 150,4056
+#define PLATFORM_NETS_DISABLE 151,4136
+#define PLATFORM_ALL_ENABLE 152,4215
+#define	PLATFORM_FAMTYPE 154,4280

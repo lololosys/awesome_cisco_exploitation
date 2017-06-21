@@ -1,0 +1,6 @@
+
+fr_registry.c,195
+static void frame_relay_registry_init 49,1588
+#define FRAME_RELAY_REGISTRY_MAJVERSION 59,1816
+#define FRAME_RELAY_REGISTRY_MINVERSION 60,1858
+#define FRAME_RELAY_REGISTRY_EDITVERSION 61,1900

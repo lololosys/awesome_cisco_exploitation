@@ -1,0 +1,136 @@
+# $Id: clns_registry.reg,v 3.2.60.2 1996/05/04 20:04:06 asastry Exp $
+# $Source: /release/112/cvs/Xsys/clns/clns_registry.reg,v $
+#------------------------------------------------------------------
+# Registry for CLNS Components
+#
+# January 1995, Dave Katz
+#
+# Copyright (c) 1995-1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: clns_registry.reg,v $
+# Revision 3.2.60.2  1996/05/04  20:04:06  asastry
+# CSCdi56559:  CLNS cache invalidations are too frequent, causing high
+# CPU utilization.
+# Branch: California_branch
+#
+# Revision 3.2.60.1  1996/04/16  18:52:30  rchandra
+# CSCdi54830:  IP features commit
+# Branch: California_branch
+#
+# Revision 3.2  1995/11/17  08:52:36  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  11:08:02  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.3  1995/11/08  20:52:00  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.2  1995/09/23  21:37:25  dkatz
+# CSCdi38306:  ISIS shouldnt run SPF on leaf route changes
+# Calculate routes from only changed LSPs if the inter-router topology
+# stays constant.  Don't gratuitously install IP routes that will
+# be immediately replaced, as this causes large-scale cache invalidation.
+# Eliminate multiple IP forwarding table traversals.
+#
+# Revision 2.1  1995/06/07  20:17:41  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BEGIN REGISTRY CLNS
+
+DEFINE isis_mark_L1_changed
+/*
+ * Mark L1 pdu change
+ */
+	STUB
+	void
+	clns_pdbtype *pdb
+END
+
+DEFINE clns_delete_igrp_adj
+/*
+ * Do IGRP-specific processing for adjacency deletion
+ */
+	STUB
+	void
+	clns_pdbtype *pdb, clns_adjtype *adj
+END
+
+DEFINE clns_adjust_static_routes
+/*
+ * Adjust static route state after an adjacency change
+ */
+	STUB
+	boolean
+	clns_adjtype *adj, idbtype *idb, boolean up_state, boolean build_lsp
+END
+
+DEFINE clns_show_protocol_source
+/*
+ * Map a PDB flag to a protocol name
+ */
+	STUB
+	void
+	ulong protocol_source
+END
+
+DEFINE clns_filter_addr
+/*
+ * Run an NSAP address through a filter
+ */
+	STUB
+	boolean
+	ulong index, nsap_addr *destaddr, nsap_addr *srcaddr
+END
+
+DEFINE clns_clear_neighbors
+/*
+ * Delete all neighbor adjacencies
+ */
+	STUB
+	void
+	int type
+END
+
+DEFINE clns_invalidate_cache
+/*
+ * Request a CLNS cache invalidation
+ */
+	STUB
+	void
+	const char *caller_name, boolean purge
+END
+
+DEFINE	tarp_enqueue
+/*
+ * Routine to enqueue a TARP packet (called by CLNS)
+ */
+	LIST
+	void
+	paktype *pak
+END
+
+DEFINE        tarp_start_type4_timer
+/*
+ * Routine to inform TARP of an NET change in CLNS.
+ */
+      LIST
+      void
+      -
+END
+
+DEFINE  tarp_running_status
+/*
+ * Report the boolean value of the flag 'tarp_running'.
+ */
+        LOOP
+        boolean
+        -
+END
+
+END REGISTRY

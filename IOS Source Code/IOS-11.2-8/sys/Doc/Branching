@@ -1,0 +1,206 @@
+# $Id: Branching,v 3.2 1996/01/15 00:20:25 tkolar Exp $
+
+	  Title: Branching
+	   Date: 27-July-93
+	Version: 1.0
+
+Copyright (c) 1993-1996 by cisco Systems, Inc.
+
+To create a branch
+
+    Assume a meaningful name like 'mumble' (or molson or sierra)
+    is useful. By convention, capitalize the first character of
+    this name and append '_branch' to it for the branch name.
+
+    Thus we have 'Mumble_branch'.
+
+    Now, we need to worry about tagging a baseline versions
+    against the main branch. We will tag these, by convention
+    using _baseline_yymmdd where yy is year, mm is month, and dd
+    is day.
+
+    If I am creating a branch on July 20, 1993, this would mean
+    using the branch name Mumble_baseline_930720
+
+    We will assume that the path to the repository is /foo/cvs (in
+    reality it might be /trunk/cvs or something else).
+
+    The best method of creating a new branch is to create the branch
+    tags against a checked-out version of the main branch and then
+    checkout your own branch.
+
+    The steps (assuming you have a copy of the main branch in your
+    working area at the point where you wish to base your branch) are
+    as follows:
+
+	cvs tag Mumble_baseline_930720
+	cvs tag -b Mumble_branch
+	cvs update -r Mumble_branch *
+
+    (Another method makes use of the CVS "rtag" command.  This method
+    is not recommended as the "cvs rtag" command operates directly on
+    RCS files in the CVS repository, inserting the branch tag into the
+    RCS file as it exists at the exact moment in time that the "cvs
+    rtag" operation performs the tag operation. If someone else commits
+    changes to the repository while you are performing a "cvs rtag"
+    operation, a tree checked out using your tag may reflect an
+    incomplete commit and therefore, not build cleanly.)
+
+    After the Mumble_branch tag is created and before you try to commit
+    changes to that branch, you will need to add the appropriate
+    CommitTool control files to the system. This is done using the
+    command:
+
+	/trunk/bin/make-new-branch -d /foo/cvs Mumble_branch
+
+    for the appropriate values of /foo/cvs and Mumble_branch (ask one of
+    the cvs-trolls to do this for you).
+
+
+To checkout a copy of this branch:
+
+	cvs -d /foo/cvs checkout -r Mumble_branch newworld
+
+To update from the main branch:
+
+    We will want to tag the main trunk with another baseline tag.
+    If we did this a week later, we might use the tag
+    Mumble_baseline_930727
+
+    We will want to tag our branch too. We will do this before we
+    do any kind of sync to the main branch. A useful tag would be
+    Mumble_presync_930727 ...
+
+    First, you should probably make sure that your tree is the latest
+    that the Mumble_branch has to offer
+
+	cvs -d /foo/cvs update -r Mumble_branch
+
+    be sure everything still builds before going on to the next step.
+
+    Next, tag the main branch:
+    
+        pushd /someplase/else
+	cvs -d /foo/cvs checkout -A newworld
+	cvs -d /foo/cvs tag Mumble_baseline_930727 boot ecmon micro \
+	sbe16 str subsys sys
+	/bin/rm -fr boot ecmon micro sbe16 str subsys sys
+	popd
+
+    Next, tag your branch you may either do this from a checked
+    out tree with the command:
+    	
+    	cvs -d /foo/cvs tag Mumble_presync_930727
+
+    Next, you will need to merge the changed files using the two
+    created previously _baseline tags.
+
+	cvs -d /foo/cvs update -kkv -jMumble_baseline_930720 \
+	-jMumble_baseline_930727
+
+    The next thing you should run, immediately after doing the update
+    is the script
+
+	/router/bin/cvs-branch-add-rm.perl
+
+    This script will pick up any files that have been added to the
+    mainline branch and remove any that have been removed. It is
+    important to do this step before anyone else commits any changes
+    to the repository, so you should probably do it before you fix any
+    conflicts. If someone does manage to make a commit before this
+    step is complete, it is possible that your branch will not be
+    properly synchronized (especially if a file as added or removed by
+    the other commit to the main branch).
+
+    The cvs-branch-add-rm.perl script will create a file in your
+    current directory with the name 'later.sh', this script should be
+    run directly before you do a 'cvs commit' to commit your merged 
+    changes back to your branch in the repository.
+
+    Sadly, cvs appears to have a race condition bug with the clock
+    such that a merge operation can occur within a second leaving the
+    mtime of the merged file exactly the same as the time listed in
+    the CVS/Entries file. The unfortunate part of this is that cvs
+    does not bother to check files for which the CVS/Entries timestamp
+    and the mtime are the same value. This means that we need to
+    manually 'touch' a merged file to make sure that cvs will check to
+    see if there are any differences in it from the checked out
+    version.  The workaround for this problem is to touch ever file in
+    the tree so that cvs will be forced to compare it and not short
+    circuit checking it for differences. You will first need to delete
+    all .o files and then touch everything else. To use this
+    workaround issue the commands:
+
+	find . -name \*.o -print | perl -ane 'chop;unlink;'
+	find . -type f -print | xargs touch
+
+    The following script will be useful for you to use to fix the
+    trivial conflicts that arise from $Log messages.
+
+	/router/bin/cvs-fix-merge.perl
+
+    Now look in the file cvs-fix-merge.report in your current
+    directory and you will see any files that yet have conflicts for
+    you to resolve by hand.
+
+    After resolving all conflicts, it will be time for you to build
+    all of the possible images that you care about and then commit
+    your changes. 
+
+	sh later.sh
+	cvs -d /foo/cvs commit
+    
+    After the 'later.sh' and  commit, it is recommend to tag your tree
+    with:
+
+	cvs -d /foo/cvs tag Mumble_postsync_930727
+
+    so that you have a state that you certify your tree, which now 
+    represents Mumble_branch after the sync, built ok.
+
+To add files to a branch:
+
+    The short answer is that you can't.  You must instead add a placeholder
+    stub to the main branch, then sync your branch to the main branch using
+    the procedure described above, at which time cvs-branch-add-rm.perl will
+    add the stubs to your branch.  You can then modify the stubs at will in
+    your branch.  See /csc/Docs/cvs-branch-stub-files for more details.
+
+To delete files from a branch:
+
+    Just say no.  You can do it, but every time you resync with the main
+    branch, cvs-branch-add-rm.perl will resurrect your deleted files.
+    The best policy is to wait until your branch has been incorporated
+    into the main branch, and then delete the files from the main branch.
+
+			   ---------------
+
+Summary of bringing a branch into sync with the main trunk
+
+
+  setenv CVSROOT /foo/cvs
+  setenv BRNAME Mumble
+  setenv OYDM yymmdd 
+  setenv YDM `date +%y%m%d`
+  cvs checkout -r ${BRNAME}_branch
+  # for appropriate values of yymmdd such that ${BRNAME}_baseline_yymmdd
+  # is the previous ${BRNAME}_baseline_* tag used.
+  cvs tag ${BRNAME}_presync_$YDM
+  pushd /someplace/else
+  cvs checkout -A newworld
+  cvs tag ${BRNAME}_baseline_$YDM sys boot ecmon micro sbe16 str
+  /bin/rm -fr sys boot ecmon micro sbe16 str
+  popd
+  cvs update -kkv \
+	-j${BRNAME}_baseline_$OYDM -j${BRNAME}_baseline_$YDM
+  # In each subdirectory (sys, boot, ecmon, micro, sbe16, str ...)
+  /router/bin/cvs-branch-add-rm.perl -p ${BRNAME}_baseline_$YDM
+  find . -name \*.o -print | perl -ane 'chop;unlink;'
+  find . -type f -print | xargs touch
+  /router/bin/cvs-fix-merge.perl
+  ... resolve conflicts ...
+  ... build system ...
+  ... test system ...
+  sh later.sh
+  cvs commit
+  cvs tag ${BRNAME}_postsync_$YDM

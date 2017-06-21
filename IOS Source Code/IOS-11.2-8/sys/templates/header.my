@@ -1,0 +1,23 @@
+-- $Id$
+-- $Source$
+-- *****************************************************************
+-- One line description here.
+--
+-- Month Year, Your Name
+--
+-- Copyright (c) 1997 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log$
+-- *****************************************************************
+-- $Endlog$
+--
+-- This mib was extracted from RFC xxxx
+
+--%DNP%  FYI:  Lines containing a comment starting with the "Do Not
+--%DNP%  Publish" prefix "%DNP%" (such as these) are automagicially
+--%DNP%  stripped from MIBS prior to publishing on ftp and cio, and
+--%DNP%  should be used for comments intended for cisco engineering
+--%DNP%  eyes only, or for new product identifiers that are not yet
+--%DNP%  announced.
+

@@ -1,0 +1,307 @@
+# $Id: at_registry.reg,v 3.2.60.3 1996/05/02 08:40:19 dwong Exp $
+#------------------------------------------------------------------
+# atalk_registry.reg - Service Points for AppleTalk Registry
+#
+# March 1994, Steven Lin
+#
+# Copyright (c) 1995-1997 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: at_registry.reg,v $
+# Revision 3.2.60.3  1996/05/02  08:40:19  dwong
+# Branch: California_branch
+# Commit SMRP-7kFastSwitch, Load Balancing, and AURP Modularity
+#
+# Revision 3.2.60.2  1996/05/01  14:26:19  fox
+# CSCdi55358:  PPP subsystem needs to be more modular
+# Branch: California_branch
+# Make PPP NCPs into real subsystems.  Add them to all images where
+# PPP and the related network protocol are located.  NCPs are dependant
+# on PPP and the related network protocol subsystem but not vice versa.
+# Remove dependancies between Appletalk network code and ATCP code.
+#
+# Revision 3.2.60.1  1996/03/23  01:27:17  slin
+# Branch: California_branch
+#
+# AppleTalk makes its exodus from the idb.
+#
+# Revision 3.2  1995/11/17  08:43:28  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  10:57:35  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.2  1995/11/08  20:50:19  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.1  1995/06/07  20:09:04  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY ATALK atalk_regcode
+
+DEFINE	atalk_shutdown
+/*
+ * Shut down sub-unit of AppleTalk and release memory/resources
+ * where applicable.
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE	atalk_age_neighbor
+/*
+ * Age neighbors
+ */
+	LIST
+	void
+	neighborentry *n
+END
+
+DEFINE	atalk_if_config
+/*
+ * Call any subsystems which want to know when an interface is being
+ * configured.
+ */
+	LIST
+	void
+	idbtype	*idb, boolean enable
+END
+
+DEFINE	atalk_if_operational
+/*
+ * Call any subsystems which want to know when an interface is going
+ * operational after being configured.
+ */
+	LIST
+	void
+	atalkidbtype	*idb
+END
+
+DEFINE	atalk_if_disable
+/*
+ * Call any/all subsystems which want to know when an interface is being
+ * de-configured.
+ */
+	LIST
+	void
+	atalkidbtype *idb
+END
+
+DEFINE  atalk_show_interface_special
+/*
+ * Display routine for special configurations such as Cayman and AURP
+ * tunnels.
+ */
+	LOOP
+	boolean
+	atalkidbtype *idb
+END
+
+DEFINE	atalk_show_private_interface
+/*
+ * Display routine used by various noncore-AppleTalk subsystems to
+ * show private interface.
+ */
+	LIST
+	void
+	atalkidbtype *idb
+END
+ 
+DEFINE  atalk_show_globals
+/*
+ * Display routine used by various noncore-AppleTalk subsystems.
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE  atalk_show_private
+/*
+ * Display private or engineering debugging information.
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE  atalk_show_neighbor
+/*
+ * Display optional information for a neighboring router entry
+ */
+	LIST
+	void
+	neighborentry *n
+END
+
+DEFINE  atalk_show_traffic
+/*
+ * Display optional packet accounting information for optional features
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE	atalk_validate_route
+/*
+ * Inform various protocols that the specifed route was just
+ * deleted. Protocols will then determine if they need to inject
+ * a backup route into the routing table.
+ */
+	LIST
+	void
+	ushort rngstart, ushort rngend
+END
+
+DEFINE  atalk_macip_add_client
+/*
+ * Test routine to add a range of MacIP clients
+ */
+	LIST
+	void
+	parseinfo *csb
+END
+
+DEFINE  atalk_macip_del_client
+/*
+ * Test routine to delete a range of MacIP clients
+ */
+	LIST
+	void
+	parseinfo *csb
+END
+
+DEFINE  atalk_intercept
+/*
+ * grab packets off of the atalk input stream.
+ */
+	LIST
+	void
+	paktype *pak, boolean *intercepted
+END
+
+DEFINE  atalk_special_macaddr
+/*
+ * Generate special MAC address
+ */
+	RETVAL
+	boolean
+	paktype *pak, uchar **daddr
+	0
+	ulong mcasttype
+END
+
+DEFINE  atalk_aurp_FindPathentry
+/*
+ *  Find AURP path entry.
+ */ 
+	STUB
+	void *
+	ushort rngstart, ushort rngend
+END
+
+DEFINE  atalk_aurpif_clear
+/*
+ *   Clear AURP on an interface.
+ */
+	STUB
+	void
+	idbtype *idb
+END
+
+DEFINE atalk_smrp_fs_update_mcache
+/*
+ *  Update the SMRP cache.  The passed argument contains the
+ *  network protocol linktype and packet.
+ */
+	LOOP
+	boolean
+	paktype* pak
+END
+
+DEFINE atalk_smrp_fastswitch
+/*
+ *  Fast switch the AppleTalk SMRP packet.  The passed argument contains the
+ *  packet.
+ */
+	LOOP
+	boolean
+	paktype* pak
+END
+
+DEFINE atalk_smrp_mci_fastswitch
+/*
+ *  Update the SMRP cache.  The passed argument contains the
+ *  HW idb pointer and MCI register pointer.
+ */
+	LOOP
+	boolean
+	hwidbtype* input, mciregtype* mci_regptr, ushort trans_offset,	ushort unaligned
+END
+
+DEFINE  atalk_forceupdate
+/*
+ *  Force DUAL to generate update events.
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE  at_ppp_client_down
+/*
+ *   Remove interface from node list
+ */
+	STUB
+	boolean
+	idbtype *idb
+END
+
+DEFINE  at_ppp_client_up
+/*
+ *   Add and initialize Appletalk PPP interface
+ */
+	STUB
+	boolean
+	atalkidbtype *idb
+END
+
+END REGISTRY ATALK
+
+
+

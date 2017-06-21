@@ -1,0 +1,106 @@
+# $Id: tbridge_registry.reg,v 3.1.8.1 1996/05/04 05:09:17 wilber Exp $
+# $Source: /release/112/cvs/Xsys/tbridge/tbridge_registry.reg,v $
+#------------------------------------------------------------------
+# tbridge/tbridge_registry.reg
+#
+# April 1996, Tony Speakman
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#
+# Service points for the transparent bridging registry
+#------------------------------------------------------------------
+# $Log: tbridge_registry.reg,v $
+# Revision 3.1.8.1  1996/05/04  05:09:17  wilber
+# Branch: California_branch
+#
+# Integrated Routing and Bridging
+# - New file(tbridge_bvi.c) for Bridge-group Virtual Interface
+# functions.
+# - Obsolete tbridge_crb_inline.h with tbridge_irb_inline.h.
+# - Bridge/route decision(tbridge_irb_inline.h).
+# - Learn routable packets(DLLI_IRBPKT) in bridge table.
+# - Move locate_bte_inline() and tbridge_get_arpa_type_inline() to
+#   tbridge_common_inline.h.
+# - Rip out MTR transparent bridging support.
+#
+# Constrained Multicast Flooding
+# - Add the tbridge monitor.
+# - Add the tbridge registry.
+# - Add the entire CMF subsystem.
+# - Convert tbridge flood array to a linked list of tbifd's.
+# - Add the call outs to CMF from the LES, RSP, and PAS forwarding
+#   functions.
+#
+# Revision 3.1  1996/04/21  23:06:51  speakman
+# Placeholders for the CMF subsystem and eventual partition of the
+# bridging registries.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY TBRIDGE
+
+DEFINE tbridge_monitor_queue
+/*
+ * Dispatch functions for queues watched by tbridge_monitor.
+ */
+	CASE
+	void
+	paktype *pak
+	TBM_LAST_QUEUE
+	ulong minor
+END
+
+DEFINE tbridge_monitor_timer
+/*
+ * Dispatch functions for timers watched by tbridge_monitor.
+ */
+	CASE
+	void
+	tbifd_type *tbifd
+	TBM_LAST_TIMER
+	ushort mgd_timer
+END
+
+DEFINE tbridge_cmf_clear
+/*
+ * Callback to free multicast-group data structures.
+ */
+	STUB
+	void
+	spantype *span
+END
+
+END REGISTRY

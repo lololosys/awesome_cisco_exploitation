@@ -1,0 +1,63 @@
+/*# $Id: rspv.link,v 3.1 1996/03/11 07:31:42 jwelder Exp $
+# $Source: /release/111/cvs/Xsys/obj-4k-rsp/rspv.link,v $
+#------------------------------------------------------------------
+# Link file to create rsp images with VIP microcode bundled
+#
+# March 1996, John Welder 
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: rspv.link,v $
+# Revision 3.1  1996/03/11  07:31:42  jwelder
+#         Vip micro code is now only in images:
+#         rsp-kv-mz, rsp-akv-mz, rsp-jv-mz, rsp-ajv-mz, rsp-pv-mz
+#
+#
+# CSCdi49379:  must restrict VIP ucode to specific RSP subsets
+#
+#------------------------------------------------------------------
+# $Endlog$
+# */
+
+
+
+SECTIONS {
+
+	.text . : {
+	    	*(.text)
+		rspv_ucode_bndl.o(.rodata)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata ALIGN(0x2000) : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+	}
+
+	_gp = (. + 0x8000);
+
+	.sdata . : {
+		*(.sdata)
+		edata = .;
+		_edata = .;
+	}
+
+	.sbss . : {
+		__bss_start = .;
+		_fbss = .;
+		*(.sbss) *(.scommon)
+	}
+
+	.bss . : {
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

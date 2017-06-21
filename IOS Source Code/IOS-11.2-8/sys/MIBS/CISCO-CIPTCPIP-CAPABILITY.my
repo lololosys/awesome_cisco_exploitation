@@ -1,0 +1,79 @@
+-- $Id: CISCO-CIPTCPIP-CAPABILITY.my,v 3.2 1995/11/17 08:33:51 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-CIPTCPIP-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-CIPTCPIP-CAPABILITY - Capabilities Agent for CIP TCP/IP MIB.
+--
+-- April 1995, Mike Otto
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-CIPTCPIP-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:33:51  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:49:40  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:09  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+CISCO-CIPTCPIP-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoCipTcpIpCapability MODULE-IDENTITY
+		LAST-UPDATED	"9504280000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for the CISCO-CIPTCPIP-MIB"
+		REVISION	"9504280000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 52 }
+
+ciscoCipTcpIpCapabilityV11R00 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 11.0"
+STATUS		current
+DESCRIPTION	"IOS 11.0 Cisco CIP TCP/IP MIB capabilities"
+
+SUPPORTS	CISCO-CIPTCPIP-MIB
+  INCLUDES	{ ciscoCipTcpIpGroup }
+	
+  VARIATION cipIpForwarding
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipIpDefaultTTL
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+  VARIATION cipTcpConnState
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+::= { ciscoCipTcpIpCapability 1 }
+
+END

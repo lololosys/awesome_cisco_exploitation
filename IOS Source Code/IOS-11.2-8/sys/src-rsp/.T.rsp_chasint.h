@@ -1,0 +1,12 @@
+
+rsp_chasint.h,328
+#define RSPSLOT_7506	42,1307
+#define RSPSLOT_7505	43,1331
+#define RSPSLOT_7507_PROC1	44,1355
+#define RSPSLOT_7507_PROC2	45,1384
+#define RSPSLOT_7513_PROC1	46,1413
+#define RSPSLOT_7513_PROC2	47,1479
+#define RSPSLOT_7000	48,1508
+#define RSPSLOT_7010	49,1532
+#define RSP_NO_SLOT	51,1557
+} slot_mask_t;slot_mask_t55,1638

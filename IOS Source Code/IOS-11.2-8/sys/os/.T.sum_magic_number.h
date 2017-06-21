@@ -1,0 +1,7 @@
+
+sum_magic_number.h,178
+#define __SUM_MAGIC_NUMBER_H__42,1449
+#define MAGIC_VARIABLE 44,1481
+#define MAGIC_VALUE 45,1526
+#define ADD_AROUND(ADD_AROUND56,1796
+#define ADD_AROUND(ADD_AROUND65,2012

@@ -1,0 +1,48 @@
+/* $Id: sdlc_alert1.alt,v 3.2 1995/11/17 18:56:34 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/sdlc_alert1.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management SDLC Alert1
+ *      Retry count expired. 
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: sdlc_alert1.alt,v $
+# Revision 3.2  1995/11/17  18:56:34  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:14:54  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:47:13  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct SdlcAlert1 ##SDLCALERT1 { ?,01,3300
+  , {2104,2031}
+  , {0209
+    , ACT = 0200
+    }
+  , 
+  , {2104,3511,F017     
+    , ACT = 0301, 011D, 010A, 010D, 1204
+   }
+  , {52, {02,remoteDeviceAddr:1},
+         {04,localDeviceAddr:2},
+         {06,linkStatRole:1,nodeType:1},
+         {07,connectionType:1,fullOrHalfDuplex:1,dlcProtocol:1,pointToPointOrMultipoint:1}}, 
+    {8C, {01,nsCount:1,nrCount:1},
+         {02,outstandingFrames:1},
+         {03,lastCntrlFieldReceived:2},
+         {04,lastCntrlFieldSent:2}, 
+         {05,modulus:1},
+         {06,linkStationState:1},
+         {07,replyTimeout:2},
+         {08,lastReceivedNrCount:1}}
+  , {05, {108009,cpName:8,00F409,adapter:8,0021}}
+  }
+

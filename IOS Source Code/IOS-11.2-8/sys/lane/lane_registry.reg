@@ -1,0 +1,778 @@
+# $Id: lane_registry.reg,v 3.5.20.8 1996/07/30 18:19:57 bbenson Exp $
+# $Source: /release/112/cvs/Xsys/lane/lane_registry.reg,v $
+#------------------------------------------------------------------
+# lane registry - for calling functions in lane subsystem
+#
+# April, 1995  -  Steve Jay
+#
+# Copyright (c) 1996, 1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: lane_registry.reg,v $
+# Revision 3.5.20.8  1996/07/30  18:19:57  bbenson
+# CSCdi64226:  Support larger max_frame_size (>1516) for LANE
+# Branch: California_branch
+# First commit of this ddts omitted registry calls out of network.c into
+# the lane subsys.
+#
+# Revision 3.5.20.7  1996/07/11  20:34:37  cyoung
+# Deregister RcvAddresses when client shutsdown/tearsdown.
+# CSCdi61990:  LANE CLIENT: memory leak
+# Branch: California_branch
+#
+# Revision 3.5.20.6  1996/07/11  17:18:00  bbenson
+# CSCdi62539:  ALC needs a registry for obtaining lsv i/f by name
+# Branch: California_branch
+#
+# Revision 3.5.20.5  1996/07/11  00:49:40  bbenson
+# CSCdi61915:  TR Lane doesnt check return value of pak_duplicate()
+# Branch: California_branch
+# Continuation of first commit.  Modified lane registries.
+#
+# Revision 3.5.20.4  1996/06/18  01:32:16  cyoung
+# CSCdi60671:  tr lane support for VTP
+# Branch: California_branch
+#
+# Revision 3.5.20.3  1996/06/06  18:39:02  michellw
+# CSCdi59652:  make generic function for creating/deleting LEC
+# Branch: California_branch
+# The functions, lec_create_client() and lec_delete_client(), are
+# created to do the job.
+#
+# Revision 3.5.20.2  1996/05/17  23:08:13  rbadri
+# CSCdi57916:  bridge_init() add a non-existent registry
+# Branch: California_branch
+# For Bridged ELANs, move lec_bridge_init registry as part of
+# the bridge sub_system.
+#
+# Revision 3.5.20.1  1996/05/09  14:32:28  rbadri
+# Branch: California_branch
+# LANE, UNI3.1 features
+#
+# Revision 3.5.46.1  1996/04/27  07:06:23  cakyol
+# non sync sync from V112_0_2 to ....
+# Branch: LE_Cal_ATM_FR_California_Postsync_960425_branch
+#
+# Revision 3.5.36.3  1996/04/17  23:14:39  rbadri
+# Branch: LE_Cal_V112_0_2_branch
+# Convert TokenRing LANE related functions to registries
+# Move contents of lec_srb* srt/srb_lane.[ch], to facilitate
+# creation of new sub-system.
+#
+# Revision 3.5.36.2  1996/04/16  02:44:13  cakyol
+# goodbye to PVC support for LANE.
+# Branch: LE_Cal_V112_0_2_branch
+#
+# Revision 3.5.36.1  1996/04/08  01:56:50  bbenson
+# Branch: LE_Cal_V112_0_2_branch
+# Sync of LE_Cal to new V112_0_2 sync point (post Port Ready).
+#
+# Revision 3.5.26.3  1996/03/30  02:16:29  sakumar
+# Changes to support sending of FLUSH message on Cat5K ATM LANE module.
+# Branch: LE_Syn_Cal_V111_1_3_branch
+#
+# Revision 3.5.26.2  1996/03/25  02:19:55  cakyol
+# sync LE_Syn_Cal_V111_1_3_branch to LE_Cal_V111_1_0_3_branch
+# Branch: LE_Syn_Cal_V111_1_3_branch
+#
+# Revision 3.5.26.1  1996/03/22  22:54:16  rlowe
+# Non-sync of Synalc3_LE_Cal_V111_1_0_3_merge_branch to V111_1_3
+# yielding LE_Syn_Cal_V111_1_3_branch.
+# Branch: LE_Syn_Cal_V111_1_3_branch
+#
+# Revision 3.5.4.2  1996/03/22  16:18:27  cyoung
+# Add function to find LEC by vlan id
+# Branch: LE_Cal_V111_1_0_3_branch
+#
+# Revision 3.5.4.1  1996/02/27  21:10:12  cakyol
+# non sync sync of LE_Cal_V111_0_16_branch to V111_1_0_3 yielding
+# LE_Cal_V111_1_0_3_branch
+# Branch: LE_Cal_V111_1_0_3_branch
+#
+# Revision 3.5  1996/02/05  18:06:54  rbadri
+# CSCdi47734:  LEC responds to LE_ARP requests even in blocked state.
+# Add another registry call for LE_ARP responses. Respond to LE_ARP
+# requests only if LEC is in Forwarding state and the MAC is not learned
+# through the LEC.
+#
+# Revision 3.4.6.1  1996/02/29  07:48:48  rlowe
+# First pass non-sync sync for Synergy ATM line card to V111_0_16.
+# Branch: Synalc3_Cal_V111_0_16_branch
+#
+# Revision 3.4.4.4  1996/02/16  21:38:22  rbadri
+# Branch: LE_Cal_V111_0_16_branch
+# Scheduler interface changes for LANE client code.
+#
+# Revision 3.4.4.3  1996/01/24  01:36:55  cyoung
+# VTP MIB support and dependant auto-config base. Part II
+# Branch: LE_Cal_V111_0_16_branch
+#
+# Revision 3.4.4.2  1996/01/23  23:54:04  cakyol
+# HSRP over LANE Code review changes:
+# - "interface_up" now works properly with HSRP after
+#   Badri's network.c fix.
+# - additional HSRP mac addresses implemented much
+#   faster on the LANE client.
+# - starting an already running or stopping an already
+#   stopped LANE client now behaves properly.
+# - white space cleanup
+#
+# Branch: LE_Cal_V111_0_16_branch
+#
+# Revision 3.4.4.1  1996/01/11  01:46:15  cakyol
+# non sync sync of LE_Calif_branch to V111_0_16 yielding
+#     LE_Cal_V111_0_16_branch
+#
+# Branch: LE_Cal_V111_0_16_branch
+#
+# Revision 3.4  1995/12/16  00:26:24  pitargue
+# CSCdi45515:  ST MAC and all ones MAC are off by 2 bytes in show bridge
+# fix comments and optimize a if statement
+#
+# Revision 3.3.10.1  1995/12/29  01:06:35  cakyol
+# Initial commits for:
+#
+# LANE Fault Tolerant LECS Servers
+# LANE Fault Tolerant LES Servers
+# HSRP over LANE Client
+#
+# Branch: LE_Calif_branch
+#
+# Revision 3.3  1995/11/20  18:35:56  rbadri
+# CSCdi38662:  Configuring bridging on multiple ATM sub-interfaces causes
+#              hardware reset
+# When a sub-interface is added to the bridge-group, initiate a config
+# change rather than resetting the ATM interface.
+#
+# Revision 3.2  1995/11/17  17:50:30  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  12:23:00  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.2  1995/11/08  21:12:23  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.1.52.2.2.1  1996/02/03  07:07:03  rlowe
+# Non-sync sync of Synalc_catchup_branch to V111_0_5.
+# Branch: Synalc_catchup_pretal_branch
+#
+# Revision 2.1.44.6  1995/10/26  02:30:09  bbenson
+# Branch: Synalc2_LE2_V110_1_0_3_branch
+# Formatting changes...alphabetizing, buffing, polishing, wasting time.
+#
+# Revision 2.1.44.5  1995/10/16  23:45:43  sakumar
+# Added support for Topology Change and LES, BUS, LECS implemented
+# on the Catalyst 5000 ATM Module with RSAR->TSAR firmware
+# implementation of BUS.
+# Branch: Synalc2_LE2_V110_1_0_3_branch
+#
+# Revision 2.1.44.4  1995/09/27  23:26:51  bbenson
+# Branch: Synalc2_LE2_V110_1_0_3_branch
+# - Further buff and polish of setting ACTIVE SAR state.
+# - Moving Topology change, SNMP, proxy, and flush code into Synergy.
+#
+# Revision 2.1.44.3  1995/09/25  15:16:26  bbenson
+# Branch: Synalc2_LE2_V110_1_0_3_branch
+# Restructure part I.  Remove any reference to vlanid in registry calls.
+#
+# Revision 2.1.44.2  1995/09/21  21:50:25  sakumar
+# Added registry call specific to the Catalyst 5000 ATM LAN Emulation
+# Module to ask the Transmit SAR to send up packets after the MAC
+# address has been resolved in order to continue to drive the LEC
+# state machine.
+# Branch: Synalc2_LE2_V110_1_0_3_branch
+#
+# Revision 2.1.44.1  1995/09/11  01:56:16  rlowe
+# Non-sync sync of Synalc2_branch to LE2_V110_1_0_3_branch,
+# yielding Synalc2_LE2_V110_1_0_3_branch.
+#
+# Branch: Synalc2_LE2_V110_1_0_3_branch
+#
+# Revision 2.1  1995/06/07  21:19:29  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BEGIN REGISTRY LANE
+
+DEFINE bridge_delete_vc
+/*
+ * SYNERGY REGISTRY
+ *
+ * Sends a message to the EARL to delete all MAC address entries
+ * riding on this particular VCD.
+ */
+	STUB
+	void
+	lec_info_t *lec_info, ushort vcd
+END
+
+DEFINE lec_bridge_lookup_mac
+/*
+ *
+ * Sends a message to the EARL or to the Bridge to determine if it can 
+ * bridge a MAC address.
+ */
+	STUB
+	boolean
+	lec_info_t *lec_info
+END
+
+DEFINE bridge_set_mac2vc
+/*
+ * SYNERGY REGISTRY
+ *
+ * Sends a message to the EARL to inform it of a new MAC-VC mapping,
+ * after the data direct is discovered and flushed.
+ */
+	STUB
+	void
+	lec_info_t *lec_info, ushort vcd, uchar *mac
+END
+
+DEFINE bus_map_bus_vcds
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lsv_client.c to map incoming to BUS send vcd to
+ * outgoing from BUS multicast forward vcd.
+ */
+	STUB
+	void
+	lsv_client_t *lsv_client
+END
+
+DEFINE is_valid_lane_mtu
+/*
+ * Called from network.c to determine if the requested MTU on the
+ * interface is supportable.
+ */
+	STUB
+	boolean
+	idbtype *swidb, ushort mtu
+END
+
+DEFINE lec_map_bus_vcds
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lec_fsm.c to map incoming to BUS send vcd to
+ * outgoing from BUS multicast forward vcd.
+ */
+	STUB
+	void
+	lec_info_t *lec_info
+END
+
+DEFINE cam_clear_entry
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lec_fsm.c to clear the Synergy CAM entry.
+ */
+	STUB
+	void
+ 	lec_info_t *lec_info, void *cam_entry, uchar *mac
+END
+
+DEFINE cam_set_counter
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lec.c to bump the pacing counter in tsar for this MAC.
+ */
+	STUB
+	void
+ 	void *cam_entry
+END
+
+
+DEFINE lane_configure_client
+/*
+ * Called from within vtp_dep.c to create/delete/modify lane clients 
+ * on VTP enabled ATM interfaces.
+ */
+	STUB
+	boolean
+	idbtype* swidb, boolean create_lec, int lane_type, uchar* \
+	elan_name, int name_size, ulong vlan_id, int vr_rn, int srb_bn
+END
+
+DEFINE lane_data_vencap
+/*
+ * Called from within atm_vencap to encapsulate outbound data.
+ */
+	STUB
+	boolean
+	paktype *pak, long dhost
+END
+
+DEFINE lane_default_mtu
+/*
+ * Called from network.c to set the default MTU for LANE.
+ */
+	STUB
+	unsigned
+	idbtype *swidb
+END
+
+DEFINE lec_bind_vlan_to_vc
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lec_fsm.c to associate a vlanid with a data direct vcd.
+ */
+	STUB
+	void
+ 	lec_info_t *lec_info, ushort vcd
+END
+
+DEFINE lec_bridging_enabled
+/*
+ * Called from lec to check if bridging is enabled.  Always returns
+ * TRUE for Synergy.
+ */
+	STUB
+	boolean
+	idbtype *swidb
+END
+
+
+DEFINE lec_cfg_vlanid
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lec_parser.c to check the validity of the vlanid
+ * that's being configured on the Synergy box.
+ */
+	STUB
+	boolean
+	idbtype *swidb, int vlanid
+END
+
+DEFINE lec_change_vcd_clbit
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from lec_fsm.c to tell rx_sar about the topology change and
+ * conditional learning
+ */
+	STUB
+	void
+	lec_info_t *lec_info, boolean clbit
+END
+
+DEFINE lec_clear_mac
+/*
+ * SYNERGY REGISTRY
+ *
+ * Send a message to the EARL to clear out a specific MAC.
+ */
+	STUB
+	void
+	lec_info_t *lec_info, uchar *mac
+END
+
+DEFINE lec_cpcs_lane
+/*
+ * Called from atm.c to encapsulate LAN emulation data packets.
+ */
+	STUB
+	void
+	paktype *pak
+END
+
+DEFINE lec_enqueue
+/*
+ * Called from within atm.c to enqueue LEC control packets to the LEC
+ * process.
+ */
+	STUB
+	boolean
+	paktype *pak
+END
+
+DEFINE lec_bridge_enqueue
+/*
+ * Called from the bridge code to Queue up a dummy packet with just the
+ * MAC address, to insure triggering of LE_ARP request, for Routers.
+ */
+        STUB
+        void
+        uchar *addr, idbtype *swidb
+END
+
+DEFINE lec_trigger_le_arp
+/*
+ * Called by lec to deque packets from bridge queue and send LE_ARPs
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE find_lec_by_name_on_interface
+/*
+ * Called form vtp_dep.c to check whether a LEC exists for the given
+ * ELAN name and interface.
+ */
+	STUB
+	idbtype*
+	uchar* elan_name, uchar elan_name_length, idbtype* idb
+END
+
+DEFINE find_lec_by_vlanid_on_interface
+/* 
+ * Called from vtp_dep.c to check whether a LEC exists for the given
+ * VLAN ID and interface 
+ */
+	STUB
+	idbtype*
+	unsigned short vlan_id, idbtype* idb
+END
+
+DEFINE lec_process_bridge_messages
+/*
+ * Called from lec.c to pick up packets queued in lec_arp_triggerQ by
+ * the flooding routine in the bridge code to generate LE_ARP requests.
+ * Or process SAR/IPC messages for the synergy platform.
+ */
+	STUB
+	void
+	-
+END
+DEFINE lec_config_change
+/*
+ * Called from the bridge code to notify that there is a change in config
+ * on this sub-interface (adding a bridge-group)
+ */
+   	STUB
+	void
+	void *lane_info
+END
+
+DEFINE lecmib_register_lec_info
+/*
+ * Create the appropriate IF-MIB structures for this LE Client
+ * Called by lec.c for each LEC, before the CONFIGURE phase is executed
+ * lec_info_t is cast as void * so it isn't imported outside the lane
+ * dir.
+ */
+	STUB
+	void
+	void *lec_info_mask
+END
+
+DEFINE lec_port_destroy
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called by the client when it goes admin INACTIVE to inform
+ * the EARL that the port state should be taken down.
+ */
+	STUB
+	void
+ 	lec_info_t *lec_info
+END
+
+DEFINE lec_port_create
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called by the client when it goes admin ACTIVE to inform
+ * the EARL that the port state should be up.
+ */
+	STUB
+	void
+	lec_info_t *lec_info
+END
+
+DEFINE lec_send_topo_change
+/*
+ * Called by the bridge or Synergy code whenever a config BPDU is
+ * generated.  This call will end up generating a LANE topology change
+ * PDU.
+ */
+	STUB
+	boolean
+	lec_info_t *lec_info, boolean TC
+END
+
+DEFINE lecmib_complete_lec_info
+/*
+ * Update the appropriate IF-MIB structures for this LE Client
+ * Called by lec.c for each LEC, after the JOIN phase succeeds
+ * lec_info_t is cast as void * so it isn't imported outside the lane
+ * dir.
+ */
+	STUB
+	void
+	void *lec_info_mask
+END
+
+DEFINE lecmib_deregister_rcv_addr
+/* 
+ * Tell the IF-MIB that a ifRcvAddressAddress has gone away and the
+ * memory is to be deallocated
+ */
+	STUB
+	void
+	void *lec_info_mask
+END
+
+DEFINE lecmib_deregister_lec_info
+/*	
+ * Destroy the IF-MIB structures for a specified LEC
+ *  (ifEntry, ifXEntry, ifStack, and ifRcvAddressEntries)
+ * Called by lec.c when each LEC is destroyed
+ * lec_info_t is cast as void * so it isn't imported outside the lane dir
+ */
+	STUB
+        void
+	void *lec_info_mask
+
+END
+
+DEFINE lecmib_get_lec_index
+/*
+ * Get a value of lecIndex from the platform dependant code.  Added to
+ * support multiple copies of the LANE code running on one system.
+ */
+	STUB
+	long
+	void *lec_info
+END
+
+DEFINE lecmib_count_deleted_SVC
+/*	
+ * Record the IF-MIB counters for the specified SVC before
+ * it is deleted. The LEC MIB needs to keep a running total
+ * of SVC counts--it does it by just tracking the deleted
+ * counts and adding in the existing counts when asked
+ *
+ * Called by lec_fsm.c and lec_pdu.c when an SVC used by the LEC
+ * is destroyed
+ * lec_info_t & lec_vc_t are cast as void * so it isn't imported 
+ * outside the lane dir
+ */
+	STUB
+        void
+	void  *lec_info_mask, 	void  *lec_svc_mask
+END
+
+DEFINE lecs_enqueue
+/*
+ * Called from within atm.c to enqueue LECS control packets to the LECS
+ * process.
+ */
+	STUB
+	boolean
+	paktype *pak
+END
+
+DEFINE les_check_for_reflect
+/*
+ * SYNERGY REGISTRY
+ *
+ * Called from LES to see if this is a "fast-switch" packet and hence
+ * needs to be reflected, since Synergy doesn't do fast switching.
+ */
+	STUB
+	boolean
+	paktype *pak
+END
+
+DEFINE lsv_enqueue
+/*
+ * Called from within atm.c to enqueue LE Server control packets to
+ * the LE Server process.
+ */
+	STUB
+	boolean
+	paktype *pak
+END
+
+DEFINE lsv_find_by_name_on_interface
+/*
+ * Called from alc_lecmsg.c to check whether an LES exists for the given
+ * ELAN name and interface.
+ */
+	STUB
+	idbtype*
+	uchar* elan_name, uchar elan_name_length, hwidbtype* hwidb
+END
+
+DEFINE tbridge_lane_bte_update
+/*
+ * Update Bridge table entries from the LAN Emulation client code.
+ */
+        STUB
+        void
+        void *lec_info, uchar *addr, ushort vcd, ushort lec_state
+END
+ 
+DEFINE tbridge_lane_bte_ready
+/*
+ * For Proxy LE_ARP responses, verify that BTE entry exists and is
+ * complete.
+ */
+        STUB
+        boolean
+        void *lec_info, uchar *addr
+END
+
+DEFINE tbridge_lane_bte_exists
+/*
+ * To insure that a bridge table entry exists for a MAC
+ */
+        STUB
+        boolean
+        void *lec_info, uchar *addr
+END
+
+
+DEFINE tbridge_lane_bte_flooding
+/*
+ * To make sure that the BTE is in flooding state so that we can move it
+ * to flushing state.
+ */
+        STUB
+        boolean
+        void *lec_info, uchar *addr
+END
+
+DEFINE tbridge_lane_arp_respond
+/*
+ * To insure that we can respond to LE_ARP responses for this MAC
+ */
+        STUB
+        boolean
+        void *lec_info, uchar *addr
+END
+
+
+DEFINE lec_hsrp_action
+/*
+ * actions that an LEC has to perform when it becomes an
+ * HSRP master or slave.
+ */
+	STUB
+	void
+	idbtype *idb, boolean activate, uchar hsrp_group
+END
+
+DEFINE tr_lane_start
+/*
+ * To initialize TR_LANE 
+ */
+ 	STUB
+	void
+	-
+END
+
+DEFINE tr_lane_add_vring_interface
+/*
+ * Registry to keep Synergy compilation happy
+ */
+	STUB
+	boolean
+	hwidbtype *hwidb, idbtype *swidb, ushort elan_rn, uchar srb_bn,\
+	ushort vr_rn
+END
+
+DEFINE tr_lane_srb_arp_req
+/*
+ * Registry to keep Synergy compilation happy
+ */
+	STUB
+	void
+	lec_info_t *lec_info, paktype *pak
+END
+
+DEFINE tr_lane_srb_enq
+/*
+ * Wrapper for calling srb_enq
+ */
+	STUB
+	void
+	lec_info_t *lec_info, paktype *pak
+END
+
+DEFINE tr_lane_tring_getlink
+/*
+ * Wrapper for calling tring_getlink
+ */
+	STUB
+	long
+	paktype *pak
+END
+
+DEFINE tr_lane_tring_parse_packet
+/*
+ * Wrapper for calling tring_parse_packet
+ */
+	STUB
+	iqueue_t
+	hwidbtype *hwidb, paktype *pak, uchar *sniff_ptr
+END
+
+DEFINE tr_lane_vrforward_pak
+/*
+ * Wrapper for calling vrforward_pak
+ */
+	STUB
+	void
+	lec_info_t *lec_info, paktype *pak
+END
+
+DEFINE lane_tr_vencap
+/*
+ * Wrapper for tr_vencap
+ */
+	STUB
+	boolean
+	paktype *pak, long address
+END
+
+DEFINE tr_lane_vrfind_ringgroup
+/*
+ * Wrapper for vrfind_ringgroup
+ */
+	STUB
+	tr_vgrouptype *
+	ushort vr_rn
+END
+
+DEFINE tr_lane_lec_srb_running
+/*
+ * Registry to find out if lec_srb_running is true
+ */
+	STUB
+	boolean
+	-
+END
+
+DEFINE lec_tr_lane_present
+/*
+ * Reverse of tr_lane_lec_srb_running
+ */
+	STUB
+	void
+	boolean value
+END
+
+DEFINE lec_init_idb
+/*
+ * Registry function to be invoked from TRLANE code to init idb
+ */
+	STUB
+	lec_info_t *
+	idbtype *swidb
+END
+END REGISTRY
+
+
+

@@ -1,0 +1,125 @@
+#!/bin/sh -- # This line is needed by perl to prevent looping
+eval 'exec perl5 -S $0 ${1+"$@"}'
+	if 0;
+'di';
+'ig00';
+# $Id: order_find,v 3.1.2.1 1996/06/27 22:48:15 jpfeifer Exp $
+# $Source: /release/112/cvs/Xsys/scripts/order_find,v $
+#------------------------------------------------------------------
+# order_find -- Place Gaia .o files into the correct link order
+#
+# June 1996, Jason Pfeifer
+#
+# Copyright (c) 1996, 1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: order_find,v $
+# Revision 3.1.2.1  1996/06/27  22:48:15  jpfeifer
+# CSCdi61574:  order_find was created to solve gaia link order problem
+# Branch: California_branch
+#
+# Revision 3.1  1996/06/27  22:31:35  jpfeifer
+# order_find script to solve gaia link-order problem
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+#place command line arguments into template array and scrambled
+# array separated by magic ':' argument
+while (scalar(@ARGV)) {
+            $arg = shift(@ARGV);
+            last if ($arg eq ':');
+            if ($arg =~ /:/) {
+                # the user combined the colon separator with another
+                # arg... do the right thing for these cases:
+                #     argA: argB
+                #     argA :argB
+                #     argA:argB
+                local($before, $after) = split(':', $arg, 2);
+                unshift(@ARGV, $after) if ($after ne '');
+                push(@template_array, $before) if ($before ne '');
+                last;
+            }
+            push(@template_array, $arg);
+
+}
+# now create an associative list for the scrambled entries
+@save_scrambled = @ARGV;
+while (scalar(@ARGV)) {
+    $arg = shift(@ARGV);
+    $scrambled{$arg}++;
+}
+
+# If template object file appears in Gaia object file list, print
+# the entry and mark the element as used.
+while (scalar(@template_array)) {
+    $template = shift(@template_array);
+    if ($scrambled{$template}) {
+	print $template, ' ';
+	$scrambled{$template} = 0;
+    }
+}
+
+# Print left over Gaia o's that were not in template list. Retain
+# original command line ordering.
+foreach $arg (@save_scrambled) {
+    if ($scrambled{$arg}) {
+	print $arg, ' ';
+    }
+}
+
+# print out final newline 
+print "\n";
+
+exit 0;
+
+##############################################################################
+
+	# These next few lines are legal in both Perl and nroff.
+
+.00;			# finish .ig
+ 
+'di			\" finish diversion--previous line must be blank
+.nr nl 0-1		\" fake up transition to first page again
+.nr % 0			\" start at page 1
+'; __END__ ############# From here on it's a standard manual page ############
+.TH order_find 1 "June 10, 1996"
+.AT 3
+.SH NAME
+order_find \- Perl script to place .o's into the correct link order
+.SH SYNOPSIS
+order_find [<list of template .o's> : <list of Gaia .o's>]
+.SH DESCRIPTION
+.I 
+.br
+order_find arranges given object files into the same order as a supplied 
+link order template.
+The link order template, as well as the list of Gaia files
+should be a space seperated list of object files.
+Order_find will arrange the Gaia object files into the same order as the
+link order template.  
+
+If there are more objects in the list of Gaia object
+files than there are in the template, order_find will append the extra 
+object files to the end of the output. 
+.br
+.SH EXAMPLE
+example: order_find 1.o 2.o 3.o : 3.o 2.o 4.o 1.o
+.br
+result: 1.o 2.o 3.o 4.o
+.br
+.SH ENVIRONMENT
+No environment variables are used.
+.SH FILES
+sys/makefile.*
+.br
+sys/*.make
+.br
+sys/obj-*-*/makefile*
+etc.
+.SH AUTHOR
+Jason Pfeifer
+.SH "SEE ALSO"
+perl(1)
+.ex

@@ -1,0 +1,449 @@
+# $Id: snmp_registry.reg,v 3.7.28.1 1996/03/28 16:47:01 jjohnson Exp $
+# $Source: /release/111/cvs/Xsys/snmp/snmp_registry.reg,v $
+#------------------------------------------------------------------
+# snmp_registry.reg - Service Points for SNMP Registry
+#
+# April 1994, Jeffrey T. Johnson
+#
+# Copyright (c) 1994-1996 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: snmp_registry.reg,v $
+# Revision 3.7.28.1  1996/03/28  16:47:01  jjohnson
+# CSCdi50399:  SNMP can drive CPU utilization to over 90%
+# Make SNMP processes default to low priority, and add a hidden config
+# command to allow customers to change it
+# Branch: California_branch
+#
+# Revision 3.7  1996/01/20  02:36:05  jjohnson
+# CSCdi47220:  need snmp packet debugging
+#
+# Revision 3.6  1995/12/16  00:14:38  sdurham
+# CSCdi44645:  MAC illegal address trap needs snmp-server host and enable
+# cli support.
+#    moved all parser commands related to mib to appropriate mib
+#    subsystem.
+#
+# Revision 3.5  1995/12/14  08:27:30  jjohnson
+# CSCdi44148:  rationalize snmp library services
+#
+# Revision 3.4  1995/11/20  22:27:33  sdurham
+# CSCdi42520:  IF MIB breaks modularity in oddball images
+#        fixed IFMIB subsystem, and moved linkUp/Down trap code to IFMIB.
+#
+# Revision 3.3  1995/11/18  00:21:39  jjohnson
+# CSCdi43548:  need mechanism to enable multiple traps for a subsystem
+#
+# Revision 3.2  1995/11/17  18:58:39  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:16:22  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.3  1995/11/08  21:25:40  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.2  1995/08/17  04:24:36  bchan
+# CSCdi36821:  SNMP trap process started without SNMP being configured
+#
+# Revision 2.1  1995/06/07  22:48:35  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY SNMP
+
+DEFINE	load_mib
+/*
+ * service that should be called by snmp subagents to make the
+ * snmp agent aware of subagent mib support
+ */
+	STUB
+	void
+	const ObjectInfo *mib, const uint num
+END
+
+
+DEFINE  snmp_engine
+/*
+ * SNMP packet processing engine.  Given an input packet of a given
+ * length and an output buffer of a given size, the SNMP request is
+ * processed and a response packet is built in the response buffer
+ * with the actual length also returned.  Both SNMPv1 and SNMPv2
+ * packets are handled.
+ */
+	STUB
+	void
+	addrtype      *src_address, \
+	unsigned char *in_packet, \
+	unsigned int   in_packet_len, \
+	unsigned char *out_packet, \
+	unsigned int  *out_packet_len
+END
+
+DEFINE	snmp_trap
+/*
+ * SNMP trap generation engine.  Given a generic trap number, a specific
+ * trap number, an enterprise object identifier, a NULL-terminated array
+ * of pointers to variable binding object identifiers, and a string
+ * representing the value of the snmpTrapOID object identifier, snmpv1 and
+ * snmpv2 trap messages will be generated and sent to all registered
+ * network management stations.
+ *
+ * The enterprise parameter may be set to NULL if the value of sysObjectId is
+ * to be used as the enterprise.
+ *
+ * The entV2Trap parameter is ignored unless this is an enterprise-specific
+ * trap.  If this is an enterprise-specific trap and entV2Trap is NULL,
+ * the trap will only be sent to SNMPv1 management stations
+ */
+	LIST
+	void
+	long            genTrap, \
+	long            specTrap, \
+	OID	      **varBindList, \
+	OID            *enterprise, \
+	char           *entV2Trap
+END
+
+
+DEFINE	snmp_trap_address
+/*
+ * an snmpv1 trap has an agent_addr field that should contain the source
+ * address of the trap.  this registry provides a mechanism for the ip
+ * code to notify the snmp code of the proper source address, potentially
+ * based on the trap destination address.
+ */
+	STUB
+	ipaddrtype
+	ipaddrtype	destination
+END
+
+DEFINE	snmp_send_trap
+/*
+ * Once an snmp trap message has been constructed and is ready to transmit,
+ * this registry is called so that the appropriate protocol stack will take
+ * the message and send it.  The return status indicates if the trap message
+ * has been accepted by the transport layer.
+ *
+ * Note well: if a message is accepted by a transport layer, but cannot be
+ * sent (due to buffer overflows or other restrictions), an appropriate
+ * protocol error counter should be incremented.
+ */
+	RETVAL
+	boolean
+	OctetString *taddress, \
+	unsigned char *message_ptr, \
+	long message_len
+	3
+	int tdomain
+END
+
+DEFINE	snmp_add_host
+/*
+ * This registry is invoked by SNMP when an SNMP host has been configured
+ */
+	LIST
+	void
+	ipaddrtype address
+END
+
+
+DEFINE	snmp_delete_host
+/*
+ * This registry is invoked by SNMP when an SNMP host has been deconfigured
+ */
+	LIST
+	void
+	ipaddrtype address
+END
+
+
+DEFINE	snmp_process
+/*
+ * When enabling or disabling SNMP service in the box, scan through a
+ * list of processes to be created or destroyed.  For example, IP and
+ * atalk SNMP listeners are spawned and on a Brut, various bridging
+ * related SMP code is enabled.
+ */
+	LIST
+	void
+	boolean createflag
+END
+
+DEFINE	snmp_priority
+/*
+ * Instructs transport-specific SNMP processes to change the priority
+ * at which the process is operating
+ */
+	LIST
+	void
+	process_priority_t priority
+END
+
+DEFINE	snmp_show
+/*
+ * Show snmp command
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE	snmp_access_check
+/*
+ * validate the source address of an snmp packet in terms of the access
+ * list that is attached to an SNMPv1 community
+ */
+	RETVAL
+	boolean
+	int access_list, addrtype *address
+	ADDR_MAX
+	int addresstype
+END
+
+DEFINE	snmp_debug
+/*
+ * checks the status of an snmp debug flag
+ */
+	STUB
+	boolean
+	int debug_flag
+END
+
+DEFINE  process_snmp_management_pdu
+/*
+ * When the snmp agent receives a "management" PDU (i.e. anything other
+ * than a get*-request or set-request pdu), this service will be called.
+ * Entities interested in SNMP management PDUs should register with this
+ * service.  Returns TRUE if the PDU was handled.
+ */
+	LOOP
+	boolean
+	Pdu *pdu
+END
+
+DEFINE  snmp_packet_source
+/*
+ * When an SNMP subagent is processing a variable binding, it may need
+ * to know the source of the packet from which the variable binding was
+ * extracted.  In particular, the ILMI MIB subagent processing depends
+ * upon the transport from which the request was received.  This service
+ * reports the source address of the SNMP packet that is currently being
+ * processed (or of the last packet processed if one is not currently
+ * being processed)
+ */
+	STUB
+	addrtype *
+	-
+END
+
+DEFINE  add_snmp_view
+/*
+ * Permits subagents (particularly ILMI) to create mib views to control
+ * access to their mibs
+ */
+	STUB
+	boolean
+	char    *name, \
+	char    *subtree, \
+	long     viewtype, \
+	long     storagetype
+END
+
+DEFINE  add_snmp_community
+/*
+ * Permits subagents (particularly ILMI) to create communities to allow
+ * access to the snmp master agent
+ */
+	STUB
+	boolean
+	char    *community, \
+	char    *viewname, \
+	int      accesslist, \
+	long     privileges
+END
+
+DEFINE snmp_init
+/*
+ * Callback which allows SNMP dependent initializations to be performed
+ * after SNMP has initialized.
+ */
+    STUB
+    void
+    -
+END
+
+
+DEFINE	snmp_ping_validate
+/*
+ * validate ping parameters received via snmp.  possible return values
+ * are documented in sys/snmp/sr_pingmib.h
+ */
+DATA
+	typedef struct _ciscoPingEntry_t ciscoPingEntry;
+END DATA
+	RETVAL
+	int
+	ciscoPingEntry *pingEntry
+	ADDR_MAX
+	int addresstype
+END
+
+
+DEFINE snmp_ping_activate
+/*
+ * initiate a ping sequence using (previously validated) ping parameters
+ * received via snmp
+ */
+	CASE
+	void
+	ciscoPingEntry *pingEntry
+	ADDR_MAX
+	int addresstype
+END
+
+DEFINE OctetStringToIP
+/*
+ * SNMP Research lib routine called by a MIB Method routine
+ */
+        STUB
+        ulong
+        OctetString *os
+END
+
+DEFINE OctetStringToUlong
+/*
+ * SNMP Research lib routine called by a MIB Method routine
+ */
+        STUB
+        ulong
+        OctetString *os
+END
+
+DEFINE	snmp_host_nvgen
+/*
+ * NV generation for snmp host configuration command
+ */
+	LIST
+	void
+	ulong flags
+END
+
+DEFINE  ciscoConfigManEvent
+/*
+ * This service should be called when a configuration event occurs
+ */
+	LIST
+	void
+	int instance
+END
+
+DEFINE	Trap_cfg_nvwrt
+/*
+ * NV generation for "snmp enable traps" command
+ * Passing argument csb in order to get the command string.
+ * Each function determines the display based on its own variables.
+ */
+	LIST
+	void
+	parseinfo *csb
+END
+
+DEFINE	Trap_cfg_set
+/*
+ * Enable/disable SNMP Traps of various trap types via configuration command.
+ * Three arguments:
+ *	enable:	value of true or false for enable or disable
+ *	subsys:	bitmap which indicates which subsystems are having their
+ *		traps configured.  typicially only one bit will be set
+ *		unless all traps are being enabled or disabled
+ *	traps:	bitmap which indicates which subsustem-specific traps are
+ *		being configured.  the meaning is subsystem-dependant
+ */
+	LIST
+	void
+	boolean enable, \
+	uint subsys,	\
+	uint traps
+END
+
+DEFINE	SnmpTrapFeProcess
+/*
+ * When enabling or disabling SNMP service in the box, the trap process
+ * is created and destroyed accordingly.
+ */
+	LIST
+	void
+	boolean createflag
+END
+
+DEFINE	Trap_freq_nvwrt
+/*
+ * NV generation for "snmp trap-frequency" command
+ * Passing argument csb in order to get the command string.
+ * Each function determines the display based on its own variables.
+ *
+ * WARNING - the below case is ONLY for the mac security trap, and
+ * should not be used anywhere else without prior approval from the
+ * mib police!!
+ */
+	LIST
+	void
+	parseinfo *csb
+END
+
+DEFINE	Trap_freq_set
+/*
+ * setting SNMP Trap frequency of various trap types via configuration command.
+ * Three arguments:
+ *	enable:	value of true or false for enable or disable
+ *	subsys:	bitmap which indicates which subsystems are having their
+ *		traps configured.  typicially only one bit will be set
+ *		unless all traps are being enabled or disabled
+ *	traps:	bitmap which indicates which subsustem-specific traps are
+ *		being configured.  the meaning is subsystem-dependant
+ *
+ * WARNING - the below case is ONLY for the mac security trap, and
+ * should not be used anywhere else without prior approval from the
+ * mib police!!
+ */
+	LIST
+	void
+	boolean enable, \
+	uint subsys,	\
+	uint traps
+END
+
+END REGISTRY

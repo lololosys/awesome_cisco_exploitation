@@ -1,0 +1,67 @@
+/* $Id: tn3270s_alert2.alt,v 3.1.4.1 1996/05/17 11:42:37 ppearce Exp $
+ * $Source: /release/112/cvs/Xsys/snanm/tn3270s_alert2.alt,v $
+ *------------------------------------------------------------------
+ * tn3270 server alert template
+ *
+ * Jan 1996, Barry Chan
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *
+ *------------------------------------------------------------------
+ * $Log: tn3270s_alert2.alt,v $
+# Revision 3.1.4.1  1996/05/17  11:42:37  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.1  1996/03/21  03:31:40  bchan
+# CSCdi52147:  Add tn3270 server new files to IbuMod_Calif_branch
+# Branch: IbuMod_Calif_branch
+#
+# Revision 3.1  1996/03/20  07:07:49  bchan
+# *** empty log message ***
+#
+ * $Endlog$
+ */
+/* 
+ * $Id: tn3270s_alert2.alt,v 3.1.4.1 1996/05/17 11:42:37 ppearce Exp $
+ *------------------------------------------------------------------
+ * tn3270s_alert2.h
+ *
+ * Michael Boe, Fri Feb  2 01:09:53 1996
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc. 
+ *------------------------------------------------------------------
+ * $Log: tn3270s_alert2.alt,v $
+# Revision 3.1.4.1  1996/05/17  11:42:37  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.1  1996/03/21  03:31:40  bchan
+# CSCdi52147:  Add tn3270 server new files to IbuMod_Calif_branch
+# Branch: IbuMod_Calif_branch
+#
+# Revision 2.1.2.1  1996/02/04  04:04:41  mboe
+# Branch: Tn3270server_branch
+# add DLUR alerts; add another tn3270s generic alert.
+#
+# Revision 2.1  1996/02/02  06:11:14  mboe
+# new files for tn3270-server
+#
+ * $Endlog$
+ */
+/*
+** - TN3270S Alert 2:  no memory for operation
+** really, no memory to create LU or Telnet control block 
+** for tn3270 session
+*/
+static const struct Tn3270S2 ##TN3270S2 { ?,01,5008
+  , {0106,800A}         // p-causes: memory,out-of-resource
+  , {0106,              // u-causes: out-of-memory
+    , ACT = 0115        //   review memory usage
+    }
+  , {8029,32A0          // i-causes: not enough memory in ctl-blk pools
+    , ACT = 1017        //   install more memory,
+    , DET = {82213d01,cardSlotAndPort:7}
+    }
+  ,                     // f-causes: none
+  ,
+  }

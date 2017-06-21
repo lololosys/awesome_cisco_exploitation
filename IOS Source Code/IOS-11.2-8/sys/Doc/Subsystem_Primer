@@ -1,0 +1,206 @@
+# $Id: Subsystem_Primer,v 3.2.8.1 1996/03/26 18:29:04 gglick Exp $
+
+          Title: Subsystem Primer
+           Date: 30-August-93
+        Version: 1.0
+
+Copyright (c) 1993-1996 by cisco Systems, Inc.
+
+The document briefly describes the programming interface and developer
+hooks for defining subsystems.
+
+Subsystems
+==========
+
+Subsystems are effectively discrete code modules, supporting various
+functions of an embedded system.
+
+In the current scheme, subsystems can come in one of 6 classes
+
+	o Kernel
+	o Library
+	o Driver
+	o Protocol
+	o Managment
+	o Registry
+
+Effectively, there is no difference in the functions that the different
+classes provide. The breakdown is to aid in sorting out things like
+initialization order, not enforcing characteristics.
+
+The fundamental point to subsystems is that it allows images to be
+compiled that have the minimum of link requirements. Certainly,
+subsystems should *not* be dependant on each other in order to
+resolve links. See the documentation on function registries if
+further pointers are needed here.
+
+Definition
+==========
+
+A subsystem definition usually looks something like
+
+#define FOO_MAJVERSION   1
+#define FOO_MINVERSION   0
+#define FOO_EDITVERSION  1
+
+SUBSYS_HEADER(foo, FOO_MAJVERSION, FOO_MINVERSION, FOO_EDITVERSION,
+              foo_subsys_init, SUBSYS_CLASS_DRIVER,
+              "seq: bar, wibble"
+	      "req: bar");
+
+This defines a driver subsystem called "foo". "foo" is initialized by
+calling the entry point, foo_subsys_init(). When the system is being
+initialized "foo" must be initalized after "bar" and "wibble". Finally,
+"foo" requires "bar" to be present for it to work properly.
+
+The header definition must appear somewhere in the group of source
+files that represent the subsystem module. There's no rules for
+where it has to appear, short of the fact that the subsystem header
+information must be compiled into the text segment (as that's the
+block of memory that's scanned for the subsystem information).
+
+Subsystem Properties
+====================
+
+If life were simple, all subsystems could be initialized in a random
+order without needing any other subsystems to be present.
+
+Unfortunately, in the real world, there are subsystems that depend on
+others being initialized before them. There are also others than
+depend on subsystems being present for them to operate at all (e.g.
+"ipservice" needs "ip" to be present to work).
+
+These dependancies are specified by using "properties". These are just
+strings that the subsystem can define in the header that control various
+aspects of their initialization and startup.
+
+There are currently two types of property available
+
+	o "seq:" - sequence
+
+          This is used to stipulate subsystems that must be initialized
+          before this subsystem. Not all the subsystems mentioned in this
+          list have to be there, but if they are, they have to start
+          first. Subsystems listed here must be in the same class as the
+          subsystem that the list belongs to.
+
+          Example:
+
+          "seq: sub1, sub2, sub3"
+
+          This defines a sequence property for the subsystem stating that
+          if sub1, sub2 or sub3 are present, they must start before this
+          one
+
+	o "req:" - requirement
+
+          This is used to stipulate subsystems that *must* be present
+          for the subsystem to operate. All subsystems listed must be
+          present. Subsystems here can be of any class.
+
+          Example:
+
+          "req: sub1"
+
+          This defines a requirement property for the subsystem stating
+          that sub1 must be present for this subsystem to start.
+
+The two properties above do not have to be similar or a subset of one or
+other. In fact, they can be completely different if the subsystem doesn't
+care about the initialization order of the subsystems it requires.
+
+The property must start with one of the property identifiers (i.e. either
+"seq:" or "req:"). After that, most strings are fair game. Information can
+be any combination of names, spaced by whitespace and/or commas. Whitespace
+in and around names is absorbed when parsing individual items.
+
+There's space for two property lists in the header currently. Blank
+properties or Don't Cares can be specified by using a NULL pointer.
+Properties can appear in any order in the header or even multiple times.
+Two "seq:" properties, for example, will be concatanated together to form
+one list.
+
+Nuts'n'Bolts
+============
+
+SUBSYS_HEADER is a macro definition that actually fills in the
+developer-visible portions of the subsystem structure. The subsystem
+structure is, in it's entirety -
+
+struct subsystype_ {
+    ulong magic1;
+    ulong magic2;
+    ulong header_version;
+    ulong kernel_majversion;
+    ulong kernel_minversion;
+    char *namestring;
+    ulong subsys_majversion;
+    ulong subsys_minversion;
+    ulong subsys_editversion;
+    subsys_init_type *init_address;
+    ulong class;
+    ulong ID;
+    char *properties[SUBSYS_PROPERTIES_MAX];
+};
+
+The 64-bit magic number is used to find the subsystem headers in the text
+segment. The kernel versions are set by the system when the module is
+compiled and these are checked by the system at run time to ensure that the
+subsystem is of the right version to run with the kernel. The ID value is
+a unique numeric value assigned to each subsystem when it is discovered by
+the kernel.
+
+The initialization function is defined as 
+
+    void foo_subsys_init (subsystype *subsys)
+
+The subsys pointer that is passed in is not currently used by any of
+the subsystems. However, it will probably be used in the future to
+allow subsystems to register for a REG_SUBSYS registry (using the
+ID field as a key).
+
+
+What am I?
+==========
+
+Currently, the intended order of subsystem startup is
+
+- Registry initialization:
+
+    	- Subsystem discovery (but not initialization)
+    	- Registry initialization
+
+- Kernel initialization
+	- First IDB initialziation
+	- Heap checking
+	- Memory Pool initialization
+	- Packet Pool initialization
+	- generic network-level driver and IDB support initialization
+
+- Driver/device initialization
+	- Platform-specific driver/device initialization
+	- Driver subsystem initialization
+	- Platform-specific serial line initialization
+	- IDB final initialization
+	- RXTYPE flags initialization
+
+- Protocol subsystem initialization
+
+- Library subsystem initialziation
+
+- Mangagement subsystem initialization
+
+- Major system processes are started
+	- Critical Background
+	- Net Background
+	- Once/second background
+
+
+What class of subsystem you choose for your code should depend primarily
+on when it should be initialized. The bulk of the subsystems currently
+are Drivers and Protocols. In the future, some Kernel subsystems will
+be created (probably console drivers and the like) along with Library
+subsystems (media encapsulation/de-encapsulation support).
+
+
+

@@ -1,0 +1,67 @@
+-- $Id: CISCO-ENVMON-CAPABILITY.my,v 3.2 1995/11/17 08:34:04 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-ENVMON-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-ENVMON-CAPABILITY.my: CISCO-ENVMON-MIB AGENT-CAPABILITIES
+--
+-- January 1995, Sandra Durham
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-ENVMON-CAPABILITY.my,v $
+--Revision 3.2  1995/11/17  08:34:04  hampton
+--Remove old entries from the RCS header logs.
+--
+--Revision 3.1  1995/11/09  10:49:50  shaker
+--Bump version numbers from 2.x to 3.x.
+--
+--Revision 2.1  1995/06/07  20:00:20  hampton
+--Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-ENVMON-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoEnvMonCapability MODULE-IDENTITY
+		LAST-UPDATED	"9501230000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for CISCO-ENVMON-MIB"
+		REVISION	"9501230000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 33 }
+
+ciscoEnvMonCapabilityV10R03 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.3"
+STATUS		current
+DESCRIPTION	"Cisco Environmental Monitor MIB capabilities"
+
+SUPPORTS	CISCO-ENVMON-MIB
+INCLUDES	{ ciscoEnvMonMIBGroup }
+
+	::= { ciscoEnvMonCapability 1 }
+
+END

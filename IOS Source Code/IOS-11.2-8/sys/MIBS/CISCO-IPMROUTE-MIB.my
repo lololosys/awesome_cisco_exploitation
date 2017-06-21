@@ -1,0 +1,389 @@
+-- $Id: CISCO-IPMROUTE-MIB.my,v 3.1.62.1 1996/06/27 07:31:12 jjohnson Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/CISCO-IPMROUTE-MIB.my,v $
+-- *****************************************************************
+-- IPMROUTE-MIB.my:  IP multicast routing table MIB file
+--
+-- August 1995, Dino Farinacci/Anke Dosedal
+--
+-- Copyright (c) 1995-1996 by cisco Systems, Inc.
+-- All rights reserved.
+--
+-- *****************************************************************
+-- $Log: CISCO-IPMROUTE-MIB.my,v $
+-- Revision 3.1.62.1  1996/06/27  07:31:12  jjohnson
+-- CSCdi61124:  Spurious Accesses Recorded in build_snmpv1_response
+-- Fix definition and implementation of ciscoIpMRouteNextHopMacHdr
+--
+-- Revision 3.1  1995/11/09  10:49:58  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.4  1995/10/03  21:03:13  anke
+-- CSCdi41459:  Definitions in CISCO-IPMROUTE-MIB need to be clarified
+--
+-- Revision 2.3  1995/09/17  05:37:12  thille
+-- CSCdi40467:  MIBs should reference source documents
+-- Fix glitch in compliance statement.
+--
+-- Revision 2.2  1995/09/15  20:29:51  thille
+-- CSCdi40467:  MIBs should reference source documents
+-- Add a comment explaining what draft RFC or ATM Forum document each of
+-- the mibs was derived from.  Also fix a few syntax problems in one of
+-- the MIBs found by smicng.
+--
+-- Revision 2.1  1995/09/01  21:46:58  anke
+-- CSCdi39742:  added ipmroute objects in cisco OID space
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-IPMROUTE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY,
+	OBJECT-TYPE,
+	Integer32,
+	Gauge32,
+	TimeTicks
+		FROM SNMPv2-SMI
+	MODULE-COMPLIANCE,
+	OBJECT-GROUP
+		FROM SNMPv2-CONF
+	TruthValue
+		FROM SNMPv2-TC
+	ipMRouteEntry, 
+	ipMRouteNextHopEntry
+		FROM IPMROUTE-MIB
+	ciscoExperiment                  
+		FROM CISCO-SMI;
+
+ciscoIpMRouteMIB MODULE-IDENTITY
+    LAST-UPDATED "9610110000Z"
+    ORGANIZATION "ciscoSytems"
+    CONTACT-INFO
+            " cisco Systems, Inc.
+              170 Tasman Drive
+              San Jose, CA
+              EMail: cs-snmp@cisco.com"
+    DESCRIPTION
+            "The MIB module for management of IP Multicast routing, but
+            independent of the specific multicast routing protocol in
+            use."
+    REVISION		  "9610110000Z"
+    DESCRIPTION
+	    "Obsolete ciscoIpMRouteInLimit and replaced with
+	    ciscoIpMRouteInLimit2."
+    ::= { ciscoExperiment 2 }  -- To be moved to ciscoMgnt or IETF space
+
+
+ciscoIpMRouteMIBObjects OBJECT IDENTIFIER ::= { ciscoIpMRouteMIB 1 }
+
+ciscoIpMRoute      OBJECT IDENTIFIER ::= { ciscoIpMRouteMIBObjects 1 }
+
+
+-- the Additional IP Multicast Routing MIB-Group
+--
+-- an extended collection of objects providing information about
+-- IP Multicast Groups
+
+ciscoIpMRouteTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF CiscoIpMRouteEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The (conceptual) table containing multicast routing
+            information for IP datagrams sent by particular sources to
+            the IP multicast groups known to this router. This table is 
+            augmented to the ipMRouteTable."
+    ::= { ciscoIpMRoute 2 }
+
+ciscoIpMRouteEntry OBJECT-TYPE
+    SYNTAX     CiscoIpMRouteEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry (conceptual row) containing the multicast routing
+            information for IP datagrams from a particular source and
+            addressed to a particular IP multicast group address."
+    AUGMENTS { ipMRouteEntry } 
+    ::= { ciscoIpMRouteTable 1 }
+
+CiscoIpMRouteEntry ::= SEQUENCE {
+    ciscoIpMRoutePruneFlag        TruthValue,
+    ciscoIpMRouteSparseFlag       TruthValue,
+    ciscoIpMRouteConnectedFlag    TruthValue,
+    ciscoIpMRouteLocalFlag        TruthValue,
+    ciscoIpMRouteRegisterFlag     TruthValue,
+    ciscoIpMRouteRpFlag           TruthValue,
+    ciscoIpMRouteSptFlag          TruthValue,
+    ciscoIpMRouteBps              Gauge32,
+    ciscoIpMRouteMetric           Integer32,
+    ciscoIpMRouteMetricPreference Integer32,
+    ciscoIpMRouteInLimit          Integer32,
+    ciscoIpMRouteLastUsed         TimeTicks,
+    ciscoIpMRouteInLimit2         Gauge32
+}
+
+ciscoIpMRoutePruneFlag OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicates whether this route is pruned. A pruned route is 
+        one that has an empty outgoing interface list or all interfaces
+        are in Pruned state. A multicast packet that matches a pruned route
+        doesn't get forwarded."
+    ::= { ciscoIpMRouteEntry 12 }
+
+ciscoIpMRouteSparseFlag OBJECT-TYPE
+    SYNTAX     TruthValue    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicating PIM multicast routing protocol sparse-mode 
+        (versus dense-mode).  In sparse-mode, packets are forwarded only 
+        out interfaces that have been joined.  In dense-mode, they are 
+        forwarded out all interfaces that have not been pruned."
+    ::= { ciscoIpMRouteEntry 13 }
+
+ciscoIpMRouteConnectedFlag OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicating whether there is a directly connected member
+        for a group attached to the router."
+    ::= { ciscoIpMRouteEntry 14 }
+
+ciscoIpMRouteLocalFlag OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicating whether local system is a member of a group
+        on any interface."
+    ::= { ciscoIpMRouteEntry 15 }
+
+ciscoIpMRouteRegisterFlag OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicates whether to send registers for the entry. A first
+        hop router directly connected to a multicast source host, as well as
+        a border router on the boundary of two domains running different
+        multicast routing protocols, encapsulates packets to be sent on the
+        shared tree. This is done until the RP sends Joins back to this
+        router"
+    ::= { ciscoIpMRouteEntry 16 }
+
+ciscoIpMRouteRpFlag OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicating whether there is a Prune state for this 
+        source along the shared tree."
+    ::= { ciscoIpMRouteEntry 17 }
+
+ciscoIpMRouteSptFlag OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Boolean, indicating whether data is being received on the SPT 
+        tree, ie the Shortest Path Tree."
+    ::= { ciscoIpMRouteEntry 18 }
+
+ciscoIpMRouteBps OBJECT-TYPE
+    SYNTAX     Gauge32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Bits per second forwarded by this router.  This is the sum of all 
+        forwarded bits during a 1 second interval.  At the end of each 
+        second the field is cleared."
+    ::= { ciscoIpMRouteEntry 19 }
+
+ciscoIpMRouteMetric OBJECT-TYPE
+    SYNTAX     Integer32 
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Metric - The best metric heard from Assert messages."
+    ::= { ciscoIpMRouteEntry 20 }
+
+ciscoIpMRouteMetricPreference OBJECT-TYPE
+    SYNTAX     Integer32 
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Metric Preference - The best metric preference heard from Assert 
+        messages."
+    ::= { ciscoIpMRouteEntry 21 }
+
+ciscoIpMRouteInLimit OBJECT-TYPE
+    SYNTAX     Integer32
+    UNITS      "Kbits/second"
+    MAX-ACCESS read-only
+    STATUS     obsolete
+    DESCRIPTION
+        "Incoming interface's limit for rate limiting data traffic, in Kbps.
+	Replaced by ciscoIpMRouteInLimit2."
+    ::= { ciscoIpMRouteEntry 22 }
+
+ciscoIpMRouteLastUsed OBJECT-TYPE
+    SYNTAX     TimeTicks
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "How long has it been since the last multicast packet was fastswitched"
+    ::= { ciscoIpMRouteEntry 23 }
+
+ciscoIpMRouteInLimit2 OBJECT-TYPE
+    SYNTAX     Gauge32
+    UNITS      "Kbits/second"
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Incoming interface's limit for rate limiting data traffic, in Kbps"
+    ::= { ciscoIpMRouteEntry 24 }
+
+
+
+--
+--  The IP Multicast Routing Next Hop Table
+--
+
+ciscoIpMRouteNextHopTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF CiscoIpMRouteNextHopEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The (conceptual) table containing information on the next
+            hops on outgoing interfaces for routing IP multicast
+            datagrams.  Each entry is one of a list of next hops on
+            outgoing interfaces for particular sources sending to a
+            particular multicast group address."
+    ::= { ciscoIpMRoute 3 }
+
+ciscoIpMRouteNextHopEntry OBJECT-TYPE
+    SYNTAX     CiscoIpMRouteNextHopEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry (conceptual row) in the list of next hops on
+            outgoing interfaces to which IP multicast datagrams from
+            particular sources to a IP multicast group address are
+            routed."
+    AUGMENTS { ipMRouteNextHopEntry }
+    ::= { ciscoIpMRouteNextHopTable 1 }
+
+CiscoIpMRouteNextHopEntry ::= SEQUENCE {
+    ciscoIpMRouteNextHopOutLimit  Gauge32,
+    ciscoIpMRouteNextHopMacHdr    OCTET STRING
+}
+
+ciscoIpMRouteNextHopOutLimit OBJECT-TYPE
+    SYNTAX     Gauge32
+    UNITS      "Kbits/second"
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "An outgoing interface's limit for rate limiting data traffic, 
+        in Kbps."
+    ::= { ciscoIpMRouteNextHopEntry 9 }
+
+ciscoIpMRouteNextHopMacHdr OBJECT-TYPE
+    SYNTAX     OCTET STRING
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "The data link mac address header for a multicast datagram. 
+        Used by IP multicast fastswitching."
+    ::= { ciscoIpMRouteNextHopEntry 10 }
+
+
+-- *************************************************************************
+-- * Conformance Information
+-- *************************************************************************
+
+ciscoIpMRouteMIBConformance
+                  OBJECT IDENTIFIER ::= { ciscoIpMRouteMIB 2 }
+ciscoIpMRouteMIBCompliances
+                  OBJECT IDENTIFIER ::= { ciscoIpMRouteMIBConformance 1 }
+ciscoIpMRouteMIBGroups  OBJECT IDENTIFIER ::= { ciscoIpMRouteMIBConformance 2 }
+
+
+-- *************************************************************************
+-- * Compliance Statements
+-- *************************************************************************
+
+ciscoIpMRouteMIBCompliance MODULE-COMPLIANCE
+	STATUS  obsolete
+	DESCRIPTION
+		"The compliance statement for the cisco IP Multicast MIB.
+		Superseded by ciscoIpMRouteComplianceV11R01."
+	MODULE  -- this module
+		MANDATORY-GROUPS { ciscoIpMRouteMIBGroup }
+
+	::= { ciscoIpMRouteMIBCompliances 1 }
+
+ciscoIpMRouteMIBComplianceV11R01 MODULE-COMPLIANCE
+	STATUS  current
+	DESCRIPTION
+		"The compliance statement for the cisco IP Multicast MIB."
+	MODULE  -- this module
+		MANDATORY-GROUPS { ciscoIpMRouteMIBGroupV11R01 }
+
+	::= { ciscoIpMRouteMIBCompliances 2 }
+
+-- units of conformance
+
+ciscoIpMRouteMIBGroup OBJECT-GROUP
+    OBJECTS { 
+              ciscoIpMRoutePruneFlag,
+              ciscoIpMRouteSparseFlag,
+              ciscoIpMRouteConnectedFlag,
+              ciscoIpMRouteLocalFlag,
+              ciscoIpMRouteRegisterFlag,
+              ciscoIpMRouteRpFlag,
+              ciscoIpMRouteSptFlag,
+              ciscoIpMRouteBps,
+              ciscoIpMRouteMetric,
+              ciscoIpMRouteMetricPreference,
+              ciscoIpMRouteInLimit,
+              ciscoIpMRouteLastUsed,
+              ciscoIpMRouteNextHopOutLimit,
+              ciscoIpMRouteNextHopMacHdr
+            }
+    STATUS  obsolete
+    DESCRIPTION
+            "A collection of objects to support management of IP
+            Multicast routing.
+	    Superseded by ciscoIpMRouteMIBGroupV11R01."
+    ::= { ciscoIpMRouteMIBGroups 1 }
+
+ciscoIpMRouteMIBGroupV11R01 OBJECT-GROUP
+    OBJECTS { 
+              ciscoIpMRoutePruneFlag,
+              ciscoIpMRouteSparseFlag,
+              ciscoIpMRouteConnectedFlag,
+              ciscoIpMRouteLocalFlag,
+              ciscoIpMRouteRegisterFlag,
+              ciscoIpMRouteRpFlag,
+              ciscoIpMRouteSptFlag,
+              ciscoIpMRouteBps,
+              ciscoIpMRouteMetric,
+              ciscoIpMRouteMetricPreference,
+              ciscoIpMRouteLastUsed,
+              ciscoIpMRouteInLimit2,
+              ciscoIpMRouteNextHopOutLimit,
+              ciscoIpMRouteNextHopMacHdr
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects to support management of IP
+            Multicast routing."
+    ::= { ciscoIpMRouteMIBGroups 2 }
+
+
+END

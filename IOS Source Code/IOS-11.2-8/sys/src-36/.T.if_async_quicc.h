@@ -1,0 +1,19 @@
+
+if_async_quicc.h,709
+#define __IF_ASYNC_QUICC_H__50,1541
+typedef struct quicc_async_instance quicc_async_instance55,1613
+} quicc_async_instance_t;quicc_async_instance_t81,2132
+#define QUICC_ODD_PARITY	83,2159
+#define QUICC_SPACE_PARITY	84,2189
+#define QUICC_EVEN_PARITY	85,2221
+#define QUICC_MARK_PARITY	86,2252
+#define MAX_ASYNC_SPEED	88,2284
+#define MIN_ASYNC_SPEED	89,2317
+#define QUICC_UART_BDSTAT_RX_PKT	91,2347
+#define QUICC_ASYNC_TX_ERR_MASK	94,2436
+#define QUICC_ASYNC_RX_ERR_MASK 96,2496
+#define QUICC_ASYNC_RX_MASK 101,2651
+#define QUICC_ASYNC_TX_MASK 104,2746
+#define QUICC_SET_RX_BRGC(QUICC_SET_RX_BRGC107,2841
+#define QUICC_SET_TX_BRGC(QUICC_SET_TX_BRGC108,2903
+#define QUICC_TX_LAST_BD	109,2964

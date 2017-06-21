@@ -1,0 +1,22 @@
+
+isdn.h,730
+#define T1_MAX_PRI 77,2916
+#define T1_D_CHAN_PRI 78,2938
+#define E1_D_CHAN_PRI 79,2963
+#define VISIBLE_T1_ISDN_BANDWIDTH 80,2988
+#define T1_ISDN_DELAY 81,3053
+#define ISDN_MAX_CHAN 82,3116
+#define ISDN_MIN_CHAN 83,3179
+#define ISDN_FASTROLLOVER_DELAY_DEF 84,3240
+#define ISDN_NO_DSL 89,3374
+#define ISDN_DSL_RESERVED 90,3397
+#define ISDN_SPEED_64 99,3671
+#define ISDN_SPEED_56 100,3711
+#define ISDN_SPEED_16 101,3751
+#define ISDN_SPEED_VOICE 102,3791
+#define ISDN_DIALER_CALL_ID_MIN 104,3862
+#define ISDN_DIALER_CALL_ID_MAX 105,3901
+#define ISDN_MODEM_CALL_ID_MIN 106,3940
+#define ISDN_MODEM_CALL_ID_MAX 107,3979
+static inline ushort call_id_for_dialer 109,4019
+static inline ushort call_id_for_modem 120,4294

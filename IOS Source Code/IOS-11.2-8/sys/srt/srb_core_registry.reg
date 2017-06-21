@@ -1,0 +1,127 @@
+# $Id: srb_core_registry.reg,v 3.1.4.2 1996/08/26 15:13:22 ppearce Exp $
+# $Source: /release/112/cvs/Xsys/srt/srb_core_registry.reg,v $
+#------------------------------------------------------------------
+# srb_core_registry.reg - Service Points for SRB_CORE registry
+#
+# August 1996, Paul Pearce
+#
+# Copyright (c) 1996 by Cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: srb_core_registry.reg,v $
+# Revision 3.1.4.2  1996/08/26  15:13:22  ppearce
+# CSCdi66582:  Implement SRB vector table to cut size of SRB_CORE subsys
+# Branch: California_branch
+#
+# Revision 3.1.4.1  1996/08/12  02:16:21  ppearce
+# CSCdi64450:  CSCdi59527 broke c4500-boot-m image
+# Branch: California_branch
+#   Add srb_core_registry that will definitely be included w/SRB subblock
+#
+# Revision 3.1  1996/08/08  16:10:10  ppearce
+# Placeholder for SRB core registry (CSCdi64450)
+#
+#
+#*------------------------------------------------------------------
+# $Endlog$
+
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY SRB_CORE
+
+
+DEFINE srb_get_vector_table
+/*
+ * Return pointer to SRB vector table
+ */
+        STUB
+        srb_vector_table_t *
+        -
+END
+
+
+DEFINE setup_srb
+/*
+ * Indexed by IDBTYPE_xxxx (hwidb->type)
+ *   Invoked by interface specific routine to setup parms for SRB
+ *
+ */
+	RETVAL
+        void
+        hwidbtype *hwidb
+        IDBTYPE_MAX
+        int idbtype
+END
+
+
+DEFINE modify_srb
+/*
+ * Indexed by IDBTYPE_xxxx (hwidb->type)
+ *   Invoked by interface specific routine to modify parms for SRB
+ *
+ */
+	RETVAL
+        void
+        hwidbtype *hwidb, ulong parm1, ulong parm2
+        IDBTYPE_MAX
+        int idbtype
+END
+
+
+DEFINE vip_setup_srb
+/*
+ * Indexed by IDBTYPE_xxxx (hwidb->type)
+ *   Invoked by interface specific routine to setup parms for SRB
+ *
+ */
+	RETVAL
+        void
+        hwidbtype *hwidb
+        IDBTYPE_MAX
+        int idbtype
+END
+
+
+DEFINE vip_modify_srb
+/*
+ * Indexed by IDBTYPE_xxxx (hwidb->type)
+ *   Invoked by interface specific routine to modify parms for SRB
+ *
+ */
+	RETVAL
+        void
+        hwidbtype *hwidb, ulong parm1, ulong parm2
+        IDBTYPE_MAX
+        int idbtype
+END
+
+END REGISTRY

@@ -1,0 +1,58 @@
+-- $Id$
+-- $Source$
+-- *****************************************************************
+-- CISCO-UDP-CAPABILITY.my: UDP-MIB AGENT-CAPABILITIES
+--
+-- November 1996, Jeffrey T. Johnson
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log$
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-UDP-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoUdpCapability MODULE-IDENTITY
+		LAST-UPDATED	"9611270000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for UDP-MIB"
+		REVISION	"9611270000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 118 }
+
+ciscoUdpCapabilityV11R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 11.2"
+STATUS		current
+DESCRIPTION	"Implementation of the UDP-MIB"
+
+SUPPORTS	UDP-MIB
+INCLUDES	{ udpGroup }
+
+	::= { ciscoUdpCapability 1 }
+
+END

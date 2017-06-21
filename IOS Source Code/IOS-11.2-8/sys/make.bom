@@ -1,0 +1,1032 @@
+# $Id: make.bom,v 3.1.10.6 1996/09/14 05:23:18 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/make.bom,v $
+#------------------------------------------------------------------
+# Bill of Materials file for GAIA images.
+#
+# May 13, 1996, Vicki Ralls
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.bom,v $
+# Revision 3.1.10.6  1996/09/14  05:23:18  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.10.5  1996/08/10  23:43:56  irfan
+# CSCdi64746:  DHCP proxy client included in BOOT
+# Branch: California_branch
+# rename DHCP to DHCP_CLIENT. boot it out of BOOT.
+#
+# Revision 3.1.10.4  1996/08/06  18:10:10  skalahas
+# CSCdi65242:  GAIA makefile enhancements
+# Branch: California_branch
+#
+# Revision 3.1.10.3  1996/07/10  02:39:39  mvenugop
+# CSCdi62387:  SRS_FEATURE is added for c7000 platform images
+# Branch: California_branch
+#
+# Revision 3.1.10.2  1996/07/09  20:45:46  ralls
+# CSCdi62324:  Remove PLATFORM_SUPPORT_V from 7000 and RSP
+# Branch: California_branch
+#
+# Revision 3.1.10.1  1996/07/02  18:50:01  jpfeifer
+# CSCdi61908:  Commit bill of materials (make.bom) for Gaia images
+# Branch: California_branch
+#
+# Revision 3.1  1996/05/14  00:49:00  ralls
+# Add GAIA Bill of Materials files
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+
+ifeq ($(origin SYSROOT), undefined)
+SYSROOT :=     $(shell ../scripts/sysroot)
+endif
+
+ALC_A_IMAGE = $(SUBSET_A_PACK_FEATURE)
+
+RSP_AJSV_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+		 $(RSP_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(RSP_PLATFORM_PARTS_PACK_FEATURE) \
+		 $(RSP_AJ_ONLY_PACK_FEATURE)
+
+C7000_AJV_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+	          $(IPC_CBUS_FEATURE) \
+                  $(TRING_GNMIB) \
+                  $(ATM_GNMIB) \
+                  $(FLASH_FEATURE) \
+                  $(LANE_FEATURE) \
+                  $(TRING_FEATURE) \
+                  $(TEST_FEATURE) \
+                  $(LEX_FEATURE) \
+                  $(FDDI_GNMIB) \
+                  $(FDDI_FEATURE) \
+                  $(ATM_FEATURE) \
+                  $(FLASH_GNMIB) \
+                  $(CHANNEL_FEATURE) \
+                  $(CHANNEL_GNMIB) \
+                  $(TN3270S_GNMIB) \
+                  $(TN3270S_FEATURE) \
+                  $(TN_GNMIB) \
+                  $(V120_FEATURE) \
+                  $(ISDN_GNMIB) \
+                  $(CPP_FEATURE)
+
+C1000_BNSY_IMAGE = $(SUBSET_BNY_PACK_FEATURE) \
+		   $(C1000_PLATFORM_PLUS_PACK_FEATURE) \
+		   $(C1000_PLATFORM_PARTS_PACK_FEATURE)
+
+C1005_BNSY_IMAGE = $(SUBSET_BNY_PACK_FEATURE) \
+		   $(C1005_PLATFORM_PLUS_PACK_FEATURE) \
+		   $(C1005_PLATFORM_PARTS_PACK_FEATURE)
+
+C1000_RBOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+C2500_BOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+C4000_BOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+C4500_BOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+C5200_BOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+C7200_BOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+RSP_BOOT_IMAGE = $(SUBSET_BOOT_PACK_FEATURE)
+
+C2500_DS_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		 $(C2500_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+                 $(PCBUS_FEATURE) \
+                 $(HUB_GNMIB) \
+                 $(TUNNEL_SLOW_FEATURE) \
+                 $(BRUT_FEATURE) \
+                 $(RADIUS_FEATURE) \
+                 $(TRING_GNMIB) \
+                 $(TRING_FEATURE) \
+                 $(CD2430_FEATURE) \
+                 $(CSU_DSU_FEATURE) \
+                 $(ISDN_GNMIB) \
+                 $(LEX_FEATURE) \
+                 $(COMM_FEATURE) \
+                 $(HUB_FEATURE) \
+                 $(CPP_FEATURE) \
+                 $(LPD_FEATURE) \
+                 $(MK5025_FEATURE) \
+                 $(MENU_FEATURE) \
+                 $(V120_FEATURE) \
+                 $(PARTNER_FEATURE) \
+                 $(CSU_DSU_GNMIB) \
+		 $(AT_ARAP_FEATURE) \
+		 $(DES_FEATURE)
+
+C4000_DS_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		 $(C4000_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(DSX1_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(DSX1_FEATURE) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(ISDN_GNMIB)
+
+C4500_DS_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		 $(C4500_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(MCN_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(ATM_GNMIB) \
+		 $(ATMZR_FEATURE) \
+		 $(AM79970_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(DSX1_FEATURE) \
+		 $(AM79970_FEATURE) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(ATM_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(PARTNER_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(ISDN_GNMIB)
+		 
+C5200_DS_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		 $(C5200_PLATFORM_PLUS_PACK_FEATURE) \
+	   	 $(DES_FEATURE) \
+		 $(AT_ARAP_FEATURE) \
+		 $(RADIUS_FEATURE) \
+		 $(RMON_FEATURE) \
+		 $(CD2430_FEATURE) \
+		 $(COMM_FEATURE) \
+		 $(LPD_FEATURE) \
+		 $(MENU_FEATURE) \
+		 $(SYSLOG_HISTORY_GNMIB) \
+		 $(V120_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(ISDN_GNMIB)
+
+C7200_DS_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		 $(C7200_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(DEC21140_FEATURE) \
+		 $(LEX_FEATURE) \
+		 $(AMDP2_FEATURE) \
+		 $(IOCARD_FEATURE) \
+		 $(TRING_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(FDDI_GNMIB) \
+		 $(TEST_FEATURE)
+
+RSP_DSV_IMAGE =  $(SUBSET_D_PACK_FEATURE) \
+		 $(RSP_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(RSP_PLATFORM_PARTS_PACK_FEATURE) 
+		 
+RSP_DW_IMAGE =   $(SUBSET_DW_PACK_FEATURE)
+
+C2500_IS_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		 $(C2500_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(PCBUS_FEATURE) \
+		 $(HUB_GNMIB) \
+		 $(TUNNEL_SLOW_FEATURE) \
+		 $(BRUT_FEATURE) \
+		 $(RADIUS_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(CD2430_FEATURE) \
+		 $(CSU_DSU_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(LEX_FEATURE) \
+		 $(COMM_FEATURE) \
+		 $(HUB_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(LPD_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(MENU_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(PARTNER_FEATURE) \
+		 $(CSU_DSU_GNMIB)
+		  
+C4000_IS_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		 $(C4000_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(DSX1_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(DSX1_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(V120_FEATURE)
+
+C4500_IS_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		 $(C4500_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(MCN_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(ATM_GNMIB) \
+		 $(ATMZR_FEATURE) \
+		 $(AM79970_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(DSX1_FEATURE) \
+		 $(AM79970_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(ATM_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(PARTNER_FEATURE)
+		  
+C5200_IS_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		 $(C5200_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(RADIUS_FEATURE) \
+		 $(RMON_FEATURE) \
+		 $(CD2430_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(COMM_FEATURE) \
+		 $(LPD_FEATURE) \
+		 $(MENU_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(SYSLOG_HISTORY_GNMIB) \
+		 $(CPP_FEATURE)
+		  
+
+C7200_IS_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		 $(C7200_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(AMDP2_FEATURE) \
+		 $(IOCARD_FEATURE) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(DEC21140_FEATURE)
+
+RSP_ISV_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		$(RSP_PLATFORM_PLUS_PACK_FEATURE) \
+		$(RSP_PLATFORM_PARTS_PACK_FEATURE)
+
+RSP_JSV_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		$(RSP_PLATFORM_PLUS_PACK_FEATURE) \
+		$(RSP_PLATFORM_PARTS_PACK_FEATURE) \
+		$(RSP_J_ONLY_PACK_FEATURE)
+
+C7000_JV_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		 $(IPC_CBUS_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(ATM_GNMIB) \
+		 $(FLASH_FEATURE) \
+		 $(LANE_FEATURE) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(ATM_FEATURE) \
+		 $(FLASH_GNMIB) \
+		 $(CHANNEL_FEATURE) \
+		 $(CHANNEL_GNMIB) \
+		 $(TN3270S_SHARE_FEATURE) \
+		 $(TN3270S_GNMIB) \
+  		 $(V120_FEATURE) \
+                 $(ISDN_GNMIB) \
+                 $(CPP_FEATURE)
+
+C7000_PV_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+		 $(IPC_CBUS_FEATURE) \
+		 $(ATM_GNMIB) \
+		 $(FLASH_FEATURE) \
+		 $(LANE_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(ATM_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(FLASH_GNMIB) \
+		 $(V120_FEATURE) \
+		 $(RADIUS_FEATURE)
+		 
+RSP_PV_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+	       $(RSP_PLATFORM_PARTS_PACK_FEATURE) \
+	       $(RSP_P_ONLY_PACK_FEATURE)
+
+C2500_F_IMAGE = $(SUBSET_F_PACK_FEATURE)
+
+C1005_NQY_IMAGE = $(SUBSET_NQY_PACK_FEATURE)
+		                                                   
+C2500_AJS_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+		  $(C2500_PLATFORM_PLUS_PACK_FEATURE) \
+		  $(ISDN_FEATURE) \
+		  $(PCBUS_FEATURE) \
+		  $(DES_FEATURE) \
+		  $(HUB_GNMIB) \
+		  $(AT_ARAP_FEATURE) \
+		  $(TUNNEL_SLOW_FEATURE) \
+		  $(BRUT_FEATURE) \
+		  $(DLSW_FEATURE) \
+		  $(RMON_FEATURE) \
+		  $(CD2430_FEATURE) \
+		  $(DLSW_SLOW_FEATURE) \
+		  $(CSU_DSU_FEATURE) \
+		  $(ISDN_GNMIB) \
+		  $(DLSW_SLOW_GNMIB) \
+		  $(HUB_FEATURE) \
+		  $(CPP_FEATURE) \
+		  $(LPD_FEATURE) \
+		  $(MK5025_FEATURE) \
+		  $(V120_FEATURE) \
+		  $(PARTNER_FEATURE) \
+		  $(CSU_DSU_GNMIB) \
+		  $(IBM_BASE_FEATURE) \
+		  $(LEX_FEATURE) \
+		  $(TRING_GNMIB) \
+		  $(TRING_FEATURE)
+		 
+C4500_AJS_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+		  $(C4500_PLATFORM_PLUS_PACK_FEATURE) \
+		  $(ISDN_FEATURE) \
+		  $(DLSW_FEATURE) \
+		  $(MCN_FEATURE) \
+		  $(ATM_GNMIB) \
+		  $(LANE_FEATURE) \
+		  $(ATMZR_FEATURE) \
+		  $(AM79970_GNMIB) \
+		  $(TEST_FEATURE) \
+		  $(DSX1_FEATURE) \
+		  $(AM79970_FEATURE) \
+		  $(ISDN_GNMIB) \
+		  $(FDDI_GNMIB) \
+		  $(FDDI_FEATURE) \
+		  $(ATM_FEATURE) \
+		  $(CPP_FEATURE) \
+		  $(MK5025_FEATURE) \
+		  $(V120_FEATURE) \
+		  $(PARTNER_FEATURE) \
+		  $(LEX_FEATURE) \
+                  $(TRING_GNMIB) \
+                  $(TRING_FEATURE)
+
+		 
+C4000_AJS_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+		  $(C4000_PLATFORM_PLUS_PACK_FEATURE) \
+		  $(ISDN_FEATURE) \
+		  $(DLSW_FEATURE) \
+		  $(DSX1_GNMIB) \
+		  $(TEST_FEATURE) \
+		  $(DSX1_FEATURE) \
+		  $(ISDN_GNMIB) \
+		  $(FDDI_GNMIB) \
+		  $(FDDI_FEATURE) \
+		  $(CPP_FEATURE) \
+		  $(MK5025_FEATURE) \
+		  $(V120_FEATURE) \
+		  $(LEX_FEATURE) \
+		  $(TRING_GNMIB) \
+		  $(TRING_FEATURE)
+		 
+C7200_AJS_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+		  $(C7200_PLATFORM_PLUS_PACK_FEATURE) \
+		  $(AMDP2_FEATURE) \
+		  $(IOCARD_FEATURE) \
+		  $(TEST_FEATURE) \
+		  $(FDDI_GNMIB) \
+		  $(FDDI_FEATURE) \
+		  $(DEC21140_FEATURE) \
+		  $(LEX_FEATURE) \
+                  $(TRING_GNMIB) \
+                  $(TRING_FEATURE)
+		 
+C4500_AINR_IMAGE = $(SUBSET_AINR_PACK_FEATURE) \
+		   $(MCN_FEATURE) \
+		   $(ATM_GNMIB) \
+		   $(ATMZR_FEATURE) \
+		   $(AM79970_GNMIB) \
+		   $(TEST_FEATURE) \
+		   $(DSX1_FEATURE) \
+		   $(AM79970_FEATURE) \
+		   $(FDDI_GNMIB) \
+		   $(FDDI_FEATURE) \
+		   $(ATM_FEATURE) \
+		   $(PARTNER_FEATURE)
+		 
+C2500_AINR_IMAGE = $(SUBSET_AINR_PACK_FEATURE) \
+		   $(PCBUS_FEATURE) \
+		   $(HUB_GNMIB) \
+		   $(TUNNEL_SLOW_FEATURE) \
+		   $(BRUT_FEATURE) \
+		   $(RADIUS_FEATURE) \
+		   $(CD2430_FEATURE) \
+		   $(DLSW_SLOW_FEATURE) \
+		   $(CSU_DSU_FEATURE) \
+		   $(DLSW_SLOW_GNMIB) \
+		   $(COMM_FEATURE) \
+		   $(HUB_FEATURE) \
+		   $(LPD_FEATURE) \
+		   $(MENU_FEATURE) \
+		   $(PARTNER_FEATURE) \
+		   $(CSU_DSU_GNMIB) \
+		   $(IBM_BASE_FEATURE)
+		 
+C4000_AINR_IMAGE = $(SUBSET_AINR_PACK_FEATURE) \
+		   $(DSX1_GNMIB) \
+		   $(TEST_FEATURE) \
+		   $(DSX1_FEATURE) \
+		   $(FDDI_GNMIB) \
+		   $(FDDI_FEATURE)
+		 
+C2500_G_IMAGE = $(SUBSET_G_PACK_FEATURE)
+		                                                                         
+RSP_ADSV_IMAGE = $(SUBSET_ADSV_PACK_FEATURE)
+		                                                                                                                          
+C2500_FIN_IMAGE = $(SUBSET_FIN_PACK_FEATURE)
+		                                                                     
+C4000_JS_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		 $(C4000_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(DLSW_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(DSX1_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(DSX1_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(IP_NAT_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(V120_FEATURE) \
+                 $(ISDN_GNMIB)
+
+		 
+C7200_JS_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		 $(C7200_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(AMDP2_FEATURE) \
+		 $(IOCARD_FEATURE) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(IP_NAT_FEATURE) \
+		 $(DEC21140_FEATURE)
+		 
+C4500_JS_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		 $(C4500_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(DLSW_FEATURE) \
+		 $(MCN_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(ATM_GNMIB) \
+		 $(LANE_FEATURE) \
+		 $(ATMZR_FEATURE) \
+		 $(AM79970_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(TEST_FEATURE) \
+		 $(DSX1_FEATURE) \
+		 $(AM79970_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(LEX_FEATURE) \
+		 $(FDDI_GNMIB) \
+		 $(FDDI_FEATURE) \
+		 $(ATM_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(IP_NAT_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(PARTNER_FEATURE)
+		 
+C5200_JS_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		 $(C5200_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(DES_FEATURE) \
+		 $(AT_ARAP_FEATURE) \
+		 $(DLSW_FEATURE) \
+		 $(RMON_FEATURE) \
+		 $(CD2430_FEATURE) \
+		 $(DLSW_SLOW_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(DLSW_SLOW_GNMIB) \
+		 $(LPD_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(CPP_FEATURE)
+		 
+C2500_JS_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		 $(C2500_PLATFORM_PLUS_PACK_FEATURE) \
+		 $(ISDN_FEATURE) \
+		 $(PCBUS_FEATURE) \
+		 $(DES_FEATURE) \
+		 $(HUB_GNMIB) \
+		 $(AT_ARAP_FEATURE) \
+		 $(TUNNEL_SLOW_FEATURE) \
+		 $(BRUT_FEATURE) \
+		 $(DLSW_FEATURE) \
+		 $(RMON_FEATURE) \
+		 $(TRING_GNMIB) \
+		 $(TRING_FEATURE) \
+		 $(CD2430_FEATURE) \
+		 $(DLSW_SLOW_FEATURE) \
+		 $(CSU_DSU_FEATURE) \
+		 $(ISDN_GNMIB) \
+		 $(LEX_FEATURE) \
+		 $(DLSW_SLOW_GNMIB) \
+		 $(HUB_FEATURE) \
+		 $(CPP_FEATURE) \
+		 $(IP_NAT_FEATURE) \
+		 $(LPD_FEATURE) \
+		 $(MK5025_FEATURE) \
+		 $(V120_FEATURE) \
+		 $(PARTNER_FEATURE) \
+		 $(CSU_DSU_GNMIB) \
+		 $(IBM_BASE_FEATURE)
+		 
+C2500_C_IMAGE = $(SUBSET_C_PACK_FEATURE)
+		                                                                                              
+C1005_Y2_IMAGE = $(SUBSET_Y2_PACK_FEATURE)
+		                                                 
+C1000_Y_IMAGE = $(SUBSET_Y_PACK_FEATURE) \
+		$(C1000_PLATFORM_PARTS_PACK_FEATURE) 
+		 
+C1005_Y_IMAGE = $(SUBSET_Y_PACK_FEATURE) \
+		$(C1005_PLATFORM_PARTS_PACK_FEATURE)
+ 
+C7200_I_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		$(TRING_GNMIB) \
+		$(AMDP2_FEATURE) \
+		$(IOCARD_FEATURE) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(DEC21140_FEATURE)
+		 
+C4500_I_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		$(ISDN_FEATURE) \
+		$(MCN_FEATURE) \
+		$(TRING_GNMIB) \
+		$(ATM_GNMIB) \
+		$(ATMZR_FEATURE) \
+		$(AM79970_GNMIB) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(AM79970_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(ATM_FEATURE) \
+		$(CPP_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(V120_FEATURE) \
+		$(PARTNER_FEATURE)
+		 
+C5200_I_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		$(ISDN_FEATURE) \
+		$(RADIUS_FEATURE) \
+		$(RMON_FEATURE) \
+		$(CD2430_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(COMM_FEATURE) \
+		$(LPD_FEATURE) \
+		$(MENU_FEATURE) \
+		$(V120_FEATURE) \
+		$(SYSLOG_HISTORY_GNMIB) \
+		$(CPP_FEATURE)
+		 
+C2500_I_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		$(ISDN_FEATURE) \
+		$(PCBUS_FEATURE) \
+		$(HUB_GNMIB) \
+		$(TUNNEL_SLOW_FEATURE) \
+		$(BRUT_FEATURE) \
+		$(RADIUS_FEATURE) \
+		$(TRING_GNMIB) \
+		$(TRING_FEATURE) \
+		$(CD2430_FEATURE) \
+		$(CSU_DSU_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(LEX_FEATURE) \
+		$(COMM_FEATURE) \
+		$(HUB_FEATURE) \
+		$(CPP_FEATURE) \
+		$(LPD_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(MENU_FEATURE) \
+		$(V120_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(CSU_DSU_GNMIB)
+		 
+C4000_I_IMAGE = $(SUBSET_I_PACK_FEATURE) \
+		$(ISDN_FEATURE) \
+		$(TRING_GNMIB) \
+		$(DSX1_GNMIB) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(CPP_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(V120_FEATURE)
+		 
+C7000_AJ_IMAGE = $(SUBSET_AJ_PACK_FEATURE) \
+		 $(IPC_CBUS_FEATURE) \
+                 $(TRING_GNMIB) \
+                 $(ATM_GNMIB) \
+                 $(FLASH_FEATURE) \
+                 $(LANE_FEATURE) \
+                 $(TRING_FEATURE) \
+                 $(TEST_FEATURE) \
+                 $(LEX_FEATURE) \
+                 $(FDDI_GNMIB) \
+                 $(FDDI_FEATURE) \
+                 $(ATM_FEATURE) \
+                 $(FLASH_GNMIB) \
+                 $(CHANNEL_FEATURE) \
+                 $(CHANNEL_GNMIB) \
+                 $(TN3270S_GNMIB) \
+		 $(TN3270S_FEATURE) \
+		 $(TN_GNMIB) \
+                 $(V120_FEATURE) \
+                 $(ISDN_GNMIB) \
+                 $(CPP_FEATURE)
+
+
+C5200_D_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+	   	$(DES_FEATURE) \
+		$(AT_ARAP_FEATURE) \
+		$(RADIUS_FEATURE) \
+		$(RMON_FEATURE) \
+		$(CD2430_FEATURE) \
+		$(COMM_FEATURE) \
+		$(LPD_FEATURE) \
+		$(MENU_FEATURE) \
+		$(SYSLOG_HISTORY_GNMIB) \
+		$(CPP_FEATURE) \
+		$(V120_FEATURE)
+		 
+C2500_D_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		$(PCBUS_FEATURE) \
+		$(DES_FEATURE) \
+		$(HUB_GNMIB) \
+		$(AT_ARAP_FEATURE) \
+		$(TUNNEL_SLOW_FEATURE) \
+		$(BRUT_FEATURE) \
+		$(RADIUS_FEATURE) \
+		$(TRING_GNMIB) \
+		$(TRING_FEATURE) \
+		$(CD2430_FEATURE) \
+		$(CSU_DSU_FEATURE) \
+		$(LEX_FEATURE) \
+		$(COMM_FEATURE) \
+		$(HUB_FEATURE) \
+		$(LPD_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(MENU_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(CSU_DSU_GNMIB) \
+		$(V120_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(CPP_FEATURE)
+		 
+C4000_D_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		$(TRING_GNMIB) \
+		$(DSX1_GNMIB) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(V120_FEATURE) \
+		$(CPP_FEATURE) \
+		$(ISDN_GNMIB)
+		 
+C4500_D_IMAGE = $(SUBSET_D_PACK_FEATURE) \
+		$(MCN_FEATURE) \
+		$(TRING_GNMIB) \
+		$(ATM_GNMIB) \
+		$(ATMZR_FEATURE) \
+		$(AM79970_GNMIB) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(AM79970_FEATURE) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(ATM_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(CPP_FEATURE) \
+		$(V120_FEATURE) \
+		$(ISDN_GNMIB)
+		 
+C1005_BNY_IMAGE = $(SUBSET_BNY_PACK_FEATURE) \
+		  $(C1005_PLATFORM_PARTS_PACK_FEATURE)
+ 
+C1000_BNY_IMAGE = $(SUBSET_BNY_PACK_FEATURE) \
+		  $(C1000_PLATFORM_PARTS_PACK_FEATURE)
+		 
+C1000_BY_IMAGE = $(SUBSET_BY_PACK_FEATURE) \
+		 $(C1000_PLATFORM_PARTS_PACK_FEATURE)
+		 
+C1005_BY_IMAGE = $(SUBSET_BY_PACK_FEATURE) \
+		 $(C1005_PLATFORM_PARTS_PACK_FEATURE)
+ 
+C7200_INU_IMAGE = $(SUBSET_INU_PACK_FEATURE)
+
+C1005_QY_IMAGE = $(SUBSET_QY_PACK_FEATURE)
+		                                             
+C4000_J_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+	        $(DLSW_FEATURE) \
+		$(TUNNEL_FEATURE) \
+		$(TRING_GNMIB) \
+		$(DSX1_GNMIB) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(V120_FEATURE) \
+                $(ISDN_GNMIB) \
+                $(CPP_FEATURE)
+
+		 
+C7000_J_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		$(IPC_CBUS_FEATURE) \
+		$(TRING_GNMIB) \
+		$(ATM_GNMIB) \
+		$(FLASH_FEATURE) \
+		$(LANE_FEATURE) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(ATM_FEATURE) \
+		$(FLASH_GNMIB) \
+		$(CHANNEL_FEATURE) \
+		$(CHANNEL_GNMIB) \
+		$(TN3270S_SHARE_FEATURE) \
+		$(TN3270S_GNMIB) \
+		$(V120_FEATURE) \
+                $(ISDN_GNMIB) \
+                $(CPP_FEATURE)
+		 
+C4500_J_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		$(DLSW_FEATURE) \
+		$(TUNNEL_FEATURE) \
+		$(MCN_FEATURE) \
+		$(TRING_GNMIB) \
+		$(ATM_GNMIB) \
+		$(ATMZR_FEATURE) \
+		$(AM79970_GNMIB) \
+		$(TRING_FEATURE) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(AM79970_FEATURE) \
+		$(LEX_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(ATM_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(V120_FEATURE) \
+                $(ISDN_GNMIB) \
+                $(CPP_FEATURE)
+
+		 
+C5200_J_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		$(DES_FEATURE) \
+		$(AT_ARAP_FEATURE) \
+		$(DLSW_FEATURE) \
+		$(TUNNEL_FEATURE) \
+		$(RMON_FEATURE) \
+		$(CD2430_FEATURE) \
+		$(DLSW_SLOW_FEATURE) \
+		$(DLSW_SLOW_GNMIB) \
+		$(LPD_FEATURE) \
+		$(V120_FEATURE) \
+                $(ISDN_GNMIB) \
+                $(CPP_FEATURE)
+
+C2500_J_IMAGE = $(SUBSET_J_PACK_FEATURE) \
+		$(PCBUS_FEATURE) \
+		$(DES_FEATURE) \
+		$(HUB_GNMIB) \
+		$(AT_ARAP_FEATURE) \
+		$(TUNNEL_SLOW_FEATURE) \
+		$(BRUT_FEATURE) \
+		$(DLSW_FEATURE) \
+		$(TUNNEL_FEATURE) \
+		$(TRING_GNMIB) \
+		$(TRING_FEATURE) \
+		$(CD2430_FEATURE) \
+		$(DLSW_SLOW_FEATURE) \
+		$(CSU_DSU_FEATURE) \
+		$(LEX_FEATURE) \
+		$(DLSW_SLOW_GNMIB) \
+		$(HUB_FEATURE) \
+		$(LPD_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(CSU_DSU_GNMIB) \
+		$(IBM_BASE_FEATURE) \
+		$(V120_FEATURE) \
+                $(ISDN_GNMIB) \
+                $(CPP_FEATURE)
+
+C4000_P_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+		$(DSX1_GNMIB) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(CPP_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(V120_FEATURE) \
+		$(TUNNEL_FEATURE) \
+		$(RADIUS_FEATURE) \
+		 
+C7000_P_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+		$(IPC_CBUS_FEATURE) \
+		$(ATM_GNMIB) \
+		$(FLASH_FEATURE) \
+		$(LANE_FEATURE) \
+		$(TEST_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(ATM_FEATURE) \
+		$(CPP_FEATURE) \
+		$(FLASH_GNMIB) \
+		$(V120_FEATURE) \
+		$(RADIUS_FEATURE)
+		 
+C7200_P_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+		$(AMDP2_FEATURE) \
+		$(IOCARD_FEATURE) \
+		$(TEST_FEATURE) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(DEC21140_FEATURE) \
+		$(TUNNEL_FEATURE)
+		 
+C4500_P_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+		$(MCN_FEATURE) \
+		$(ATM_GNMIB) \
+		$(ATMZR_FEATURE) \
+		$(AM79970_GNMIB) \
+		$(TEST_FEATURE) \
+		$(DSX1_FEATURE) \
+		$(AM79970_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(FDDI_GNMIB) \
+		$(FDDI_FEATURE) \
+		$(ATM_FEATURE) \
+		$(CPP_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(V120_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(TUNNEL_FEATURE) \
+		$(RADIUS_FEATURE)
+		 
+RSP_P_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+	      $(RSP_PLATFORM_PARTS_PACK_FEATURE) \
+	      $(RSP_P_ONLY_PACK_FEATURE)
+		 
+C2500_P_IMAGE = $(SUBSET_P_PACK_FEATURE) \
+		$(PCBUS_FEATURE) \
+		$(HUB_GNMIB) \
+		$(BRUT_FEATURE) \
+		$(CSU_DSU_FEATURE) \
+		$(ISDN_GNMIB) \
+		$(COMM_FEATURE) \
+		$(HUB_FEATURE) \
+		$(CPP_FEATURE) \
+		$(LPD_FEATURE) \
+		$(MK5025_FEATURE) \
+		$(MENU_FEATURE) \
+		$(V120_FEATURE) \
+		$(PARTNER_FEATURE) \
+		$(CSU_DSU_GNMIB) \
+		$(TUNNEL_SLOW_FEATURE) \
+		$(RADIUS_FEATURE) \
+		$(CD2430_FEATURE)
+		 
+C1000_NY_IMAGE = $(SUBSET_NY_PACK_FEATURE) \
+		 $(C1000_PLATFORM_PARTS_PACK_FEATURE)
+		 
+C1005_NY_IMAGE = $(SUBSET_NY_PACK_FEATURE) \
+		 $(C1005_PLATFORM_PARTS_PACK_FEATURE)
+	
+feature-based-images-alc-a		= $(sort $(ALC_A_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-adsv		= $(sort $(RSP_ADSV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c2500-ainr		= $(sort $(C2500_AINR_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-ainr		= $(sort $(C4000_AINR_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-ainr		= $(sort $(C4500_AINR_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7000-aj		= $(sort $(C7000_AJ_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-ajs		= $(sort $(C2500_AJS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-ajs		= $(sort $(C4000_AJS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-ajs		= $(sort $(C4500_AJS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-ajs		= $(sort $(C7200_AJS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-ajsv		= $(sort $(RSP_AJSV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c7000-ajv		= $(sort $(C7000_AJV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c1000-bnsy		= $(sort $(C1000_BNSY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1005-bnsy		= $(sort $(C1005_BNSY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1000-bny		= $(sort $(C1000_BNY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1005-bny		= $(sort $(C1005_BNY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1000-rboot                = $(sort $(C1000_RBOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-boot                = $(sort $(C2500_BOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-boot                = $(sort $(C4000_BOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-boot                = $(sort $(C4500_BOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-boot                = $(sort $(C5200_BOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-boot                = $(sort $(C7200_BOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-boot                = $(sort $(RSP_BOOT_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1000-by		= $(sort $(C1000_BY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1005-by		= $(sort $(C1005_BY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-c		= $(sort $(C2500_C_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-d		= $(sort $(C2500_D_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-d		= $(sort $(C4000_D_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-d		= $(sort $(C4500_D_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-d		= $(sort $(C5200_D_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-ds		= $(sort $(C2500_DS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-ds		= $(sort $(C4000_DS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-ds		= $(sort $(C4500_DS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-ds		= $(sort $(C5200_DS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-ds		= $(sort $(C7200_DS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-dsv		= $(sort $(RSP_DSV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-rsp-dw		= $(sort $(RSP_DW_IMAGE)) $(UTIL)
+feature-based-images-c2500-f		= $(sort $(C2500_F_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-fin		= $(sort $(C2500_FIN_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-g		= $(sort $(C2500_G_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-i		= $(sort $(C2500_I_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-i		= $(sort $(C4000_I_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-i		= $(sort $(C4500_I_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-i		= $(sort $(C5200_I_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-i		= $(sort $(C7200_I_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-inu		= $(sort $(C7200_INU_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-is		= $(sort $(C2500_IS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-is		= $(sort $(C4000_IS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-is		= $(sort $(C4500_IS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-is		= $(sort $(C5200_IS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-is		= $(sort $(C7200_IS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-isv		= $(sort $(RSP_ISV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c2500-j		= $(sort $(C2500_J_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-j		= $(sort $(C4000_J_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-j		= $(sort $(C4500_J_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-j		= $(sort $(C5200_J_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7000-j		= $(sort $(C7000_J_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-js		= $(sort $(C2500_JS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-js		= $(sort $(C4000_JS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-js		= $(sort $(C4500_JS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c5200-js		= $(sort $(C5200_JS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-js		= $(sort $(C7200_JS_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-jsv		= $(sort $(RSP_JSV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c7000-jv		= $(sort $(C7000_JV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c1005-nqy		= $(sort $(C1005_NQY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1000-ny		= $(sort $(C1000_NY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1005-ny		= $(sort $(C1005_NY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c2500-p		= $(sort $(C2500_P_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4000-p		= $(sort $(C4000_P_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c4500-p		= $(sort $(C4500_P_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7000-p		= $(sort $(C7000_P_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7200-p		= $(sort $(C7200_P_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-rsp-p		= $(sort $(RSP_P_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c7000-pv		= $(sort $(C7000_PV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-rsp-pv		= $(sort $(RSP_PV_IMAGE)) $(UTIL) $(UCODEV)
+feature-based-images-c1005-qy		= $(sort $(C1005_QY_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1000-y		= $(sort $(C1000_Y_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1005-y		= $(sort $(C1005_Y_IMAGE)) $(UTIL) $(UCODE)
+feature-based-images-c1005-y2		= $(sort $(C1005_Y2_IMAGE)) $(UTIL) $(UCODE)
+# DO NOT DELETE THIS LINE -- make depend depends on it.

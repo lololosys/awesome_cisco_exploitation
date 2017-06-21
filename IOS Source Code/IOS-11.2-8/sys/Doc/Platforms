@@ -1,0 +1,803 @@
+/* $Id: Platforms,v 3.1.2.2 1996/08/15 21:17:15 jturner Exp $
+ * $Source: /release/112/cvs/Xsys/Doc/Platforms,v $
+ *------------------------------------------------------------------
+ * Platforms : Documentation on the various IOS platforms
+ *
+ * July 1996, Michael Beesley
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: Platforms,v $
+ * Revision 3.1.2.2  1996/08/15  21:17:15  jturner
+ * CSCdi66154:  Add AS5200 blurb to Platforms doc
+ * Branch: California_branch
+ *
+ * Revision 3.1.2.1  1996/08/07  01:21:40  mbeesley
+ * CSCdi65333:  Add some platform documentation
+ * Branch: California_branch
+ *
+# Revision 3.1  1996/08/07  01:19:04  mbeesley
+# Add placeholder file.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+[1] Introduction
+================
+
+	This document will attempt to give a birds eye (not the peas) view of
+	the platforms on which IOS runs in this release. It will give a brief
+	description of the platform, indicating the development and shipping
+	status, and the key differentiation of the platform.
+
+	It is not intended to be a bible of platform information. Instead, it
+	will try and be introductory in nature, and should hopefully help
+	a large number of developers who need no more then a cursory knowledge
+	of platform details. It will also include some pointers to more 
+	information for those who want and/or need to get much more familiar
+	with any given platform supported by IOS.
+
+	Terminology :
+
+	image 	: Cisco IOS executable
+	rommon	: The Rom monitor is a piece of rom code that executes
+		  when the system is powered on.
+			New - More user friendly, portable monitor, sys/rommon
+			Old - Original rom monitor, ../boot
+	text	: The code of the image
+	bss	: Uninitailzed data of the image, zeroed at init time
+	boothelper : IOS image that is only capable of acting as a host.
+		Primarily used for loading a full IOS image from the network
+	OIR	: "Online Insertion and Removal" of cards
+	flash   : Writable, non-volatile memory used for image storage
+	
+[2] Overview of Production Platforms
+====================================
+
+	Platform	Directories	CPU     	Code Name
+	=======================================================================
+	c1000	   	obj-36-c1000	68360   	Sapphire
+	c1005	   	obj-36-c1005	68360   	Catwoman
+	c2500/igs  	obj-68-c3000	68030   	Cancun
+	c4000	   	obj-68-c4000	68030   	DosXX
+	c4500/c4700	obj-4k-c4000	R4K	   	Sierra
+	as5200		obj-68-as5200	68030		Brasil
+	ags/ags+	obj-68-ags	68040   	AGS (unsupported
+							     past 11.0)
+	c7000		obj-68-c7000	68040		Clean
+	c7200		obj-4k-c7100	R4K		Predator
+	c7500		obj-4k-rsp	R4K		IRSP
+	VIP1		obj-4k-rvip	R4K		Checkers (VIP1)	**
+	VIP2		obj-4k-svip	R4K		Viper (VIP2)	**
+
+			obj-sp-sunos	Sparc		Unix 		***
+			obj-sp-solaris	Sparc		Unix 		***
+
+    **  The VIP1 and VIP2 are the only two production platforms that run
+	IOS that are not full, standalone routers in the above list. They
+	are IO controller cards that fit into the c7500 chassis and provide
+	distributed functionality.
+
+    *** There are also several unix ports that are for test purposes, that are
+	not shipping images
+
+[3] Overview of Packet Switching w.r.t Platforms
+================================================
+
+    Process Switching :
+
+	The frame is switched by an IOS task running at process level.
+	The packet is enqueued onto a process level queue by an ISR, causing
+	the task to wake up and switch the frame. This is available on
+	all platforms. Some (ags, c7000, c7500) use cached DRAM for the packet
+	memory as the frame has to be copied by the system into a system
+	packet buffer from the packet memory used by the interface controllers
+	(IE from MEMD on these platforms).
+
+    Fast Switching :
+
+	The frame is switched by the main CPU running IOS but from within
+	an interrupt service routine. This is present on all platforms.
+
+    Autonomous Switching :
+
+	The frame is switched by the Cbus controller. The main IOS CPU does
+	not see the frame. This is only supported on boxes that have a Cbus
+	controller (AGS+ and c7000).
+
+    SSE Switching :
+
+	The frame is switched by the Silicon Switching Engine. This is only
+	available on the c7000 and it must have an SSP rather then the
+	normal Cbus Controller (SP).
+
+    IP Flow/Optimum Switching :
+
+	The frame is switched by a special interrupt level switching
+	code path on the main IOS CPU. Only the IP protocol is supported. 
+	This is only available on the c7500 and c7200.
+	
+    Distributed Switching :
+
+	The frame is switched by the IO card itself. This is only supported
+	on the c7500 using a VIP (versatile interface processor).
+
+*******************************************************************************
+
+c1000 (Sapphire) Platform Description : 
+=======================================
+
+Product Overview :
+
+	Small home office / branch office fixed configuration router
+
+Processor :
+
+	Motorola 68360 at 25 Mhz
+
+Memory/Image Architecture :
+
+	o Unified DRAM, consisting of one DRAM SIMM socket
+	o DRAM is used for text, data, bss, heap and packets. It is split at
+	  boot time into local CPU memory and shared IO memory
+	o Box is execute from DRAM.
+	o Images are stored in flash which is optional (although highly 
+	  recommended). Without flash, images are tftploaded over LAN
+	o Rom monitor (new style, sys/rommon) and a boothelper image live 
+	  in ROM.
+
+Supported Media :
+
+	Ethernet, ISDN
+
+Special Considerations :
+
+	This platform is very very sensitive to image size as there is 
+	typically very little memory installed.
+
+Build Directories :
+
+	sys/obj-36-c1000	: platform specific objects
+	sys/obj-36		: platform independant objects
+	sys/rommon/obj-36-c1000	: platform Rom monitor
+
+Image Names :
+
+	c1000-*-*		: system images
+	C1000_RM		: Rom monitor
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-1001, cs-1003
+	    Questions/code reviews 	- sapphire-dev
+
+*******************************************************************************
+
+c1005 (Catwoman) Platform Description : 
+=======================================
+
+Product Overview :
+
+	Small home office / branch office fixed configuration router
+
+Processor :
+
+	Motorola 68360 at 25 Mhz
+
+Memory/Image Architecture :
+
+	o Unified DRAM, consisting of one DRAM SIMM socket
+	o DRAM is used for text, data, bss, heap and packets. It is split at
+	  boot time into local CPU memory and shared IO memory
+	o Box is execute from DRAM.
+	o Images are stored in flash which is optional (although highly 
+	  recommended). Without flash, images are tftploaded over LAN
+	o Rom monitor (new style, sys/rommon) and a boothelper image live 
+	  in ROM.
+
+Supported Media :
+
+	Ethernet, Serial and Async
+
+	Note : Serial and Async are supported by the same hardware
+	       but require seperate images
+
+Special Considerations :
+
+	This platform is very very sensitive to image size as there is 
+	typically very little memory installed.
+
+Build Directories :
+
+	sys/obj-36-c1005	: platform specific objects
+	sys/obj-36		: platform independant objects
+	sys/rommon/obj-36-c1000	: platform Rom monitor
+
+Image Names :
+
+	c1005-*-*		: system images
+	C1000_RM		: Rom monitor
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-1001, cs-1003
+	    Questions/code reviews 	- catwoman-sw-dev
+
+*******************************************************************************
+
+c2500/IGS (Cancun) Platform Description : 
+=========================================
+
+Product Overview :
+
+	Branch office fixed configuration router
+
+Processor :
+
+	Motorola 68030 at 25 Mhz
+
+Memory/Image Architecture :
+
+	o Unified DRAM, consisting of some soldered on memory and
+	  the ability to install more memory thru a socket
+	o DRAM is used for data, bss, heap and packets. It is split at
+	  boot time into local CPU memory and shared IO memory. It is also
+	  used for text with a run from RAM image.
+	o Box is execute from flash or execute from DRAM depending
+	  on which image.
+	o Images are stored on internal flash simms
+	o Rom monitor (old style from boot) and a boothelper image (which
+	  is run from rom) live in ROM
+
+Supported Media :
+
+	Ethernet, Serial, Async, BRI, Token Ring
+
+Special Considerations :
+
+	This platform is very sensitive to the size of non-text image
+	components as typically there is plenty of flash space to hold the
+	executing executable, but little DRAM space to hold data, bss and 
+	allocated objects. There is a special obj directory (obj-68-c3000-boot)
+	to build the boothelper image that goes into ROM that does not have
+	any parser help strings to save space.
+
+	Also this platform has many many derivatives, and has been OEM'ed
+	into all kinds of other equipment.
+
+Build Directories :
+
+	sys/obj-68-c3000	: platform specific objects (system image)
+	sys/obj-68-c3000-boot	: all objects for boothelper (which
+				  are compiled without parser help strings)
+	sys/obj-68		: platform independant objects
+	../boot/obj-68-c3000	: platform Rom monitor
+
+Image Names :
+
+	igs-*-*
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-igs
+	    Questions/code reviews 	- cancun
+
+*******************************************************************************
+
+c4000 (DosXX) Platform Description : 
+====================================
+
+Product Overview :
+
+	Branch office modular router. Three, non-oirable slots are
+	provided that accept NIM's (network interface modules).
+
+Processor :
+
+	Motorola 68030 at 40 Mhz
+
+Memory/Image Architecture :
+
+	o Split DRAM. There is a DRAM simm for CPU memory that is
+	  used for text, data, bss and heap. And there is another DRAM
+	  simm that is used for IO memory (all packets).
+	o Box is execute from DRAM only, with the exception of the
+	  boothelper image which is execute from ROM.
+	o Images are stored on internal flash simms.
+	o Rom monitor (old style from boot) and a boothelper image (which
+	  is run from rom) live in ROM
+
+Supported Media :
+
+	Ethernet, Token Ring, Serial, FDDI, Async, PRI, BRI
+
+Special Considerations :
+
+	None.
+
+Build Directories :
+
+	sys/obj-68-c4000	: platform specific objects
+	sys/obj-68		: platform independant objects
+	../boot/obj-68-c4000	: platform Rom monitor
+
+Image Names :
+
+	xx-*-*
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			-
+	    Questions/code reviews 	- dosxx-task, 4000-team
+
+*******************************************************************************
+
+c4500/c4700 (Sierra/Bigfoot) Platform Description : 
+===================================================
+
+Product Overview :
+
+	Branch office modular router. Three, non-oirable slots are
+	provided that accept NIM's (network interface modules).
+
+Processor :
+	
+	c4500  - r4k at 100Mhz
+	c4700m - r4k at 133Mhz
+	c4700s - r4k at 150Mhz
+
+Memory/Image Architecture :
+
+	o Split DRAM. There is a DRAM simm for CPU memory that is
+	  used for text, data, bss and heap. And there is another DRAM
+	  simm that is used for IO memory (all packets). Main CPU DRAM
+	  is from 8M to 32M (c4500) and 64M (c4700).
+	o Box is execute from DRAM only, including the boothelper
+	o Images are stored on internal flash simms. There is one simm
+	  socket to hold the boothelper image, and two for system images.
+	o Rom monitor (newstyle sys/rommon) lives in ROM.
+
+Supported Media :
+
+	Ethernet, Token Ring, Serial, FDDI, Async, PRI, BRI, ATM, Fastether
+	(and soon HSSI ??)
+
+Special Considerations :
+
+	This platform has an r4k RISC CPU. Please refer to the Processors 
+	document for concerns and considerations.
+
+Build Directories :
+
+	sys/obj-4k-c4000	: platform specific objects
+	sys/obj-4k		: platform independant objects
+	sys/rommon/obj-4k-c4000	: platform Rom monitor
+
+Image Names :
+
+	c4500-*-*		: system images
+	C4500_RM		: Rom monitor
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-4500
+	    Questions/code reviews 	- sierra-gurus, 4000-team
+
+*******************************************************************************
+
+AS5200 (Brasil) Platform Description : 
+======================================
+ 
+Product Overview :
+ 
+        Access Server for Dialup market.  Three, non-oirable slots that
+	will support one Dual PRI card (T1 or E1+modems) and two 24 modem
+	cards.
+
+Processor :
+        
+        68030 at 20Mhz
+ 
+Memory/Image Architecture :
+	o Split DRAM.  There is a single DRAM simm for CPU memory that is
+	  used for data, bss and heap.  CPU DRAM can also be used for text
+	  with an appropriately loaded (i.e. netbooted or uncompressed from
+	  flash relocatable image) run from RAM image.  Minimum CPU memory
+	  size is 8MB with a max of 16MB.  There is another simm for IO
+	  memory, standard with 4MB but upgradable to 8MB, 16MB.
+	o Platform is run from Flash but does support run from RAM but only
+	  for internal debug use.
+	o Images are relocatable and are stored in as well as run from
+	  internal flash (recommended operation).
+	o There is System flash (4, 8, 16MB) and Bootflash (4, 8, 16MB).
+	o Dual Bank flash functionality is supported only for 16MB "Fiji"
+	  type simms as there is only one simm slot for either Boot or
+	  System flash.
+	o Boothelper image is run from flash also.
+	o Rom monitor is new style (ie. sys/rommon based).
+ 
+Supported Media :
+	Ethernet, Serial, PRI (E1/T1) and integrated modems.  Currently
+	the modem vendor of choice is Microcom with plans to integrate
+	Telebit modem technology in the future.
+ 
+Special Considerations :
+	The platform is based on the c2500 series and therefore has the
+	same considerations listed for that platform.
+
+	In addition, due to the number of possible channelized interfaces,
+	CPU intensive operations are challenging on this platform.
+
+	Also, unlike the c2500 there is no special obj directory to build
+	the boot image: as5200-boot-l is built out of obj-68-as5200.
+
+	Finally, to date there have been no OEM'ed versions of this platform.
+ 
+Sources of information :
+ 
+        Mailing aliases : brasil-sw-eng
+ 
+
+*******************************************************************************
+
+AGS/AGS+ Platform Description : 
+===============================
+
+Product Overview :
+
+	Modular branch office / backbone router. Both AGS and AGS+ chassises
+	have 9 slots. The AGS has a multibus only, with a CSC/2/3/4 processor
+	board and up to eight mutilbus IO cards. The AGS+ has a multibus and
+	a cbus, one CSC2/3/4 CPU card, one cbus controller card, up to 
+	four cbus IO cards and some number of multibus IO cards (that 
+	are not OIR'able).
+
+Processor Cards :
+
+	csc2 : 68020 at 12Mhz
+	csc3 : 68020 at 30Mhz
+	csc4 : 68040 at 25Mhz
+
+Memory/Image Architecture :
+
+	o Unified DRAM (from 4 to 16MB)
+	o Box is execute from DRAM (except for the csc2 which could
+	  also execute from ROM), including the boothelper.
+	o Images are stored on internal flash.
+	o Rom monitor (old style, boot) and a full system image (which
+	  can act as a boothelper) live in ROM.
+
+Supported Media :
+
+	Ethernet, Token Ring, Serial, FDDI, PRI, HSSI
+
+Special Considerations :
+
+	The AGS+ has a "Cbus controller". See Processors doc.
+
+Build Directories :
+
+	sys/obj-68-ags		: platform specific objects
+	sys/obj-68		: platform independant objects
+	../boot/obj-68-ags	: platform Rom monitor
+
+Image Names :
+
+	gs3-*-*, pt3-*-*
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-agshw
+	    Questions/code reviews 	-
+
+*******************************************************************************
+
+c7000 (Clean) Platform Description : 
+====================================
+
+Product Overview :
+
+        Modular backbone router. OIRable slots accept IO cards (known
+	as Interface Processors or IP's which are compatible between the
+	c7000 family and c7500 family of products). The 7000 has 5 slots 
+	for IPs while the c7010 has 3 slots.  Both AC & DC power supplies 
+	are available and the c7000 supports redundant power supplies. One
+	slot is always taken by the RP and another is always taken by the Cbus
+	Controller (also referred to as the Switch Processor or SP). There
+	is also the SSE (Silicon Switching Engine which is a combined Cbus
+	controller and silicon switching engine), which is also known as
+	the SSP.
+
+Processor Card :
+
+        68040 at 40Mhz (refered to as RP)
+        
+Memory/Image Architecture :
+
+        o DRAM (either 16MB or 64MB) for text, data, bss and heap.
+        o SRAM for packets (known as MEMD). This memory is physically 
+	  located on the Switch Processor (SP) or Silicon Switch Processor 
+	  (SSP). The SP has 512 KB of SRAM, while the SSP can have either
+          512KB or 2MB. This memory is not directly accessible by the main
+	  CPU on the RP, however it is available thru a complicated set of
+	  very smart registers on the SP (known as the sniff buffer).
+        o When using autonomous or sse switching the SP/SSP switches packets
+          without interaction from the RP.
+        o Box is execute from DRAM only, including the boothelper.
+        o Images are stored on internal flash or flash card.
+        o Rom monitor (old style, boot) and a full system image (which
+          can act as a boothelper) live in ROM.
+
+Supported Media / Interface Processors :
+
+	Ethernet	: EIP
+	Token Ring 	: TRIP
+	Serial		: FSIP, SSIP
+	PRI/CT1/CE1	: MIP, SMIP
+	IBM Channel	: CIP (Bus-and-Tag and ESCON)
+	FDDI		: FIP
+	HSSI		: HIP
+	ATM		: AIP
+        Fastethernet	: FEIP
+
+	VIP1		: Versatile Interface Processor. This cards supports
+			  a variety of media including Ethernet, Fastethernet,
+			  Serial, Token Ring, FDDI etc
+
+Special Considerations :
+
+        It has a "Cbus controller". See Processors doc.
+
+Build Directories :
+
+	sys/obj-68-c7000	: platform specific objects
+	sys/obj-68		: platform independant objects
+	../boot/obj-68-c7000	: platform Rom monitor
+
+Image Names :
+
+	gs7-*-*
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-7000
+	    Questions/code reviews 	- microcode-people
+
+*******************************************************************************
+
+c7200 (Predator) Platform Description : 
+=======================================
+
+Product Overview :
+
+        Modular midrange/backbone router. OIRable slots accept IO cards
+	(also known as Port Adaptors, which are compatible between the c7200
+	and the VIP interface processors on the c7000/c7500). The c7206 has 
+	six port adaptor slots, and the c7204 has four. Both AC & DC power 
+	supplies are available and redundant power supplies are supported.
+
+Processor Cards :
+
+	NPE-150 : 150MHz MIPS R4700 with L2 cache and packet SRAM
+	NPE-100 : Slower version of CPU, no packet SRAM
+
+Memory/Image Architecture :
+
+        o Unified DRAM (16MB to 128MB) for text, data, bss and heap and
+	  packets. It is split into CPU memory amd IO memory at boot time.
+        o SRAM for some packets. SRAM and IO DRAM can be used interchangably
+	  with just a performance/bandwidth consideration.
+        o Box is execute from DRAM only, including the boothelper.
+        o Images are stored on internal flash ("bootflash:") or PCMCIA
+	  flash cards ("slot0:" and "slot1").
+        o Rom monitor (newstyle, sys/rommon) lives in ROM.
+
+Supported Media :
+
+	Ethernet, Fastethernet, Token Ring, Serial, FDDI.
+
+Special Considerations :
+
+        This platform has a MIPS RISC CPU. Please refer to the Processors 
+        document for concerns and considerations. The interface device
+	drivers receive packets in scatter/gather form. These frames
+	cannot be directly queued to process level. They must be coalesced
+	into a contigous system buffer. Also, packets that flow
+	thru the IP flow/optimum switching code path are bursted into the
+	CPU's internal data cache, so care is needed to keep the cache and
+	physical memory coherent.
+
+Build Directories :
+
+	sys/obj-4k-c7100	: platform specific objects
+	sys/obj-4k		: platform independant objects
+	sys/rommon/obj-4k-c7100	: platform Rom monitor
+
+Image Names :
+
+	c7200-*-*		: system images
+	C7200_RM		: Rom monitor
+
+Sources of information :
+
+        Mailing aliases : 
+
+	    Problems 			- cs-7200
+	    Questions/code reviews 	- pred-sw
+
+	Documentation   : 
+
+	    /nfs/csc/Docs/predator
+ 	    sys/Doc/C7200_Predator
+
+	Web Pages 	: 
+
+	    http://www-tac.cisco.com/Support_Library/Hardware/Routers/7200
+	    http://www-tac/People/sawan/7206/content_train_7206.html
+
+*******************************************************************************
+
+c7500 (RSP) Platform Description : 
+==================================
+
+Product Overview :
+
+        Core router, in a variety of shapes & sizes:
+
+	Chassis	Slots   IO Cards	Cybuses	Dual-rsp capable
+	================================================================
+	7505    5       4       	1       no
+	7506    7       6       	1       no
+	7507    7       5       	2       yes
+	7513   	13      11       	2       yes
+
+    	Note : each cybus is 1066M bits per second. IO cards are known
+	       as interface processors (IP's).
+
+Processor cards :
+
+	RSP1 - 100MHz MIPS r4600, single cybus support
+	RSP2 - same as RSP1, adds dual-RSP capability, dual-cybus support
+	RSP4 - same as RSP2, except 200MHz MIPS r5000
+               adds 512KB level2 cache, faster DRAM
+
+    	All of the above will work in any 75xx chassis
+
+        RSP7000 - RSP1 for a 70x0 chassis, single cxbus support
+
+Memory/Image Architecture :
+
+        o 2MB MEMD (packet memory, where fastswitching takes place)
+        o 16-128MB DRAM (where code, data, & process switching live)
+          (RSP4 supports up to 256MB DRAM)
+        o execute from DRAM only, including the boothelper
+        o Images are stored on internal flash simm ("bootflash:")
+          or PCMCIA slots ("slot0:" & "slot1:")
+        o Rom monitor (newstyle sys/rommon) lives in ROM.
+
+Supported Media / Interface Processors :
+
+	Ethernet	: EIP
+	Token Ring 	: TRIP
+	Serial		: FSIP, SSIP
+	PRI/CT1/CE1	: MIP, SMIP
+	IBM Channel	: CIP (Bus-and-Tag and ESCON)
+	FDDI		: FIP
+	HSSI		: HIP
+	ATM		: AIP
+        Fastethernet	: FEIP
+	POS		: POSIP (packet-pver-sonet)
+
+	VIP1/VIP2	: Versatile Interface Processor. These cards support
+			  a variety of media including Ethernet, Fastethernet,
+			  Serial, Token Ring, FDDI etc
+
+Special Considerations :
+
+        This platform has a MIPS RISC CPU. Please refer to the Processors 
+        document for concerns and considerations. Also, packets are held
+	in MEMD buffers for fastswitching. These buffers cannot be queued
+	to process level. The CPU's internal data cache is used to read these
+	fastswitched packets from MEMD buffers, so care is needed to keep
+	the data cache coherenet with physical memory.
+
+Build Directories :
+
+	sys/obj-4k-rsp		: platform specific objects
+	sys/obj-4k		: platform independant objects
+	sys/rommon/obj-4k-rsp	: platform Rom monitor (RSP1)
+	sys/rommon/obj-4k-rsp2	: platform Rom monitor (RSP2)
+	
+Image Names :
+
+	rsp-*-*			: system images
+	RSP_RM			: Rom monitor (RSP1)
+	RSP2_RM			: Rom monitor (RSP2)
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-7500
+	    Questions/code reviews 	- jacks-hacks
+
+*******************************************************************************
+
+VIP1/VIP2 (Checkers/Viper) Platform Description :
+=================================================
+
+Product Overview :
+
+	Versatile Interface Processors for the c7000/c7500 family of core
+	backbone routers. Support up to two port adaptors with various
+	media, running a small IOS based kernel with some distributed
+	features (mainly IP protocol packet switching).
+	
+	Note, on the c7000 platform, no distributed features are supported.
+
+Processor cards :
+
+	VIP1 - 100MHz MIPS r4600, L2 cache, unified DRAM. Supported on 
+	       the c7000 and c7500.
+	VIP2 - 100MHz MIPS r4600, L2 cache, packet SRAM, "smart"
+	       CyBus interface ASIC/DMA engine. Only supported on c7500.
+
+Memory/Image Architecture :
+
+        o 8-128MB DRAM (where code, data, and heap live)
+        o execute from DRAM only. No boothelper.
+        o Images are stored on the master CPU for the box IE RP or RSP.
+        o Rom monitor (newstyle sys/rommon) lives in ROM.
+
+Supported Media / Port Adaptors :
+
+	Ethernet	: 4E, 8E, 5E-FL
+	Token Ring 	: 4R
+	Serial		: 4T
+	FDDI		: 1FDDI
+        Fastethernet	: 1FE
+
+Special Considerations :
+
+        This platform has a MIPS RISC CPU. Please refer to the Processors 
+        document for concerns and considerations. Also, the VIP cards
+	run a small subset of IOS functionality. No packet processing
+	happens at process level. Everything is in the fastswitched path.
+
+Build Directories :
+
+	sys/obj-4k-rvip		: platform specific objects (VIP1)
+	sys/obj-4k-svip		: platform specific objects (VIP2)
+	sys/obj-4k		: platform independant objects
+	sys/rommon/obj-4k-svip	: platform Rom monitor (VIP2)
+
+Image Names :
+
+	rvip-*-*		: VIP1
+	svip-*-*		: VIP2
+	SVIP_RM			: Rom monitor (VIP2)
+
+Sources of information :
+
+	Mailing aliases : 
+
+	    Problems 			- cs-vip
+	    Questions/code reviews 	- vip-sw, vip-hacks, rvip-hacks
+
+*******************************************************************************

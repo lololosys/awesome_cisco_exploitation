@@ -1,0 +1,2147 @@
+# $Id: media_registry.reg,v 3.13.8.17 1996/09/01 21:18:29 fowler Exp $
+# $Source: /release/112/cvs/Xsys/h/media_registry.reg,v $
+#------------------------------------------------------------------
+# media_registry.reg - Service Points for MEDIA registry
+#
+# 21-Jul-1993, Gannu Satish Kumar
+#
+# Copyright (c) 1993-1997 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: media_registry.reg,v $
+# Revision 3.13.8.17  1996/09/01  21:18:29  fowler
+# CSCdi60734:  Frame Relay rate enforcement is not effective
+#              Remove original fix due to its performance impact
+# Branch: California_branch
+#
+# Revision 3.13.8.16  1996/08/30  19:30:48  fowler
+# CSCdi60734:  Frame Relay rate enforcement is not effective
+# Branch: California_branch
+#
+# Revision 3.13.8.15  1996/08/29  02:22:16  xtang
+# CSCdi60447:  FSIP max MTU=14816 not 18000
+# Branch: California_branch
+#              Implemented new FSIP command 93 to pass the available
+#              buffer size in the controller to the system.
+#              The corresponding microcode change are in
+#              cvs -d /micro fsip_q (fsip187-0)
+#              and cvs -d /micro fsip_i (rsp_fsip204-0).
+#
+# Revision 3.13.8.14  1996/08/15  00:45:19  tylin
+# CSCdi66084:  cdp should send updates on lowest numbered vlan
+# Branch: California_branch
+#
+# Revision 3.13.8.13  1996/07/30  14:45:58  michellw
+# CSCdi64226:  Support larger max_frame_size (>1516) for LANE
+# Branch: California_branch
+# Add one parameter (swidb) to reg_invoke_media_change_mtu registry
+# function.
+#
+# Revision 3.13.8.12  1996/07/28  08:49:02  irfan
+# CSCdi60568:  v120 autodetect not working
+# Branch: California_branch
+# add registries needed by serial autodetect.
+#
+# Revision 3.13.8.11  1996/07/18  21:52:23  bcole
+# CSCdi57941:  Windows95 reports duplicate IP address on network
+# Branch: California_branch
+#
+# Place interface in promiscuous mode while using ARP for address
+# discovery.  This way we can completely & transparently spoof the web
+# client.
+#
+# Revision 3.13.8.10  1996/06/17  08:31:18  jhernand
+# Commit Modular Cobra to California_branch
+#
+# Revision 3.13.8.9  1996/06/16  21:12:02  vnguyen
+# Finally committing Brasil to California_branch
+#
+# Revision 3.13.8.8  1996/06/13  19:07:21  etrehus
+# Commit boa to California Branch
+#
+# Revision 3.13.8.7  1996/06/01  06:14:51  hampton
+# Remove obsolete media_tring_supports_etr registry call.  [CSCdi59254]
+# Branch: California_branch
+#
+# Revision 3.13.8.6  1996/05/22  20:54:43  raj
+# CSCdi56721:  Debug ip mpacket doesnt show ttl and other important fields
+# Branch: California_branch
+# Added fields for "detail", and specifying acl as well as group.
+#
+# Revision 3.13.8.5  1996/05/17  11:15:55  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.12.2.3  1996/05/05  23:05:23  ppearce
+# Sync to IbuMod_Calif_baseline_960504
+#
+# Revision 3.12.2.2  1996/04/06  01:05:35  pmorton
+# CSCdi45577:  QLLC w/PVCs regression with QLLC in CLS.
+# Build a map for managing PVCs, so that they can be claimed either by
+# CLS or by RSRB
+#
+# Revision 3.12.2.1  1996/03/17  17:48:01  ppearce
+# Sync IbuMod_Calif_branch to V111_1_3
+#
+# Revision 3.13.8.4  1996/05/08  01:46:35  lwei
+# CSCdi56122:  Tunnel interface default MTU should not show up in nvgen
+# output
+# Branch: California_branch
+#
+# Revision 3.13.8.3  1996/04/29  20:41:50  jquan
+# CSCdi50033:  Crash after setup dialog intermitnently
+# Branch: California_branch
+#
+# Revision 3.13.8.2  1996/04/25  23:11:05  ronnie
+# CSCdi55766:  Hey!  This ATM and Frame Relay is no different than in 11.1
+# Feature commit for ATM and Frame Relay into 11.2
+# Branch: California_branch
+#
+# Revision 3.13.8.1  1996/04/10  04:22:43  bcole
+# CSCdi54192:  IPX pings over a multipoint GRE tunnel fail intermittently
+# Branch: California_branch
+#
+# Fixup IPX encapsulation over multipoint tunnels.
+#
+# Revision 3.13  1996/03/01  00:48:45  dbilling
+# CSCdi47275:  CLS over RSRB(lack) does not clean up correctly
+# Restore CSCdi47275 w/fix to netbios_as.c
+#
+# Revision 3.12  1996/02/16  18:09:13  dbilling
+# CSCdi47275:  CLS over RSRB(lack) does not clean up lakie
+# Backout CSCdi47275 temporarily-- it breaks igs-c-l build
+#
+# Revision 3.11  1996/02/15  18:01:51  gtaylor
+# CSCdi45779:  Leased Line ISDN work.
+#
+# Revision 3.10  1996/02/15  01:37:45  dbilling
+# CSCdi47275:  CLS over RSRB(lack) does not clean up lakie
+# Fix cleanup and change appl. cleanup from registry to vector
+#
+# Revision 3.9  1996/02/13  21:24:51  rbatz
+# CSCdi30258:  Fixed the following:
+#                  Duplicate half-duplex commands.
+#                  Could not do half-duplex stun.
+#                  Could not tune half-duplex timers for bstun.
+#
+# Revision 3.8  1996/01/16  22:52:48  atsao
+# CSCdi46647:  Update N1 when MTU, X25 modulo or LAPB compression is
+# changed
+# Use lapb_update_n1 as a registry instead of a function call.
+#
+# Revision 3.7  1995/12/14  20:58:47  wmay
+# CSCdi45297:  bridging does not work over smds subinterfaces - add
+# registry to call to convert destination address to swidb.
+#
+# Revision 3.6  1995/12/13  02:28:03  ppearce
+# CSCdi45473:  %SYS-3-SUPNONE: Registry 6 doesnt exist output during boot
+#   (1) Rename fddi_srb_in() to fddi_to_tr()
+#         to parallel the tr_to_fddi() routine that already exists
+#   (2) Remove srt_fddi_in() registry from srt/srt_registry.reg
+#         and add media_fddi_to_tr() registry into h/media_registry.reg
+#
+# Revision 3.5  1995/11/22  18:54:47  slin
+# CSCdi38892:  vines over X.25 requesting a full routing update on all
+#              PVCs
+# - Send only to newly established PVC
+#
+# Revision 3.4  1995/11/21  20:42:37  turadek
+# CSCdi43841:  add frame relay payload compression feature
+# syncing code to 11.0
+#
+# Revision 3.3  1995/11/17  09:12:58  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.2  1995/11/16  23:24:16  gstovall
+# Ladies and gentlemen, I introduce to you, the port ready commit.
+#
+# Revision 3.1  1995/11/09  11:35:44  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.6  1995/11/08  20:58:51  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.5  1995/09/15  05:56:51  ppearce
+# CSCdi40438:  Cannot config LLC parms for RSRB/LAK on CSNA virtual i/f
+#
+# Revision 2.4  1995/08/29  23:50:53  motto
+# CSCdi39129:  Make the source-bridge config cmd on CIP ILANs work like
+# TRIP/FIP
+#
+# Revision 2.3  1995/08/22  06:36:52  tkolar
+# CSCdi38902:  ATCP client mode wont work with ISDN
+# Change method of handing out virtual-net node addresses to accomodate
+# arbitrary interfaces, and prevent non P2P interfaces from being
+# configured for Appletalk client mode.
+#
+# Revision 2.2  1995/06/16  22:32:02  shankar
+# CSCdi35485:  autoinstall over Frame Relay breaks in 103-3.3
+#
+# Revision 2.1  1995/06/07  20:35:58  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY MEDIA
+
+
+DEFINE  media_get_first_ieee_hardware_address
+/*
+ * Applicable for getting the hardware address of the first ethernet (or IEEE)
+ * interface. Currently used only by MOP, when sending out on a serial
+ * interface.
+ */
+	STUB
+	uchar *
+	 -
+END
+
+DEFINE	media_interesting_addresses
+/*
+ * Called by drivers that are initializing an interfaces to accept only
+ * certain multicast addresses.  This should take the steps necessary to
+ * inform the interface drivers, bridging code, etc of its "interesting"
+ * MAC address.
+ */
+	LIST
+	void
+	idbtype *swidb
+END
+
+DEFINE 	media_ether_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return an encapsulation
+ * method, a destination MAC address, and SNAP or other addressing information
+ * that is required.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, \
+	int *enctype, uchar **daddr, \
+	uchar const **other_info	
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_ether_macwrite
+/*
+ * Index by ET_xxx.
+ * Rewrite MAC header of packet given an encapsulation method.
+ */
+	RETVAL
+	boolean
+	paktype *pak, hwidbtype *hwidb, \
+	int linktype, char *daddr, char const *other_info
+	ET_MAX
+	int enctype
+END
+
+
+DEFINE 	media_token_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return an encapsulation
+ * method, a destination MAC address, and SNAP or other addressing information
+ * that is required.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, \
+	int *enctype, uchar **daddr, \
+	uchar const **other_info, ulong *rif_flags
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_token_macwrite
+/*
+ * Index by ET_xxx.
+ * Rewrite MAC header of packet given an encapsulation method.
+ */
+	RETVAL
+	boolean
+	paktype *pak, \
+	int linktype, char *daddr, char *saddr, \
+	char const *other_info, riftype *rifptr
+	ET_MAX
+	int enctype
+END
+
+
+DEFINE media_rif_lookup
+/*
+ * Token ring rif lookup.
+ */
+    STUB
+    riftype *
+    uchar *address, hwidbtype *interface, uchar *sa, int flags
+END
+
+
+DEFINE  media_fddi_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return an encapsulation
+ * method, a destination MAC address, and SNAP or other addressing information
+ * that is required.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, int *enctype, \
+	uchar **daddr, uchar const **other_info, ulong *rif_flags
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_fddi_macwrite
+/*
+ * Index by ET_xxx.
+ * Rewrite MAC header of packet given an encapsulation method.
+ */
+	RETVAL
+	boolean
+	paktype *pak, hwidbtype *hwidb, int linktype, \
+	char *daddr, char *saddr, char const *other_info, riftype *rifptr
+	ET_MAX
+	int enctype
+END
+
+DEFINE media_fddi_to_tr
+/*
+ * Interrupt level routine to canonalize FDDI SRB frame 
+ *   into TokenRing SRB frame.
+ */
+        STUB
+        void
+        paktype *pak, hwidbtype *idb
+END
+
+DEFINE 	media_smds_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return either a
+ * destination address, or a filled in addrtype structure that is
+ * used to look into the static map entries.  Also returned is any
+ * SNAP or other addressing information that is required.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, int *enctype, \
+	uchar const **daddr, uchar const **other_info, \
+	addrtype *proto_addr
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_x25_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return a filled
+ * in addrtype structure that is used to look into the static map
+ * entries.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, \
+	addrtype *proto_addr, lcitype **lci, \
+	boolean *broadcast
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_frame_macaddr
+/*
+ * Case. 4 arg: paktype *, long, boolean *, addrtype *
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return a filled
+ * in addrtype structure that is used to look into the static map
+ * entries.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, addrtype *proto_addr, \
+	boolean *broadcast
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_tunnel_macaddr
+/*
+ * Index by LINK_xxx.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, addrtype *proto_addr, \
+	boolean *broadcast
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE 	media_tunnel_bcast
+/*
+ * Index by LINK_xxx.
+ * Interface between GRE tunneling code and NHRP.  Used to allow NHRP
+ * to handle packet replication of GRE packets during sending of 
+ * broadcasts/multicasts over multipoint tunnels.
+ */
+	RETVAL
+	boolean
+	paktype *pak
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE media_tunnel_mtu
+/*
+ * Index by LINK_xxx.
+ * Returns the tunnel interface MTU.
+ */
+	RETVAL
+	ulong
+	idbtype *idb
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE 	media_ddr_macaddr
+/*
+ * Case. 4 arg: paktype *, long, boolean *, addrtype *
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return a filled
+ * in addrtype structure that is used to look into the static map
+ * entries.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, addrtype *proto_addr, \
+	boolean *broadcast
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE media_hdlc_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return an encapsulation
+ * method, a destination MAC address, and SNAP or other addressing information
+ * that is required.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, \
+	int *enctype, ushort *flags
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_hdlc_macwrite
+/*
+ * Index by ET_xxx.
+ * Rewrite fixed offset MAC header of packet given an encapsulation method.
+ */
+	RETVAL
+	boolean
+	paktype *pak, int linktype, \
+	ushort flags, int size
+	ET_MAX
+	int enctype
+END
+
+DEFINE 	media_atm_macaddr
+/*
+ * Case. 4 arg: paktype *, long, boolean *, staticmap_type **, uchar **
+ * Index by LINK_xxx
+ * do address resolution phase of encapsulation.  We return a filled
+ * in addrtype structure that is used to look into the static map
+ * entries.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, hwaddrtype *daddr, \
+	uchar const **snap_info, \
+	staticmap_type **map, boolean *broadcast
+	0
+	int linktype
+END
+
+DEFINE 	media_atm_setup
+/*
+ * Indexed by encapsulation type.
+ */
+	STUB	
+	boolean
+	hwidbtype *hwidb
+END
+
+
+DEFINE 	media_tbridge_swidb_vc_queue_init
+/*
+ * link all the VC's associated w/ this swidb into a linked list
+ * in a linked list of vc's used by tbridging
+ */
+	CASE
+	void
+	idbtype *swidb
+	ET_MAX
+	int encap
+END
+
+
+DEFINE 	media_tbridge_swidb_vc_queue_clear
+/*
+ * unlink all the VC's associated w/ this swidb
+ * in a linked list of vc's used by tbridging
+ */
+	CASE
+	void
+	idbtype *swidb
+	ET_MAX
+	int encap
+END
+
+
+
+DEFINE 	media_tbridge_swidb_vc_enqueue
+/*
+ * link one element associated w/ this swidb into a linked list
+ * in a linked list of vc's used by tbridging
+ */
+	CASE
+	void
+	idbtype *swidb, vc_info_t *vc
+	ET_MAX
+	int encap
+END
+
+
+DEFINE 	media_tbridge_swidb_vc_unqueue
+/*
+ * unlink one of the VC's associated w/ this swidb
+ * in a linked list of vc's used by tbridging
+ */
+	CASE
+	void
+	idbtype *swidb, vc_info_t *vc
+	ET_MAX
+	int encap
+END
+
+
+DEFINE 	media_tbridge_display_VCs
+/*
+ * unlink one of the VC's associated w/ this swidb
+ * in a linked list of vc's used by tbridging
+ */
+	CASE
+	void
+	idbtype *idb
+	ET_MAX
+	int encap
+END
+
+
+DEFINE media_channel_macaddr
+/*
+ * Index by LINK_xxx.
+ * Do address resolution phase of encapsulation.  We return an encapsulation
+ * method, a destination MAC address, and SNAP or other addressing information
+ * that is required.
+ */
+	RETVAL
+	boolean
+	paktype *pak, long address, int *enctype, boolean *broadcast, \
+		staticmap_type **map
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE 	media_channel_macwrite
+/*
+ * Index by ET_xxx.
+ * Rewrite fixed offset MAC header of packet given an encapsulation method.
+ */
+	RETVAL
+	boolean
+	paktype *pak, int linktype, ushort flags, int size, ushort vc
+	ET_MAX
+	int enctype
+END
+
+DEFINE media_reset_llc2_parms
+/*
+ * Indexed by IDBTYPE_*.  
+ * Perform additional reset of LLC2 parms required by an interface
+ *   (specifically used to reset the LLC2 parms of the CSNA internal LANs)
+ *
+ */
+	CASE
+	void
+	hwidbtype *idb
+	0
+	int idbtype
+END
+
+DEFINE 	media_type_to_link
+/*
+ * Indexed by type code.  Returns link type.
+ */
+	VALUE
+	ulong
+	ulong value
+	0
+	long type
+END
+
+
+
+DEFINE 	media_link_to_type
+/*
+ * Indexed by link code.  Returns link type.
+ */
+	VALUE
+	ulong
+	ulong value
+	0
+	long type
+END
+
+
+DEFINE 	media_link_to_snaptype
+/*
+ * Indexed by link type.  Returns type code.
+ */
+	VALUE
+	ulong
+	ulong value
+	LINK_MAXLINKTYPE
+	long index
+END
+
+
+DEFINE 	media_sap_to_link
+/*
+ * Indexed by SAP code.  Returns link type.
+ */
+	VALUE
+	ulong
+	ulong value	
+	0
+	long  sap
+END
+
+
+DEFINE  media_serial_to_link
+/*
+ * Indexed by type code.  Returns link type.
+ */
+	VALUE
+	ulong
+	ulong value
+	0
+	long type
+END
+
+
+DEFINE 	media_link_to_serial
+/*
+ * Indexed by link type.  Returns serial type code.
+ */
+	VALUE
+	ulong
+	ulong value
+	LINK_MAXLINKTYPE
+	long index
+END
+
+
+DEFINE 	media_getlink
+/*
+ * Indexed by encapsulation type.  Arguments are idb and packet.
+ */
+	RETVAL
+	ulong
+	idbtype *idb, paktype *pak
+	ET_MAX
+	int enctype	
+END
+
+
+DEFINE 	media_serial_setup
+/*
+ * Indexed by encapsulation type.
+ */
+	RETVAL
+	boolean
+	parseinfo *csb, hwidbtype *hwidb
+	0
+	int enctype
+END
+
+
+DEFINE 	media_serial_encap_changed
+/*
+ * Arguments is idb.
+ */
+	LIST
+	void
+	hwidbtype *hwidb, int enctype
+END
+
+
+DEFINE	media_bia_discovered
+/*
+ * Argument is hwidb.
+ */
+	LIST
+	void
+	hwidbtype *hwidb
+END
+
+
+DEFINE 	media_tring_ring_status
+/*
+ * Arguments are hwidb and ring status value.
+ */
+	LIST
+	void
+	hwidbtype *hwidb, ushort ringstat
+END
+
+
+DEFINE 	media_x25_pvc_create
+/*
+ * Indexed by link type.  Arguments are idb and lci structures.
+ */
+	CASE
+	void
+	idbtype *swidb, addrtype *proto_addr
+	0
+	int linktype
+END
+
+
+DEFINE 	media_x25_pvc_delete
+/*
+ * Indexed by link type.  Arguments are idb and lci structures.
+ */
+	CASE
+	void
+	idbtype *swidb, lcitype *lci
+	0
+	int linktype
+END
+
+
+DEFINE 	media_x25_svc_connect
+/*
+ * Indexed by link type.  Arguments are idb and lci structures.
+ */
+	CASE
+	void
+	idbtype *swidb, addrtype *proto_addr
+	0
+	int linktype
+END
+
+
+DEFINE 	media_x25_svc_clear
+/*
+ * Indexed by link type.  Arguments are idb and lci structures.
+ */
+	CASE
+	void
+	idbtype *swidb, lcitype *lci
+	0
+	int linktype
+END
+
+
+DEFINE	media_x25_place_call
+/*
+ * No index necessary.  Only calls to x25_place_call
+*/
+	STUB
+	lcitype *
+	register idbtype *idb,	\
+	addrtype *proto_addr,	\
+	uchar *subaddr,		\
+	uchar prec,		\
+	int protocol,		\
+	uchar *cud,		\
+	uint cudlen
+END
+
+DEFINE x25_incoming_call
+/*
+ * Api handling for Incoming Call.  App may want to
+ * refuse the Incoming Call even though X.25 has
+ * found it acceptable.  Cause, diagnostic, and reason
+ * are fields that can be filled in
+ *
+ * Indexed by lci_linktype
+ */
+	RETVAL
+	boolean
+	paktype *pak,		\
+	lcitype *lci,		\
+	uchar *cause,		\
+	uchar *diagnostic,	\
+	uchar **reason
+	LINK_MAXLINKTYPE
+	int lintype
+END
+
+
+DEFINE	media_x25_encaps
+/*
+ * No index necessary.  Only calls to x25_encaps 
+*/
+	STUB
+	boolean
+	paktype *pak, 		\
+	long opaque, 		\
+	x25map *map
+END
+
+
+DEFINE	media_x25_output
+/*
+ * No index necessary.  Only calls to x25_output
+ */
+	STUB
+	boolean
+	hwidbtype *idb, paktype *pak, enum HEADTAIL which
+END
+
+
+DEFINE	media_x25_sendcause
+/*
+ * No index needed.  Only calls x25_sendcause
+ */
+	STUB
+	void
+	hwidbtype *idb, 	\
+	register lcitype *lci, 	\
+	uchar type, 		\
+	uchar reason, 		\
+	uchar diag, 		\
+	paktype *opak
+END
+
+
+DEFINE	media_x25_notify_event
+/*
+ * Indexed by linktype
+ *	
+ * Events are
+ * incoming call
+ * call accept         
+ * clear indication
+ * clear confirmation
+ * reset indication
+ * reset confirmation
+ * packet level RR
+ * Packet level RNR    
+ * Packet level RR, or holdq not full 
+ * Packet level RNR, or hold q full 
+ * lci is being torn down - let api know 
+ */
+	CASE
+	void
+	lcitype *lci, 		\
+	uchar event, 		\
+	uchar cause, 		\
+	uchar diagnostic,	\
+	paktype *pak
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE	media_x25_address_map_enter
+/*
+ * Indexed by linktype
+ * Call out from X.25 when an address map entry is made
+ */
+	RETVAL
+	boolean
+	x25map *map
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE	media_x25_address_map_delete
+/*
+ * Indexed by linktype
+ * Call out from X.25 when an address map entry is deleted
+ */
+	CASE
+	void
+	addrtype *proto_addr
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE	media_x25_lci_busy
+/*
+ * Indexed by linktype
+ * Call out from X.25 to see if an address map entry is is use
+ */
+	CASE
+	void
+	addrtype *proto_addr, 	\
+	boolean *result
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE	media_x25_pvc_setup
+/*
+ * Indexed by linktype
+ * Call out from X.25 to set up a x.25 client as a PVC or non PVC
+ * (deepending on the sense)
+ */
+	RETVAL
+	boolean
+	x25map *map, 	\
+	lcitype *lci, 		\
+	boolean sense
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+
+DEFINE	media_x25_get_next_lci
+/*
+ * No index needed.  Only calls x25_lci_lookup_next.  Start with an
+ * LCI number of zero to get the first LCI.
+ */
+DATA
+	typedef struct llctype_ llctype__;
+END DATA
+	STUB
+	lcitype *
+	hwidbtype *idb, 	\
+	int lci, 		\
+	llctype__ *llc2
+END
+
+
+DEFINE	media_x25_lookup_lci
+/*
+ * No index needed.  Only calls x25_lci_lookup_by_x121.
+ */
+	STUB
+	lcitype *
+	hwidbtype *idb, 	\
+	uchar *addr,		\
+	int addr_length
+END
+
+
+DEFINE	media_x25_get_lci_info
+/*
+ * No index needed.  Only calls x25_lci_get_info.
+ */
+	STUB
+	boolean
+	lcitype *lci,		\
+	int *lcn,		\
+	hwaddrtype *hwaddr,	\
+	ulong *packetsneedack
+END
+
+
+DEFINE	media_x25_get_lci_stats
+/*
+ * No index needed.  Only calls x25_lci_get_stats.
+ */
+	STUB
+	boolean
+	lcitype *lci,		\
+	ulong *bytessent,	\
+	ulong *bytesrcvd,	\
+	ulong *packetssent,	\
+	ulong *packetsrcvd,	\
+	ulong *resetssent,	\
+	ulong *resetsrcvd
+END
+
+
+DEFINE	media_x25_reassemble
+/*
+ * No index necessary.  Only calls to x25_reassemble
+ */
+	STUB
+	int
+	paktype **pak,		\
+	queuetype *reassmQ
+END
+
+
+DEFINE	media_x25_nsap_compare
+/*
+ * Arguments are NSAP prefix and NSAP address;
+ * return value is depth of match
+ */
+	STUB
+	int
+	uchar *prefix, uchar *nsap
+END
+
+
+DEFINE 	media_fr_pvc_active
+/*
+ * Indexed by link type.  Arguments are idb structures and dlci number.
+ */
+	PID_LIST
+	void
+	idbtype *swidb, ushort dlci
+	MSG_FR_PVC_ACTIVE
+END
+
+
+DEFINE 	media_fr_pvc_inactive
+/*
+ * Indexed by link type.  Arguments are idb structures and dlci number.
+ */
+	PID_LIST
+	void
+	idbtype *swidb, ushort dlci
+	MSG_FR_PVC_INACTIVE
+END
+
+
+DEFINE 	media_ether_mtu
+/*
+ * Indexed by link type.  Arguments are swidb and default flag.
+ */
+	RETVAL
+	int
+	idbtype *swidb, boolean get_default
+	0
+	int linktype
+END
+
+
+DEFINE  media_tring_mtu
+/*
+ * Indexed by link type.  Arguments are swidb and default flag.
+ */
+	RETVAL
+	int
+	idbtype *swidb, boolean get_default
+	0
+	int linktype
+END
+
+
+DEFINE  media_fddi_mtu
+/*
+ * Indexed by link type.  Arguments are swidb and default flag.
+ */
+	RETVAL
+	int
+	idbtype *swidb, boolean get_default
+	0
+	int linktype
+END
+
+DEFINE  media_atm_mtu
+/*
+ * Indexed by link type.  Arguments are swidb and default flag.
+ */
+	RETVAL
+	int
+	idbtype *swidb, boolean get_default
+	0
+	int linktype
+END
+
+DEFINE  media_channel_mtu
+/*
+ * Indexed by link type.  Arguments are swidb and default flag.
+ */
+	RETVAL
+	int
+	idbtype *swidb, boolean get_default
+	0
+	int linktype
+END
+
+DEFINE        media_check_mtu
+/*
+ * Arguments are hwidb, mtu_size
+ * Check if the size of the mtu is acceptible to the interface
+ */
+        RETVAL
+        boolean
+        hwidbtype *hwidb, ushort mtu
+        0
+        int type
+END
+
+DEFINE	media_hwidb_enqueue_private_list
+/*
+ * Arguments are hwidb
+ * do hwidb enqueue onto the private list and swidbQ, default is do nothing
+ */
+        LIST
+        void
+        hwidbtype *hwidb
+END
+
+DEFINE 	media_change_mtu
+/*
+ * Arguments are hwidb and delta change.
+ */
+	LIST
+	void
+	hwidbtype *hwidb, idbtype *swidb, int delta
+END
+
+
+DEFINE 	media_default_mtu
+/*
+ * Argument is hwidb.
+ */
+	LIST
+	void
+	hwidbtype *hwidb
+END
+
+
+DEFINE	media_transmit_delay
+/*
+ * Arguments are hwidb, new value
+ */
+	CASE
+	void
+	hwidbtype *idb, int value
+	0
+	int type
+END
+
+DEFINE media_max_transmit_delay
+/*
+ * For CBUSSERIAL IDB type, returns the maximum number of
+ * transmit_delay units.
+ */
+	STUB
+	ulong
+	hwidbtype *idb
+END
+
+DEFINE	media_minimum_carrier_delay
+/*
+ * Indexed by idb_type.  Returns minimum carrier delay for interface
+ * delay is in milliseconds, so it can be used with timers
+ */
+	VALUE
+	ulong
+	ulong value
+	0
+	int type
+END
+
+DEFINE 	media_rps_startup
+/*
+ * Argument are hardware idb pointer and the assigned ring number.
+ */
+	STUB
+	void
+    	hwidbtype *hwidb, int actual_ring
+END
+
+
+DEFINE 	media_tring_get_smt_stats
+/*
+ * Read Station Management Statistics into the hardware idb.
+ * Index is idb->type (i.e. IDBTYPE_xxx).  Used by LANMGR code.
+ * Currently on STR and SBE16 multibus cards use this service point.
+ */
+	CASE
+	void
+        hwidbtype *idb
+	0
+	int idbtype
+END
+
+DEFINE 	media_tring_add_functional
+/*
+ * Call to add any additional TR functional addresses not encompassed
+ * by a particular linktype.
+ */
+	LIST
+	void
+        hwidbtype *idb, idbtype *swidb
+END
+
+DEFINE 	media_rif_reset
+/*
+ * Call to reset RIF, Netbios, etc. data structures associated with
+ * a token ring or FDDI interface.
+ */
+	LIST
+	void
+        hwidbtype *idb
+END
+
+DEFINE 	media_update_attempt
+/*
+ * Attempt to change the media type during setup.
+ */
+	STUB
+	void
+	-
+END
+
+	DEFINE media_dialer_is_answer
+/*
+ * Invoke media (ISDN, sync serial, etc) specific code to decide if we placed
+ * or answered this call.  Returns TRUE if answered, FALSE otherwise.
+ */
+ 	RETVAL
+	boolean
+	hwidbtype *idb
+	0
+	int type
+END
+
+DEFINE 	media_llc_create
+/*
+ * Invoke application specific (lack, sdllc) cleanup code for initializing
+ * an LLC2 connection.
+ */
+	LIST
+	void
+        llctype__ *llc, paktype **ppak
+END
+
+DEFINE  media_llc_show
+/*
+ * Show the LLC2 CONS information for an X25 connection.  Indexed by link 
+ * type.  Arguent is the llctype.
+ */
+	CASE
+	void
+	llctype__ *llc2
+	0
+	int linktype
+END
+
+DEFINE	media_hw_setup
+/*
+ * Invoke the low-level encapsulation routines
+ */
+	LIST
+	void
+	hwidbtype *hwidb
+END
+
+DEFINE	media_hw_reset
+/*
+ * Invoke all registered functions that may use this interface
+ */
+	LIST
+	void
+	hwidbtype *hwidb
+END
+
+DEFINE media_hwaddr_notify
+/*
+ * Notify any/all higher-level protocols on any SWIDB's attached to a 
+ * hardware interface who registered an interest
+ * that the hardware address on this HW interface has changed.
+ */
+	LIST
+	void
+	idbtype *idb, uchar *addr, ushort len
+END
+
+DEFINE media_delete_hardware_address_filter
+/*
+ * Remove any driver-specific support for address filtering
+ * on a per-MAC address basis.
+ *
+ * This function should be used, for instance, to clean up CAM entries
+ * corresponding to a bridge table entry (bte) when the bte is removed
+ * for any reason.
+ */
+	LIST
+	void
+	hwidbtype *hwidb, uchar *mac_address, hwidbtype *input_hwidb
+END
+
+
+DEFINE media_add_hardware_address_filter
+/*
+ * Add any driver-specific support for address filtering
+ * on a per-MAC address basis.
+ *
+ * This function should be used to add entries to the CAM
+ * corresponding to a bridge table entry (bte).
+ */
+        LIST
+        void
+        hwidbtype *hwidb, uchar *mac_address
+END
+
+
+DEFINE media_set_rxoffset
+/*
+ * Invoke hardware specific (Cbus, MCI, low-end) "set receive offset"
+ * routine.  Index is idb->type (IDBTYPE_xxx).
+ */
+	CASE
+	void
+	hwidbtype *idb
+	0
+	int idbtype
+END
+
+DEFINE 	get_hdpx_errors
+/*
+ * Get MCI half duplex errors
+ */
+	STUB
+	void
+    	hwidbtype *hwidb
+END
+
+
+DEFINE 	media_smds_encap_after_line
+/*
+ * Index by idbtype
+ * Amount of smds encapsulation after the "line" - used by
+ * the MIP card.
+ */
+	RETVAL
+	ushort
+	hwidbtype *hwidb
+	0
+	int idbtype
+END
+
+DEFINE media_protocol_up
+/*
+ * Invoke media specific routines to deal with line protocol going up.
+ */
+	LIST
+	void
+	hwidbtype *idb, uint linktype
+END
+
+DEFINE media_protocol_down
+/*
+ * Invoke media specific routines to deal with line protocol going down.
+ */
+	LIST
+	void
+	hwidbtype *idb, uint linktype
+END
+
+DEFINE media_copy_encap_fields
+/*
+ * Invoke media specific routine to copy fields from idb1 to idb2.
+ * Index is ET_xxx.
+ */
+	CASE
+	void
+	hwidbtype *idb1, hwidbtype *idb2
+	ET_MAX
+	int enctype
+END
+
+DEFINE media_frame_relay_parse
+/*
+ * Parse global frame relay commands.
+ */
+	STUB
+	void
+	parseinfo *csb
+END
+
+DEFINE  serial_autoinstall
+
+/*
+ * Indexed by enctype
+ * Function to process an autoinstall over a serial interface
+ */
+	CASE
+	void
+	parseinfo *csb
+	ET_MAX
+	int enctype
+END
+
+DEFINE  serial_lineup
+
+/*
+ * Indexed by enctype
+ * When attempting an autoinstall, registry to process whether
+ * a certain WAN encapsulation can bring up the serial link.
+ */
+	RETVAL
+	boolean
+	parseinfo *csb
+	ET_MAX
+	int enctype
+END
+
+DEFINE  autoinstall_addr_search
+
+/*
+ * Indexed by enctype
+ * Try to find an address for the remote serial interface
+ * by searching through our database
+ */
+	RETVAL
+	addrtype *
+	hwidbtype *idb, ushort pvc_num, paktype *pak
+	ET_MAX
+	int enctype
+END
+
+DEFINE  autoinstall_copy_snpa
+
+/*
+ * Indexed by enctype
+ * Extract and copy over a channel ID based on encaps type
+ */
+	RETVAL
+	ushort
+	hwaddrtype *address
+	ET_MAX
+	int enctype
+END
+
+DEFINE  autoinstall_static_map
+
+/*
+ * Indexed by enctype
+ * enter a static map to the BOOTP server
+ * 
+ */
+	RETVAL
+	boolean
+	hwidbtype *idb, addrtype *bootp_server, ushort pvc
+	ET_MAX
+	int enctype
+END
+
+DEFINE  autoinstall_complete
+
+/*
+ * Indexed by enctype
+ * Wrap up by cleaning up
+ * 
+ */
+	CASE
+	void
+	hwidbtype *idb
+	ET_MAX
+	int enctype
+END
+
+DEFINE  autoinstall_cleanup
+
+/*
+ * Indexed by enctype
+ * Remove any parts of the configuration that we only 
+ * needed temporarily to allow autoinstall to succeed. 
+ */
+	CASE
+	void
+	hwidbtype *idb
+	ET_MAX
+	int enctype
+END
+
+DEFINE isdn_map_channel
+/*
+ * map the channel for an isdn idb
+ */
+    CASE
+    void
+    hwidbtype *idb, ulong mask, int speed
+    0
+    int idbtype
+END
+
+DEFINE isdn_frommodem
+/*
+ * Whenever modem event happens, this function is called
+ */
+   STUB
+   ushort
+   hwidbtype * dchan_idb, ushort CallID, ushort ces, ushort bchan, ushort event, \
+   ushort cause, uchar *number, ushort encoding
+END
+
+DEFINE dsx1_applique_name
+/*
+ * stub call to dsx1_applique name
+ */
+    STUB
+    char *
+    int unit
+END
+
+DEFINE ethernet_update_vendor_states
+/*
+ * Bells and whistles for vendor tweaks
+ */
+    STUB
+    void
+    hwidbtype *idb
+END
+
+DEFINE ethernet_driver_setup
+/*
+ * Set up ethernet driver data structures.
+ */
+    CASE
+    void
+    hwidbtype *idb, long membase, long serial_port
+    0
+    int driver_type 
+END
+
+DEFINE get_default_hw_address
+/*
+ * Get default bia for interface
+ */
+    STUB
+    void
+    hwidbtype *idb, uchar *addr
+END
+
+DEFINE ethernet_hw_listen
+/*
+ * Add a MAC address to listen to
+ */
+    STUB
+    void
+    hwidbtype *idb, uchar *address
+END
+
+DEFINE ethernet_hw_listen_range
+/*
+ * Add a MAC address range to listen to
+ */
+    STUB
+    void
+    hwidbtype *idb, uchar *address, uchar *mask
+END
+
+
+DEFINE init_stac_context
+/*
+ * allows vc-oriented protocols to init stac contexts
+ */
+	STUB
+	boolean
+	hwidbtype *hwidb
+END
+
+DEFINE remove_comp_context
+/*
+ * allows vc-oriented protocols to remove compression (stac or pred) contexts
+ */
+	STUB
+	boolean
+	hwidbtype *hwidb
+END
+
+DEFINE encaps_compress
+/*
+ * Indexed by encapsulation type
+ * Call a routine to compress a packet based on the encapsulation type.
+ * This is for packet by packet compression of the payload
+ */
+	RETVAL
+	paktype *
+	paktype *pak
+	0
+	int enctype
+END
+
+DEFINE late_q_compress
+/* 
+ * Index by compression type
+ * param for dictionary control
+ */
+	RETVAL
+	boolean
+	paktype *pak, long dict_cntl
+	4
+	uchar method
+END
+
+DEFINE late_q_uncompress
+/* 
+ * Indexed by compression type 
+ * param for dictionary control
+ */
+	RETVAL
+	paktype *
+	paktype *pak, long dict_cntl
+	4
+	uchar method
+END
+
+DEFINE compress_squish
+/*
+ * Compress a packet, conserving dictionary 
+ */
+	RETVAL	
+	paktype *
+	hwidbtype *h, paktype *p
+	4
+	uchar method
+END
+
+DEFINE compress_explode
+/*
+ * Expand a compressed packet, conserving dictionary
+ */
+	RETVAL	
+	paktype *
+	hwidbtype *h, paktype *p
+	4
+	uchar method
+END
+
+DEFINE compress_reset
+/*
+ * Expand a compressed packet, gonna reset the dictionary
+ */
+	CASE
+	void
+	hwidbtype *h
+	4
+	uchar method
+END
+
+DEFINE 	media_type_cmd
+/*
+ * Argument is parser csb.
+ */
+	CASE
+  	void
+        parseinfo *csb
+ 	0
+ 	int type
+END
+
+DEFINE  media_half_or_full_duplex_cmd
+/*
+ * Argument is parser csb.
+ */
+	CASE
+  	void
+        parseinfo *csb
+ 	0
+ 	int type
+END
+
+
+DEFINE  lapb_setup_encap
+/*
+ * Invoke a encapsulation type specific setup routine to apply lapb as an
+ * extra layer of added encapsualtion
+ * Index is ET_xxx.
+ */
+        CASE
+        void
+        hwidbtype *hwidb, uchar address, uchar window, int maxhdr
+		ET_MAX
+		int enctype
+END
+
+DEFINE  lapb_remove_encap
+/*
+ * Removes lapb encapsualtion and returns primary encapsulation to the
+ * encapsulation type specified by ET_xxx
+ * Index is ET_xxx.
+ */
+        CASE
+        void
+        hwidbtype *hwidb
+		ET_MAX
+		int enctype
+END
+
+DEFINE 	lapb_update_n1
+/*
+ * Arguments is hwidb.
+ */
+	LIST
+	void
+	hwidbtype *hwidb
+END
+
+DEFINE  lapb_ppp_event_notify
+/*
+ * Notifies PPP about specific LAPB events: link reset, and  frame 
+ * received with invalid address.
+ */
+        STUB
+        void
+        hwidbtype *hwidb
+END
+
+
+DEFINE 	get_subint_ref_num_from_pak
+/*
+ * Indexed by encapsulation type.  Arguments are idb and packet.
+ */
+	RETVAL
+	ushort
+	hwidbtype *hwidb, paktype *pak
+	ET_MAX
+	int enctype	
+END
+
+
+DEFINE	fr_encaps_check
+/* 
+ * Check whether we are converting ET_FRAME_RELAY to 
+ * ET_FR_IETF or vice versa. 
+ */
+	RETVAL
+	boolean
+	parseinfo *csb, hwidbtype *hwidb
+	ET_MAX
+	int enctype
+END
+
+
+DEFINE media_enctype_setup
+/*
+ * Call all parties interested in the media's encapsulation type, telling
+ * them that the enctype has changed.
+ */
+
+	LIST
+	void
+	idbtype *idb, int enctype
+END
+
+DEFINE autoinstall_terminate
+/*
+ * Kill the autoinstall process
+ */
+    STUB
+    void
+    -
+END
+
+DEFINE autoinstall_reset_serial_encap
+/*
+ * Reset the serial encapsulation
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE ether_sniff_encap
+/*
+ * Sniff encapsulation layer
+ * Currently this mechanism sniffs out FEIP love letters
+ * Cheated here with the index type seeing registry code can't parse
+ * two tokens for type such as 'enum IDBTYPE'.
+ */
+    RETVAL
+    boolean
+    mcitype* cbus, hwidbtype* idb
+    0
+    int ulong 
+END
+
+DEFINE encap_isl_vlan
+
+/*
+ * Generic encapsulation routine which configures a subinterface
+ * for Inter Switch Link VLAN encapsulation.
+ */
+        LIST
+        void
+        parseinfo *csb
+END
+
+DEFINE deencap_isl_vlan
+
+/*
+ * Deencapsulation routine for ISL VLAN encapsulated subinterfaces.
+ */
+        LIST
+        void
+        idbtype *swidb, boolean sense
+END
+
+DEFINE vlan_packet_counters
+
+/*
+ * Process Switched vLAN packet accounting.
+ */
+        LIST
+        void
+        paktype *vlan_packet, uchar vlan_encapsulation
+END
+
+DEFINE isl_vlan_lowest_colour
+
+/*
+ * Retrieve the swidb that has the lowest ISL configured for
+ * the associated hwidb.
+ */
+	STUB
+	idbtype *
+	hwidbtype *hwidb
+
+END
+
+DEFINE media_glean_source_address
+/*
+ * Allow media specific routines to glean the source address of the
+ * packet, so they can build dynamic maps (or do anything else they
+ * want to with it.) 
+ */
+	CASE
+	void
+	paktype *pak
+	ET_MAX
+	int enctype
+END    
+ 
+DEFINE	media_fix_serial_vectors
+/*
+ * call encaps-specific vector fixup when hunt-changes are prop'd
+ */
+	CASE
+	void
+        hwidbtype *idb
+	ET_MAX
+	int enctype
+END
+
+DEFINE media_serial_hdlc_address
+/*
+ * Process cisco serial line ARP (SLARP) packets (for IP address
+ * resolution) and HDLC keepalives. 
+ */
+	STUB
+	void
+	paktype *pak
+END
+
+DEFINE        fr_svc_l3_action
+/*
+ * Invoke a layer 3 action that will trigger or bring down an FR SVC.
+ */
+	STUB
+	boolean
+	fr_idb_struct_type *fr_idb, paktype *pak, staticmap_type *map, \
+	uint call_ref, uchar event
+END
+
+DEFINE        fr_svc_teardown
+/*
+ * We are turning off SVCs. Kill all relevant processes.
+ */
+	STUB
+	void
+	boolean yes
+END
+
+DEFINE        fr_svc_teardown_calls
+/*
+ * We are turning off SVCs. Kill all calls.
+ */
+	STUB
+	void
+	fr_idb_struct_type *fr_idb
+END
+
+DEFINE        fr_svc_init
+/*
+ * Registry to initialize SVCs
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE serial_driver_setup
+/*
+ *  This is the serial driver case registry.
+ */
+	CASE
+	void
+	hwidbtype *idb, long membase, long serial_port	
+	0
+	int driver_type
+	
+END	
+
+DEFINE media_sniff_ipc
+/*
+ * Sniff for IPC encapsulation
+ */
+    STUB
+    boolean
+    mcitype* cbus, hwidbtype* idb, ushort offset_to_sniff
+END
+
+DEFINE set_cdb_txcount
+/*
+ * set tx count for cdb type controllers
+ */
+    STUB
+    void
+    hwidbtype *idb
+END
+
+DEFINE  cdb_clear_counters 
+/*
+ *  
+ */
+    STUB
+    void
+    hwidbtype *idb
+END
+
+DEFINE media_macaddr_map
+/*
+ * Allow a dynamic address resolution protocol to determine the mapping between
+ * network and link layer addresses used during encapsulation.
+ * Deals with generating a map table entry
+ * for the resolved link layer address, if found.
+ */
+	LOOP
+	boolean
+	paktype *pak, addrtype *proto_addr, boolean bcast, staticmap_type **map
+END
+
+DEFINE media_map_lookup
+/*
+ * Lookup an address in a link layer protocol's private mapping tables.
+ * Indexed by encapsulation type.
+ */
+	CASE
+	void
+	addrtype *addr, ulong linktype, void *map
+	ET_MAX
+	int encap
+END
+
+DEFINE media_addr_to_swidb
+/*
+ * Translate an incoming map to a specific swidb
+ * Indexed by encapsulation type.
+ */
+	RETVAL
+	idbtype *
+	void *addr, hwidbtype *hwidb
+	ET_MAX
+	int encap
+END
+
+DEFINE media_physical_layer_command
+/*
+ * Set the physical layer on a sync/async serial interface
+ */
+	STUB
+	void
+	parseinfo *csb
+END
+
+DEFINE  isdn_leased_line
+/*
+ * Invoked to change a BRI interface to a leased line interface.
+ */
+    STUB
+    void
+    hwidbtype *hwidb
+    END
+
+DEFINE 	autoinstall_process_running
+/*
+ * Invoked to determine whether autoinstall_over_serial is running.
+ */
+	STUB
+	boolean
+	-
+END
+
+DEFINE	hwaddr_lookup
+/*
+ * Translates a hardware address to the IP address if it's available.
+ */
+	RETVAL
+	addrtype *
+	uchar *hwaddrptr, paktype *pak
+	ET_MAX
+	int enctype	
+END
+
+DEFINE csu_dsu_init
+/*
+ * Used on the c2524s to initialize any integrated CSU/DSU modules
+ */
+        STUB
+        void *
+        hwidbtype *idb, int which
+END
+
+DEFINE  csu_dsu_installed
+/*
+ * Returns TRUE if this there is the service module selected
+ *   is installed on this platform
+ */
+        STUB
+        boolean
+        int module_type, hwidbtype *hwidb
+END
+
+DEFINE  csu_dsu_validate_usr_pat
+/*
+ * Validate the user define pattern is valid
+ */
+        STUB
+        ulong
+        char *user_pat
+END
+
+DEFINE  csu_dsu_loopback_command
+/*
+ * Process command "loopback" for service module.
+ */
+        STUB
+        void
+        parseinfo *csb
+END
+
+DEFINE  csu_dsu_show_cable_state
+/*
+ * Returns TRUE if this it is a correct cable state
+ */
+        STUB
+        boolean
+        ushort cable_type, boolean print_flag
+END
+
+DEFINE  csu_dsu_get_status_value
+/*
+ * Get status value for CSU/DSU module
+ */
+        STUB
+        void
+        hwidbtype *hwidb, void *ds, ushort *status_value
+END
+
+DEFINE  csu_dsu_send_snmp_loop_status_trap
+/*
+ * Send SNMP loop status trap.
+ */
+        STUB
+        void
+        int module_type, int loop_status, ulong ifIndex
+END
+
+DEFINE	serial_autodetect_register_encaps
+/*
+ * Register the necessary vectors for the
+ * encapsulation so it can be used with serial
+ * autodetect.
+ */
+	STUB
+	void
+	int encap, void *encaps_test_vector, void *encaps_switch_vector
+END
+
+DEFINE	serial_autodetect_start
+/*
+ * Notify Autodetect of a serial interface that
+ * has just now connected to a point to point
+ * peer.
+ */
+	STUB
+	boolean
+	hwidbtype *hwidb
+END
+
+DEFINE media_if_should_use_promiscuous
+/*
+ * Determine if the interface should be placed in promiscuous mode during
+ * a reset.
+ */
+	STUB
+	boolean
+	hwidbtype *hwidb
+END
+
+DEFINE nhrp_on_if
+/*
+ * Determine if NHRP is at all minimally configured to perform address 
+ * resolution on this interface.
+ */
+	STUB
+	boolean
+	idbtype *swidb
+END
+
+DEFINE media_change_idb
+/*
+ * Some interfaces will dynamically change the idb during interface
+ * configuration time. Notify those who wish to know about it.
+ */
+	LIST
+	void
+	idbtype *old_swidb, idbtype *new_swidb
+END
+
+END REGISTRY MEDIA

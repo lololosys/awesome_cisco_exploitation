@@ -1,0 +1,532 @@
+
+          Title: Makefile Primer
+          Date Created: 21-Jan-1995
+          Last Updated: 25-Jul-1997
+          Version: 2.0
+
+Copyright (c) 1995-1997 by cisco Systems, Inc.
+
+The document describes the makefile structure of the current system
+tree, along with some descriptions and explanations of rules. It also
+comes with an assortment of handy, pocket-sized hints.
+
+Introduction
+============
+
+Cisco uses the Cygnus supported GNU make program for maintenance of
+it's various software. GNU make offers many features that aren't
+available under other make programs, along with a variety of unique
+"features".  People who're familiar with make but not with GNU make
+are encouraged to read the Info pages associated with the current make
+release (/sw/current/info/make.info).
+
+People who're unfamiliar with any form of make are advised to seek a
+bookshop for a helpful book as the following document doesn't attempt
+to explain how make works, only how we use it here ("Managing Projects
+With Make" published as part of the O'Reilly Nutshell series may prove
+useful to raw beginners). Painkillers for the resultant throbbing
+headache may also be advisable.
+
+Understanding how the images are made and the build system is bolted
+together can save you a huge amount of debugging time when something
+goes wrong. In addition, it'll save the sanity of your local guru,
+who's probably tired of helping debug yet another minor dependancy
+problem.
+
+System Tree Structure
+=====================
+
+The system tree, for the most part, contains the following structure
+
+  sys/                makefile            - Master rules and core subsystems
+                      makefile.{cpu}      - CPU specific variables
+                      makeimages          - Image and subset rules
+                      makesubsys          - Common Object subsystem rules
+                      makecflow           - Code coverage and flow rules
+
+                      dependancies        - dependancy declarations
+                      depend.specials     - "manual" dependancies
+                      depend.make         - dependancy makefile
+
+                      tags-id.make        - Tags and "gid" ID rules
+
+                      makemibs            - SNMP MIB rules
+                      mibdependancies     - MIB dependancy declarations
+                      
+  obj-foo/            makefile            - platform specific rules
+
+
+The sys/ files that contain the bulk of the information that most
+people find they need to browse day to day are sys/makefile,
+sys/makeimages and sys/makesubsys. In addition to the platform
+makefiles in the obj-foo/ directories, these files form the bulk of
+the rules and variables needed to construct an image.
+
+An Aside on Implicit Rules
+==========================
+
+In it's usual form, make works by matching targets against a set of
+pattern rules that it has. If the target matches one of the rules, it
+uses that rule. If the target matches numerous rules, it matches the
+most specific one.
+
+To avoid having to have a rule for *every* target (be it object,
+subsystem or image), we make great use of implicit makefile rules.
+These allow generic rules to be written just once and used for every
+target that matches it.
+
+An example of implicit rule is below
+
+   %.a: %.b
+	frobnicate $< > $*.temp
+        mv $*.temp $@
+
+This looks relatively complicated but is actually quite simple. Say
+you wanted to make "foobar.a". The rule above would look for
+"foobar.b" or a rule to make it - we'll assume it finds a suitable
+"foobar.b" for simplicity. What is executed next is the following
+
+        frobnicate foobar.b > foobar.temp
+        mv foobar.temp foobar.a
+
+So, you can see that
+
+    $< = foobar.b (the first dependancy)
+    $@ = foobar.a (the target)
+    $* = foobar   (the stem from the implicit target match)
+
+These automatic variables are used extensively throughout the makefiles.
+
+Dependencies
+============
+
+See info make for more gnumake details.
+
+The dependency tree for source files in IOS is quite complex and 
+difficult to fathom. There has been a large change in the way
+dependencies have been handled to improve both the accuracy
+which leads to fewer errors and the speed which directly affects
+productivity. 
+
+Note: Please see previous versions of the Makefile Primer for old 
+      dependency details.
+
+There's now over 10,000 source files in the system. Every one of these
+files has a dependency associated with it. The accurate representation
+of this dependency will result in a process with fewer errors.
+If it's a C or assembler source file, the included files are dependencies. 
+If it's a .h file, the files it includes (if any) are dependencies and get 
+added to the list of dependencies of any .c or S file that includes it.
+
+We have incorporated a new scheme using dynamic platform specific
+dependencies. The previous method used static files and was 
+platform generic. As a result the depend data has moved from
+the source directory to the object directories. There is also
+a new dependancies.seed file at the sys level to tell make where to
+find the dot_c files to build a required dot_o.
+
+Every object file has a .DD. dependency file associated with it, 
+for example in any particular object directory:
+
+      -rw-rw----  1 owner        32799 Jan 19 12:48 init.o
+      -rw-rw-r--  1 owner         2102 Jan 19 13:28 .DD.init
+
+The .DD. file contains the following lines:
+
+      init.o: ../os/init.c ../h/master.h ../h/types.h ... {ad nausea}
+
+This is how the init.o file and all of its dependencies are tied together. 
+
+Whenever a dot_o file is rebuilt the depend data is extracted from
+the compiler using the -MD option to gcc. This file is then moved
+into .DD.<filename>. All of these dependency files are read
+whenever a make is executed. 
+
+So, how does this link into the makefile rules? Well, we have an
+implicit rule for objects:
+
+%.o:
+ifeq ($(FROMLEGO),)
+        @$(MAKE) -s -C $(SYSROOT) CC=$(CC) all_derived_source \
+				--no-print-directory
+endif
+	$(QUIET_COM) echo "Compiling $< to $@" \
+	    "$(patsubst %,(with debugging),$(filter $(<D), $(GDB_REQUIRED)))"
+	$(QUIET_CC)$(CC) -c -MD $(CFLAGS) $(WARN_ALL) \
+	    $(patsubst %,-g,$(filter $(<D), $(GDB_REQUIRED))) $< \
+	|| (rm -f $@ ; exit 1)
+	@sed 's|$(SYSROOT)|\.\.|g' $*.d > .DD.$*
+	@rm -f $*.d
+
+Note that the actual source file is always the first on the dependency
+line so that the $< variable can be used in the rule.
+
+So, when you run "make depend", in a view the compiler is not actually 
+called as it was previously. Instead we build a stub dependency file 
+called dependancies.seed. This seed file is used by the compiler the 
+first time an object is built. After an object is built the actual
+detailed {ad nausea} depend data is created which is a superset
+of the seed data. 
+The .lis assembler file listing dependency is also added to the seed file.
+
+There is a slight overhead added to the make step as a result of 
+using dynamic data but it is infinitisimally small compared with
+the time savings of always having accurate data and never having to
+run the slower previous verion of make depend.
+
+If you are having problems that look like corrupt depend data is 
+a particular object directory the following steps should be taken:
+  - look in the .DD.<filename> file to see if the file looks sound
+  - delete the <filename>.o file and retype make. This forces the
+    <filename>.o and the .DD.<filename file to be rebuilt. 
+
+The dependancies target also create all the dervied source in the
+system. This is part of preparing your environment as the snmp,
+rpc, registry, interface_types and a few miscellaneous others 
+can be included by the regular source files in your system. There
+is a new rule all_derived_source that gets executed as part of
+make dependancies to make sure all derived source files exist.
+
+The "make nodepend" steps removes all dependancy (.DD) files
+as well as all dot_o files. This is due to the fact that it is 
+dangerous when using dynamic dependencies to have a dot_o exist
+without the associated .DD file.
+
+
+Note:
+'make depend' does TAGS, ID and dependancies where as 'make dependancies' 
+does only dependancies.
+
+
+Making Subsystems
+=================
+
+Most engineers find themselves needing to add a new subsystem to the
+system at some point. It helps to understand how the rules for them
+bolt together.
+
+A subsystem definition is comprised of the following parts -
+
+      sub_arp   =     arp.o arp_debug.o arp_chain.o
+      sub_arp.o :     $(sub_arp)
+
+As you'd expect by now, there's an implicit subsystem rule. It's
+
+      sub_%.o:
+              $(QUIET_COM)echo "Updating $@"
+              $(QUIET_CC) rm -f $(@F)
+              $(QUIET_CC)$(LD) $(LOPTIONS) -r -o $(@F) $(sub_$*)
+
+So, the rule for sub_arp.o is
+
+     sub_arp.o: $(sub_arp)
+              $(QUIET_COM)echo "Updating $@"
+              $(QUIET_CC) rm -f $(@F)
+              $(QUIET_CC)$(LD) $(LOPTIONS) -r -o sub_arp.o $(sub_arp)
+
+Of course, $(sub_arp) expands to "arp.o arp_debug.o arp_chain.o",
+which is how the subsystem objects are tied to their component parts.
+
+[ n.b. there's an interesting GNU make restriction here for the curious.
+  You can't actually specify the dependancy as a variable built from a
+  stem match, i.e. sub_%.o : $(sub_%) so each dependancy has to be 
+  specified by hand. ]
+
+Specifying the component parts of the subsystem on the dependancy line
+causes those objects to be built before linking, which is how
+the compilation of the individual objects is triggered.
+
+So, that's how subsystems are made in the object directory. How are
+they actually specified within the list of subsystems for an
+imagelist?
+
+In sys/makefile, we find the following reference to Arp -
+
+      CORE_LITE =     $(KERNEL) $(PLATFORM_SUPPORT) $(FASTSWITCH_CORE) $(ARP)
+
+And $(ARP) is given by
+
+      ARP =           shr_arp.o
+
+However, this is shr_arp.o, not sub_arp.o. Why?
+
+In the system now there are two different "classes" of subsystem -
+common object subsystems and platform subsystems. 
+
+     shr_foo.o - common object subsystem
+     sub_foo.o - platform subsystem
+
+By referencing a subsystem as a shr_foo.o subsystem, we indicate to
+make that this subsystem should be made in a "common" directory,
+rather than the current platform directory where the make was
+executed.  This allows platforms with identical compiler options to
+share the same objects, reducing diskspace usage and compile time.
+
+The rule for a shr_foo.o subsystem is below
+
+      shr_%.o: FORCE
+              $(QUIET_CMD)$(MAKE) --no-print -C $(OBJECTS) \
+                                  $(patsubst shr_%.o,sub_%.o,$(@F))
+              $(QUIET_CMD)rm -f $@
+              $(QUIET_CMD)ln -s $(OBJECTS)/$(patsubst shr_%.o,sub_%.o,$(@F)) $@
+
+     FORCE:
+
+[ The FORCE dependancy is a dummy dependancy to cause the shr_%.o commands
+  to always execute. ]
+
+Using the example of shr_arp.o, this rule expands to
+
+      shr_arp.o:
+              $(QUIET_CMD)$(MAKE) --no-print -C $(OBJECTS) sub_arp.o
+              $(QUIET_CMD)rm -f $@
+              $(QUIET_CMD)ln -s $(OBJECTS)/sub_arp.o shr_arp.o
+
+You'll notice that the $(patsubst,,) function causes shr_arp.o to
+become sub_arp.o. We then kick off a make in the common directory
+(referenced by $(OBJECTS)) for the subsystem sub_arp.o. When that
+completes, we softlink shr_arp.o to the sub_arp.o subsystem in the
+common directory. This gives the illusion of having built the
+shr_arp.o subsystem locally.
+
+This substitution of sub_ for shr_ in the remote build is how the
+common objects are built. It's important to reference the subsystems
+mentioned in images by their variable names, *not* a hard name like
+sub_arp.o. This allows subsystems to be migrated from platform
+subsystems to common subsystems without having to change anything
+other than the variable definition.
+
+A final point is that the platform makefiles that're running common
+objects do not include sys/makesubsys, where the common object
+subsystems are defined. Only the common object makefile for the build
+includes it. This prevents the user from, say, making sub_arp.o in the
+obj-68-c7000 directory and getting confused. The translation of
+shr_arp.o int sub_arp.o via the independant make is how the wall
+between the two object directories is preserved.
+
+Adding a new image
+==================
+
+This is very straightforward. All that's required to specify an image
+for our various platforms are the following pieces in sys/makeimages.
+
+image-gs-foo = { subsystems }
+
+main-gs-foo-m:
+        $(REMAKE) SWFLAGS=bxlp OBJNAME=$@ main
+        @HWSWNAME=gs-foo-m COMP="$(CC) $(CFLAGS)" \
+        flock ../version ../cisco.sh \
+        "$(PLATFORM_IMAGE_GROUP) Software ($(PLATFORM_IMAGE_PREFIX)-FOO-M)" \
+        $(SYSTEM_LABEL) $(PLATFORM) "$(CC) $(CFLAGS)" TRUE
+
+The image-gs-foo variable declares the contents of the "foo" subset of
+images. One of the possible permutations, a "-m" run-from-ram image is
+specified by main-gs-foo-m. That's usually all that's required to add
+this image for all the platforms that support run-from-ram images.
+Adding other media is just a matter of adding the main-gs-foo-* rule
+at the moment (there's plans to remove this altogether and make the
+main-% rules implicit too, reducing further the amount of work
+required).
+
+Adding a new media for a platform
+=================================
+
+All the platform makefiles specify rules for linking objects together
+for the various media that they support. For example, the 4000 defines
+the following link options
+
+      #
+      # Generic Link rules
+      #
+      xx-%-m.sun: lock $(SYS_START_FILE) main-gs-%-m gs-%.lego
+              $(QUIET_COM)echo Linking $@...
+              $(QUIET_CC)$(LD) $(RAM_LDFLAGS) -o gs-$*-m.temp \
+              $(SYS_START_FILE) Main_main-gs-$*-m.o cisco-gs-$*-m.o \
+              $(image-gs-$*)
+              rm -f test.lock
+              mv gs-$*-m.temp $@
+
+      xx-%-r.sun: lock $(SYS_START_FILE) main-gs-%-r gs-%.lego
+              $(QUIET_COM)echo Linking $@...
+              $(QUIET_CC)$(LD) $(ROM_LDFLAGS) -o gs-$*-r.temp \
+              $(SYS_START_FILE) Main_main-gs-$*-r.o cisco-gs-$*-r.o \
+              $(image-gs-$*)
+              rm -f test.lock
+              mv gs-$*-r.temp $@
+
+      .PRECIOUS: xx-%-m.sun xx-%-r.sun
+
+      #
+      # Image rules
+      #
+      xx-%-r: xx-%-r.rom
+              @
+      xx-%-m: xx-%-m.tftp
+              @
+
+As can be seen, the 4000 supports two options - "-r" and "-m". The
+"-r" option means a run-from-rom image and the "-m" means
+run-from-ram. Whilst the two rules look almost identical, notice that
+the $(*_LDFLAGS) used to link the image together is different for the
+rules. This is how the media option is demultiplexed from the image
+name.
+
+The ".PRECIOUS" statement allows us to specify intermediate files that
+make should preserve when it's finished building the specified
+targets. We use the .sun files for GDB debugging so they need to
+survive the build. 
+
+Finally, a binding needs to be specified between the image name
+(*without* a postfix) and the type of build option required. For "-m"
+images, we want them to be TFTP'd to the server we use once they're
+built. However, we usually want the "-r" images to remain in the local
+directory so they can be post-processed for eprom blowing. The .rom
+suffix allows us to do this (to see how, follow the build example
+given below with gs7-k-r instead of gs7-k-m).
+
+To add a new media for a platform, three things need be done -
+
+     o Declare the link rule for the .sun file
+     o Add the implicit .sun file to the .PRECIOUS statement
+     o Add the media binding rule (TFTP is the usual flavor)
+
+If the media suffix is already specified in the system, all the images
+declared in $(image-gs-foo) rules should be available to that platform.
+
+If the media suffix is completely new to the system, additional
+main-foo rules will need to be added (at the moment at least).
+
+Building an Image
+=================
+
+The easiest way to work out how an image is built is to trace one
+through from beginning to end.
+
+The example we'll use is the "gs7-k-m" image, the "kitchen sink" image
+for the 7000's RP1.
+
+When "make gs7-k-m" is entered, the following rule sequence is
+executed.  Each step downward in the overall dependancy tree is
+numbered. The comments in square brackets are what happens *after* the
+dependancies listed for each rule are built successfully.
+
+1. sys/obj-68-c7000/makefile:
+
+      gs7-%-m: gs7-%-m.tftp
+               @
+
+   This simple rule causes make to start looking for a rule to build
+   the dependancy, gs7-k-m.tftp.
+
+2. sys/makefile:
+
+      %.tftp: %.bin
+              $(COPY) $< $(TFTPHOST):$(TFTPDIR)/$(*F)$(BIN_SUFFIX)
+              rm -f $<
+              @-echo ""
+              @-echo "TFTP image: $(TFTPHOST):$(TFTPDIR)/$(*F)$(BIN_SUFFIX)"
+              cat ../version
+              sh ../symbols.sh "$(NM)" $*.sun $*.symbols $(PLATFORM) $*
+
+   This rule means that gs7-k-m.tftp depends on gs7-k-m.bin
+
+   [ Once we've built gs7-k-m.bin successfully, the image will be copied
+     to the TFTP server, the gs7-k-m.bin image deleted and a symbol table
+     file built from the gs7-k-m.sun file ]
+
+3. sys/makefile.68k:
+
+      %.bin: %.sun mksum
+              ./mksum $*.sun
+              $(CPSTRIP) $*.sun $@
+              ls -l $@
+
+   This rule causes gs7-k-m.sun to be a dependancy of gs7-k-m.bin and also
+   causes the utility mksum to be created, if it hasn't already.
+
+   [ Once we've build gs7-k-m.sun, the image will be checksummed by mksum
+     and have the symbol table stripped from it ]
+
+4. sys/obj-68-c7000/makefile:
+
+      gs7-%-m.sun: lock main-gs-%-m gs-%.lego
+              $(QUIET_COM)echo Linking $@...
+              $(QUIET_CC)$(LD) $(RAM_LDFLAGS) -o gs-$*-m.temp \
+              Main_main-gs-$*-m.o cisco-gs-$*-m.o $(image-gs-$*)
+              rm -f test.lock
+              mv gs-$*-m.temp $@
+
+   This rule has three main dependancies - lock, main-gs-k-m and gs-k.lego.
+   Each of these dependancies will be evaluated in the order they're
+   written on the dependancy line.
+
+   [ Once main-gs-k-m and gs-k.lego have finished being "created" - note
+     that neither are actually real files, the image is linked together
+     into gs7-k-m.temp from the following object files - Main_main-gs-k-m.o,
+     cisco-gs-k-m.o and the objects mentioned in the variable $(image-gs-k).
+     The lock is then removed and gs7-k-m.temp moved to gs7-k-m.sun ]
+
+5. sys/makefile:
+
+      lock: 
+	      @../lock
+
+   What this simplistic rule does is run the Perl script sys/lock. Note that
+   the path used here is fixed - this rule won't work for directory depths
+   deeper than 1. The lock script prevents multiple compiles in the same
+   directory.
+
+6. sys/makeimages:
+
+      main-gs-k-m:
+            $(REMAKE) SWFLAGS=bxlp OBJNAME=$@ main
+            @HWSWNAME=gs-k-m COMP="$(CC) $(CFLAGS)" \
+            flock ../version ../cisco.sh \
+            "$(PLATFORM_IMAGE_GROUP) Software ($(PLATFORM_IMAGE_PREFIX)-K-M)" \
+            $(SYSTEM_LABEL) $(PLATFORM) "$(CC) $(CFLAGS)" TRUE
+
+   This rule has no dependancies and, thus, no further targets to be
+   generated before it's commands are executed. cisco-gs-k-m.o (which
+   is the file that specifies the top lines shown in "show version") and
+   Main_main-gs-k-m.o, which contains the entry point to the cisco IOS
+   code.
+
+7. sys/makeimages:
+
+      %.lego:
+              $(QUIET_COM)echo Building $@...
+              $(QUIET_CMD)$(Make_Platform_Objects)
+              $(QUIET_CMD)$(Make_Common_Objects)
+
+   This rule matches gs-k.lego. The $(Make_Platform_Objects) and
+   $(Make_Common_Objects) sequences (a feature unique to GNU make) build
+   the subsystems required to make the image.
+
+      define Make_Platform_Objects
+      $(MAKE) $(MAKEFLAG-J) --no-print $(filter-out shr_%.o,$(image-$*))
+
+      endef
+
+   This sequence takes the variable $(image-gs-k) and removes all of the
+   shr_foo.o subsystems from it. What's left are the local, platform
+   specific subsystems that need compiled with platform specific flags.
+   The $(MAKE) kicks off a submake to build all of these objects.
+
+      define Make_Common_Objects
+      $(MAKE) $(MAKEFLAG-J) --no-print -C $(OBJECTS) \
+      $(patsubst shr_%.o,sub_%.o,$(filter shr_%.o,$(image-$*)))
+      $(foreach subsys,$(filter shr_%.o,$(image-$*)),$(Relink_Common_Objects))
+
+      endef
+  
+   This fearsome looking command sequence is actually quite straightforward.
+   It's the partner to $(Make_Platform_Objects) and extracts all of the
+   shr_foo.o subsystems from $(image-gs-k). It then substitutes all the
+   shr_ prefixes for sub_ prefixes and kicks off a make in the $(OBJECTS)
+   directory for all of those subsystems. We do this for speed.
+
+   Once those common subsystems are built, it uses the $(Relink_Common_Objects)
+   sequence to link all of the shr_foo.o subsystems to their counterparts
+   in $(OBJECTS).
+
+

@@ -1,0 +1,13 @@
+
+ether_private.h,383
+#define __ETHER_PRIVATE_H__35,1252
+#define ETHER_HOLDQ 37,1281
+#define ETHER_MAXDGRAM_DEF 38,1340
+#define ETHER_MAXPAK 39,1418
+#define ETHER_BUFFERSIZE_BYTES 40,1478
+#define ETHER_DELAY 45,1555
+#define VISIBLE_ETHER_BANDWIDTH 46,1609
+#define FETHER_DELAY 51,1733
+#define FETHER_VISIBLE_BANDWIDTH 52,1788
+typedef struct ethersb_ ethersb_57,1900
+} ethersb;ethersb116,4657

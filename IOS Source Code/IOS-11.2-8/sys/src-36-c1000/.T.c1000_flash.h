@@ -1,0 +1,9 @@
+
+c1000_flash.h,212
+#define __QUICC_FLASH_H__40,1385
+#define FLASH_BASE 42,1412
+#define SUN 43,1454
+#define PCM_FLASH_SOCK 45,1495
+#define PCM_FLASH_DWIN 46,1574
+#define PCM_FLASH_AWIN 47,1653
+#define PCM_FLASH_IOWIN 48,1732

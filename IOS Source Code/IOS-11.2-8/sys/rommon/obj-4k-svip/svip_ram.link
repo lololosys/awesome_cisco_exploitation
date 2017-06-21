@@ -1,0 +1,52 @@
+/* $Id: svip_ram.link,v 1.1.10.1 1996/07/08 22:42:20 mwu Exp $
+ * $Source: /release/112/cvs/Xsys/rommon/obj-4k-svip/svip_ram.link,v $
+ *------------------------------------------------------------------
+ * svip_ram.link
+ *
+ * Mar, 96. Paul Greenfield
+ *
+ * Copyright (c) 1995-1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: svip_ram.link,v $
+# Revision 1.1.10.1  1996/07/08  22:42:20  mwu
+# CSCdi60922:  11.2 Core Features Commit
+# Branch: California_branch
+#
+# Revision 1.1  1996/03/23  01:14:02  pgreenfi
+# Placeholder files for obj-4k-svip
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+/*
+ * RSP Linker Command Script for run from RAM
+ */
+
+SECTIONS {
+
+	.text 0x80010000 : {
+	    	*(.text)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata . : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+		edata = .;
+		_edata = .;
+	}
+	.bss . : {
+		_fbss = .;
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

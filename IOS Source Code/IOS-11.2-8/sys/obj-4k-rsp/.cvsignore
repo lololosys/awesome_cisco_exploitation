@@ -1,0 +1,12 @@
+cisco*.c
+rsp-*
+test.lock
+*only
+lite
+tiny
+*_elf-*-*
+dependancies.monlib
+tools
+*_elf
+*vip_ucode_once
+*vip_ucode_needed

@@ -1,0 +1,20 @@
+# $Id: makefile.ppc,v 3.1 1996/04/09 18:32:03 smackie Exp $
+# $Source: /release/112/cvs/Xsys/makefile.ppc,v $
+#------------------------------------------------------------------
+# makefile.ppc - PowerPC common definitions for EABI object files
+#
+# April 1996, Scott Mackie
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+# 
+#------------------------------------------------------------------
+# $Log: makefile.ppc,v $
+# Revision 3.1  1996/04/09  18:32:03  smackie
+# Add PowerPC placeholders
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+

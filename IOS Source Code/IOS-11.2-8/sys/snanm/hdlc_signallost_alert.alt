@@ -1,0 +1,36 @@
+/* $Id: hdlc_signallost_alert.alt,v 3.2 1995/11/17 18:55:24 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/hdlc_signallost_alert.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management HDLC Alert
+ *     Signal Lost 
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: hdlc_signallost_alert.alt,v $
+# Revision 3.2  1995/11/17  18:55:24  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:14:15  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:46:23  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct  HdlcSignalLostAlert ##HDLCSIGNALLOSTALERT { ?,01,1000
+  , {3601, 3401}
+  , {3400, 0205}
+  ,
+  , {3601, 3401, F038
+    , ACT = 0403, 1320, 3303, 32D0
+    , DET = {82216101,adapterNum:1},
+            {82216001,portNum:1},
+            {8221F211,intNameA:0D}
+    }
+  , {05, {108009,cpName:8,00F409,port:8,003F}}
+  }

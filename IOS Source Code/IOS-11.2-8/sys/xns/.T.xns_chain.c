@@ -1,0 +1,12 @@
+
+xns_chain.c,282
+#define ALTERNATE 84,2863
+#define ALTERNATE 93,3019
+#define ALTERNATE 102,3174
+#define ALTERNATE 111,3332
+#define ALTERNATE 120,3488
+#define ALTERNATE 129,3668
+#define	ALTERNATE	138,3828
+#define	OALTERNATE	139,3851
+#define	ALTERNATE	150,4091
+void xns_parser_init 191,5445

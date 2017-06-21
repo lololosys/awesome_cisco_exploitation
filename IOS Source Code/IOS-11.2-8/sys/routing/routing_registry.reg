@@ -1,0 +1,95 @@
+# $Id: routing_registry.reg,v 3.2 1995/11/17 18:49:35 hampton Exp $
+# $Source: /swtal/cherf.111/ios/sys/routing/routing_registry.reg,v $
+#------------------------------------------------------------------
+# routing_registry.reg -- Integrated routing subsystem registry
+#
+# March 1995 Tony Li
+#
+# Copyright (c) 1995 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: routing_registry.reg,v $
+# Revision 3.2  1995/11/17  18:49:35  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:10:48  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:43:13  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY ROUTING routing_regcode
+
+DEFINE route_map_set_nvgen
+/*
+ * Passed a map entry, each function does nvgen of the particular clause
+ * that it cares about.
+ */
+	LIST
+	void
+	parseinfo *csb,	route_maptype *map
+END
+
+DEFINE route_map_match_nvgen
+/*
+ * Passed a map entry, each function does nvgen of the particular clause
+ * that it cares about.
+ */
+	LIST
+	void
+	parseinfo *csb, route_maptype *map
+END
+
+DEFINE route_map_show_match
+/*
+ * Print out details about a route map entry.
+ */
+	LIST
+	void
+	route_maptype *map
+END
+
+DEFINE route_map_show_set
+/*
+ * Print out details about a route map entry.
+ */
+	LIST
+	void
+	route_maptype *map
+END
+
+
+END REGISTRY

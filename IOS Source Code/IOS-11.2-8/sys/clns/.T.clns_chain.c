@@ -1,0 +1,14 @@
+
+clns_chain.c,339
+#define	ALTERNATE	96,3250
+#define ALTERNATE 105,3408
+#define ALTERNATE 115,3595
+#define ALTERNATE 125,3791
+#define ALTERNATE 135,4019
+#define ALTERNATE 146,4261
+#define ALTERNATE 155,4428
+#define ALTERNATE 166,4669
+#define	ALTERNATE	175,4833
+#define	ALTERNATE	193,5271
+#define	ALTERNATE	198,5410
+void clns_parser_init 234,6764

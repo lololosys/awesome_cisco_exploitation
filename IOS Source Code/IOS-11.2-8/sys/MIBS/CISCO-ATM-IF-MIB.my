@@ -1,0 +1,20 @@
+-- $Id: CISCO-ATM-IF-MIB.my,v 3.1 1996/01/18 02:08:08 lcheung Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-ATM-IF-MIB.my,v $
+-- *****************************************************************
+-- cisco extension to the Atom MIB Interface table.
+--
+-- January 1996, Kartik Chandrasekhar
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-ATM-IF-MIB.my,v $
+-- Revision 3.1  1996/01/18  02:08:08  lcheung
+-- placeholder
+--
+-- Revision 2.1  1996/01/09  01:31:47  lcheung
+-- placeholder
+--
+-- *****************************************************************
+-- $Endlog$
+--

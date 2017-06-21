@@ -1,0 +1,20 @@
+-- $Id: CISCO-ATM-TRAFFIC-MIB.my,v 3.1 1996/01/18 02:08:10 lcheung Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-ATM-TRAFFIC-MIB.my,v $
+-- *****************************************************************
+-- C I S C O  A T M   T r a f f i c  P a r a m e t e r  E x t e n s i o n s
+--
+-- December 1995, Michael Grobelch
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-ATM-TRAFFIC-MIB.my,v $
+-- Revision 3.1  1996/01/18  02:08:10  lcheung
+-- placeholder
+--
+-- Revision 2.1  1995/12/12  00:38:03  grobelch
+-- - create placeholder.
+--
+-- *****************************************************************
+-- $Endlog$
+--

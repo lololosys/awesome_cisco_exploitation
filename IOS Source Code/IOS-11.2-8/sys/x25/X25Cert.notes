@@ -1,0 +1,499 @@
+Notes on running the HP 4955 X.25 Certification tests.
+See below for how to test using the Datatel DCP2050 Data
+Link Simulator.
+
+LAPB results as of 27-Apr-87 1630
+
+In order to run the DTE series of tests, you must connect a
+breakout box to swap pins 2 and 3 and connect pins 4 and 20.
+The swap is needed because our ordinary cable is a DCE configuration
+and the second jumper is needed because induced noise on RTS will
+add excessive interrupt load to the com controller. As an alternative
+to the 4-20 jumper, you can do a SET LEAD RTS ON to configure
+the 4955 pod to drive the circuit.
+
+The program ICMPHDLC will setup the RS232 pod correctly and send
+ICMP echo requests using our simple HDLC encapsulation.
+
+The interface to be tested must be configured as
+ENCAPSULATION LAPB
+LAPB DTE
+LAPB T1 3
+LAPB N1 1024
+LAPB N2 20
+LAPB K 7
+LAPB TH 0
+which sets T1=3, N1=1024, N2=20, K=7 and disables ACK-hold.
+
+Notes on the individual modules follow.
+
+A1A runs without exception.
+A2A can only be run on a test version of the LAPB code. It
+	requires that we send an unprovoked DISC, which is
+	not normally done. It runs fine on the crocked code.
+A3A runs without exception.
+A3B runs without exception.
+A4A runs without exception.
+A4B Test 21.1 and 23.1 complain that we retransmit the FRMR when
+	T1 expires. Bug in test?
+A5A runs without exception.
+A5B must be run with T1 set to 20. This is because you generate I-Frames
+	using the Ping command and it will generate a new one only
+	once per second unless it gets a response.
+A5C runs without exception.
+A5D test 26.3 complains of no SABM. By design since we go into disconnect
+	after T1 expires. This test expects us to attempt a reconnection
+	automatically. We will only if we have data to send.
+A6A runs without exception. T1 must be set to 20, see A5B.
+A6B runs without exception.
+A7A runs without exception.
+A7B runs without exception.
+A8A runs without exception.
+A8B runs without exception.
+
+To run the DCE series of tests, connect a breakout box to jumper pin 24
+to both pins 15 and 17 this connects the 4955 ETC to TC and RC.
+
+The interface to be tested must be configured as
+ENCAPSULATION LAPB-DCE
+LAPB T1 3000
+LAPB N1 1024
+LAPB N2 20
+LAPB K 7
+LAPB TH 0
+which sets T1=3, N1=1024, N2=20, K=7 and disables ACK-hold.
+
+Notes on the individual modules follow.
+
+B1A runs without exception.
+B2A Not run -- see A2A for comments.
+B3A runs without exception.
+B3B runs without exception.
+B4A runs without exception.
+B4B Test 21.1 and 23.1 complain that we retransmit the FRMR when
+	T1 expires. Bug in test?
+B5A runs without exception.
+B5B must be run with T1 set to 20. This is because you generate I-Frames
+	using the Ping command and it will generate a new one only
+	once per second unless it gets a response.
+B5C runs without exception.
+B5D test 26.3 complains of no SABM. By design since we go into disconnect
+	after T1 expires. This test expects us to attempt a reconnection
+	automatically. We will only if we have data to send.
+	(Test has syntax error!)
+B6A runs without exception. T1 must be set to 20, see B5B.
+B6B runs without exception.
+B7A runs without exception.
+B7B runs without exception.
+B8A runs without exception.
+B8B runs without exception.
+
+The final series of tests is to see if the code actually works.
+One way is to use a path simulator to provide controlable delay
+and error insertion.
+
+You need:
+A breakout box
+The 'magic loopback cable'
+A male-male gender changer
+
+Timings to send 100Kbytes of data as a function of link delay.
+Delays were set the same in each direction, so the round trip
+time is twice the delay shown. The timing pattern is not simple.
+The cycle goes like this: Send ICMP echo, link delay, receive
+ICMP echo, send ICMP echo reply, link delay. Added to this is
+the LAPB pattern. With K=7 and ack hold in use, an RR is
+sent every seven i-frames. An additional 2*link delay will
+occur here.
+
+First, how many packets given to Ping. Note that the actual
+traffic is twice the specified number of packets, since
+the response must be transmitted as well as the request.
+
+Size	# packets for 100KBytes 
+40	1250
+50	1000
+100	500
+200	250
+400	125
+800	63
+1500	33
+
+Time in seconds (T1=3,N1=12032,N2=20,K=7,Th=2):
+
+Siz\Dly	0	50	100	280	500
+40	36	178	292		
+50	32	142	242	601	1046
+100	22	89	133		530
+200	20	63	83	167	
+400	18	48	60	98	152
+800	17	46	46	66	92
+1500	16	43	44	52	64
+
+For T1=3,N1=12032,N2=20,K=7,Th=0:
+
+Siz\Dly	0	50	100	280	500
+40	
+50
+100		89
+200		63	84
+400	18	48	60	
+800	17	47	48	67
+1500	16	44	45	53
+
+For T1=2,N1=12032,N2=20,K=2,Th=1:
+
+Siz\Dly	0	50	100	280	500
+40	
+50
+100
+200
+400
+800
+1500
+
+
+X.25 results as of 17-Mar-87 19:00
+
+The special swap cable that swaps 2 and 3 and transmit and receive
+clocks must be used to connect the HP 4955 to the box.  The box must be
+configured with X25 encapsulation with the following channels set:
+
+	Incoming channels: 1024-1535
+	Two-way channels: 2304-2815
+	Outgoing channels: 2304-2815
+
+This assumes that the box is running as a DDN X.25 gateway (DTE
+interface).
+
+The HP 4955 configuration parameters must be set up as follows to run
+the X.25 certification tests.  This can be done via the CONFIG program.
+
+	1. T1 3000
+	2. N2 20
+	3. K 7
+	4. Y
+	5. 2304
+	6. 1536
+	7. <RETURN> or 64 when testing PVCs
+	8. 123456789
+	9. 000000010100
+
+<RETURN> means to just hit the return key (no entry) for that item.  If
+the PVC tests are desired, use the number 64 for that item and enter the
+following configuration command:
+
+	x25 pvc 64 interface-ip-address
+
+Notes on the individual modules follow.
+
+A9A Test 5 fails because test 4 doesn't reset the interface correctly.
+	Bug in test.
+A9B runs without exception.
+A9C runs without exception.
+A9D runs without exception.
+A10A runs without exception.
+A10B runs without exception.
+A10C Test 4 fails because previous test (A10B test 3.16) leaves
+	interface in wrong state (doesn't reset -- see A9A). Running
+	test twice causes run without exception. Bug in previous test.
+A10D runs without exception.
+A10E runs without exception.
+A11A Not applicable for this implementation. See test Note 6.
+A11B Not applicable for this implementation. See test Note 6.
+A12A runs without exception.
+A12B runs without exception.
+A13A runs without exception.
+A13B Fails test 16 to be compliant with CCITT 1984.
+A13C runs without exception.
+A13D runs without exception.
+A13E runs without exception.
+A14A Not applicable for this implementation. See test Note 6.
+A14B Not applicable for this implementation. See test Note 6.
+A15A runs without exception.
+A15B runs without exception.
+A15C runs without exception.
+A16A runs without exception.
+A16B Fails test 22 to be compliant with CCITT 1984.
+A16C runs without exception.
+A16D runs without exception.
+A17A runs without exception.
+A17B runs without exception.
+A17C runs without exception.
+A17D runs without exception.
+A18A Not applicable for this implementation. See test Note 6.
+A18B Not applicable for this implementation. See test Note 6.
+A19A runs without exception.
+A19B runs without exception.
+A19C Tests 18.1 and 19.1 aren't applicable for this implementation.
+	See test note 6.
+A20A runs without exception.
+A20B runs without exception.
+A20C runs without exception.
+A20D runs without exception.
+A21A Not applicable for this implementation. See test Note 6.
+A21B Not applicable for this implementation. See test Note 6.
+
+Configure the box to be a DCE.  This requires that a breakout box be
+used to jumper pin 24 to pins 15 and 17.
+
+The results of the DCE X.25 tests follow:
+
+B9A runs without exception.
+B9B runs without exception.
+B9C runs without exception.
+B9D runs without exception.
+B10A Not applicable for this implementation.  See test Note 6.
+B10B Not applicable for this implementation.  See test Note 6.
+B11A Tests 1.2 and 2.2 fail because an undocumented CLEAR is sent after
+	the requests. We respond with a DIAGNOSTIC packet.
+B11B Test 3.14 fails because it sends a RESTART as initialization but we
+	are in state R3 and thus transit to state R1 without sending
+	a RESTART_CONFIRMATION.
+B11C
+B11D runs without exception.
+B11E runs without exception.
+B12A
+B12B
+B13A
+B13B
+B14A
+
+
+Notes on the DDN Validation Test
+
+LAPB comes up outputing SABMs until it can bring up the link.  It
+should be reset by reconfiguring the system and selecting LAPB or
+configing from memory. This will cease the SABMs.
+
+Select the passive option for link setup.  Select all tests (option 4).
+The Chameleon must have its T1 timer set 1 second less then our T1 timer.
+
+For Link Level tests, use the following configuration information:
+
+ENCAPSULATION LAPB
+LAPB T1 4000
+LAPB TH 0
+LAPB N1 1024
+
+Remember to set up the FRAMEM parameters appropiately.
+
+No errors for the link level test for DTE tests version 3 and 4.
+
+Test 4B Subtest 8 on DCE fails.  Bug in test since it passes for the
+DTE?
+
+Test 6B Subtest 7 and 9 fail because incoming RNR frames start the T1
+timer which causes RR/P frames to be issued that cause the tests to
+fail.  Bug in test since it should handle the RR/P polliing.
+
+To run the packet level test, the X25 software must be compiled with
+the -DTEST option. You can do this with the following commands:
+
+		rm x25_state.o
+		make OPTIONS=-DTEST
+
+For the Packet level tests, use the following:
+
+Link level 2 parameters as above.
+ENCAPSULATE DDNX25
+LAPB N1 2048
+X25 LIC 1
+X25 LTC 1
+X25 LOC 1
+X25 HIC 50
+X25 HTC 50
+X25 HOC 50
+X25 ADDRESS 00000099010000
+X25 MAP IP-ADDRESS 00000099020000
+
+Also, make sure the Chameleon SIMP/L HDLC Menu parameters are set up
+such that the N1 parameter is greater then our N1 parameter.
+
+When running the Tekelec tests, choose:
+
+0) Select all tests 3.
+1) the default addresses, option 1.
+2) Maximum packet length of 128
+3) T1 timer of 4 seconds
+
+Enter manual mode and execute the following tests:
+
+	9, 10, 11, 12
+
+Test 11A, subtest 25 fails on DCE because the test claims it wanted a
+RESTART REQUEST cause of DTE ORIGINATED (0) and we sent the correct
+value of LOCAL PROCEDURE ERROR (1). Bug in test.
+
+Test 12A, subtest 3 fails on DCE because the CALL ACCEPTED packet sent
+is too large which causes a diagnostic code of 39 (TOO LARGE) to be
+returned instead of 20 (INVALID PTI). Bug in test.
+
+Test 12A, subtest 7 fails on DTE because the test claims it wanted a
+CLEAR REQUEST with diagnostic code 20 but it was sent a code of 33.
+The documentation expects code 33.
+
+Test 12B, subtest 8 and 9 fail on the DCE because they test CALL USER
+DATA and we do not support that.  The DTE tests do not test CALL USER
+DATA. Bug in test.
+
+Enter manual mode and execute test 13 (DTE) or 14 (DCE):
+
+	To facilitate automation, you can start
+	the ping command with repeat count of 40
+	and timeout of 15. This causes a CALL REQUEST
+	packet to be sent 40 times every 15 seconds.
+	Test 13B (DTE) or 14B (DCE) should be run with a
+	repeat count of	8.
+
+No errors encountered for DTE tests.
+
+Test 14A, subtest 25 for DCE fails on the 16th invalid GFI field test.
+Somehow the upper 8 bits of the expected 16 bit field is getting set in
+the test which can never happen in the data.  Bug in test.
+
+Test 14B, subtest 9 for DCE fails since we reply with a CLEAR code of
+39 (too long) instead of the expected code of 22 (invalid pti p3).
+Since this is a test for a too long packet, code 39 is appropiate.  Bug
+in test?
+
+Enter manual mode and execute test 14 and 15 (DTE) or 15 (DCE):
+
+No errors encountered for DTE tests.
+
+Test 15A, subtest 12 for DCE fails because a CALL ACCEPTED packet is
+sent which is too large (22 bytes != 3 + 1 + 14 + 1).  A CLEAR REQUEST
+is returned with a too large code of 39 instead of invalid pti p4 (23)
+which is expected.  Bug in test.
+
+Test 15A, subtest 14 for DCE fails on the 16th invalid GFI field test.
+Somehow the upper 8 bits of the expected 16 bit field is getting set in
+the test which can never happen in the data.  Bug in test.
+
+Enter manual mode and execute test 16 (DTE):
+
+	Using the ping command with repeat count of 39
+	and timeout of 15 seconds, all of test 16A can
+	be run automatically. Test 16B can be run with
+	a repeat count of 7.
+
+Test 16B, subtests 3, 4, 5, and 6 for DTE all want diagnostic code 24
+instead of 64, 64, 65 and 66 which is what is sent.  The later set of
+codes is expected for Test 13B subtests 3, 4, 5 and 6.
+
+Enter manual mode and execute test 17 and 18:
+
+Test 18A, subtest 14 for DCE fails on the 16th invalid GFI field test.
+Somehow the upper 8 bits of the expected 16 bit field is getting set in
+the test which can never happen in the data.  Bug in test.
+
+Enter manual mode and execute tests 19, 20 and 21:
+
+Test 19A, subtest 5 for DCE fails since we send a diagnostic code of 33
+(which is documented to be correct) but test exptects 37.  Bug in test.
+
+Test 19A, subtest 16 for DTE fails because we aren't configured for a
+PVC.
+
+Test 19A, subtest 23 for DCE fails because it expects a permanent
+virtual circuit when testing switched virtual circuits.
+
+Test 20A, subtest 16 for DTE fails because we aren't configured for a
+PVC.
+
+Test 21A, subtest 14 for DCE fails on the 16th invalid GFI field test.
+Somehow the upper 8 bits of the expected 16 bit field is getting set in
+the test which can never happen in the data.  Bug in test.
+
+Test 21A, subtest 16 for DCE fails because it expects a permanent
+virtual circuit when testing switched virtual circuits.
+
+* First add the following configuration commands:
+
+* X25 LIC 2
+* X25 LTC 2
+* X25 LOC 2
+* X25 PVC 1 IPADDR
+
+* Enter manual mode and execute tests 19, 20 and 21:
+
+* No errors encountered.
+
+Enter manual mode and execute test 23:
+
+	Using ping, request that one packet
+	be output with a timeout of 1 second. This
+	will cause a call request packet to be sent
+	with the DDN Standard Facility. Then invoke ping
+	again sending one packet with a timeout of 1 second
+	but also select the extended options and a type of
+	service of 3.
+
+No errors encountered.
+
+Notes on Telenet certification tests.
+-------------------------------------
+
+The tests can be used without reconfiguation, except make sure that
+the comstate is in internal clock mode, and the speed can be increased.
+Use the "emulate DCE" connector on the back, and "emulate dce" mode.
+No special compililation is required...
+
+For frame level tests, use the following configuration.
+
+	interface Serial 0
+	address 192.31.7.49 255.255.255.240
+	encapsulation lapb
+	lapb th 3000
+
+Test 1 (DISC SEND state) should not be run at all.
+
+Test 2 (SABM SENT state) requires that the DUT initiate a lapb level
+connection after it receives a disconnect command.  In order for the
+AGS to do this, there must be data waiting to be sent, so start up a
+long set of pings.
+
+Subtest 0 of all the frame tests sends a DISC.  Again, the telenet
+tests expect us to imediately restart the connection by sending a SABM.
+In order to pass this test, you have to have a ping going.  Having
+pings going will break other tests, however.  Type quickly...
+
+Subtest 2 of all frame level tests sends a SARM.  We do not support
+SARM, and treat the packet as a DM.  This means that we attempt to
+reinitiate the connection, whereas the telenet tests expect us to enter
+an error condition.  This affects test 5, 6, and 7.
+
+Subtest 10 and 2 of frame level test 3 seems to expect the
+retransmitted FRMR to have the P/F bit set since it was set in the
+illegal command.  We retransmit it in its original form.  This is not
+clearly specified in the spec, and Telenet says the way we handle it is
+OK.  Note that the DDN insists that we do it this way, and will complain
+if we set the P/F bit because of an invalid frame. 
+
+Test 4 (SABM RESET) apparently expects us to respond to an invalid FRMR
+by sending a SABM with the P bit set.  We send the first SABM after the
+error without the P bit.  In order for the test to get beyond the
+initialization, increase T1 on the Comstate to 4 seconds.  This way
+we'll send one of each before the test times out.  (OK accoring to telenet).
+
+Test 6 and 7 actually send X25 packets designed to illicit a repsonse
+from the DUT.  Use the configuration shown below for X25 level 3...
+
+
+For X25 level tests, use the following configuration:
+
+	interface Serial 0
+	address 192.31.7.49 255.255.255.240
+	encapsulation X25
+	x25 address 31250000000101
+	x25 hic 1
+	x25 htc 1
+	x25 hoc 1
+	x25 map 192.31.7.50 31109090096101
+	lapb th 3000
+
+Various tests require that the DUT send the connection request.  Use
+Ping to accomplish this.
+
+One test wants "reverse charging" facilities in the call request.  We
+don't currently support this.

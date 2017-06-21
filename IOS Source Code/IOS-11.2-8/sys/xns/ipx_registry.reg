@@ -1,0 +1,782 @@
+# $Id: ipx_registry.reg,v 3.3.54.4 1996/05/14 01:16:53 sluong Exp $
+# $Source: /release/112/cvs/Xsys/xns/ipx_registry.reg,v $
+#*------------------------------------------------------------------
+#* ipx_registry.reg - Service Points for IPX registry
+#*
+#* October 1994, Joel P. Bion
+#*
+#* Copyright (c) 1994-1996 by cisco Systems, Inc.
+#* All rights reserved.
+#*
+#*------------------------------------------------------------------
+# $Log: ipx_registry.reg,v $
+# Revision 3.3.54.4  1996/05/14  01:16:53  sluong
+# CSCdi52574:  NLSP LSP for statics lost after clear ipx nl *
+# Branch: California_branch
+#
+# Revision 3.3.54.3  1996/05/03  02:16:46  sluong
+# Branch: California_branch
+# IPX ACL Violation Logging, Plaining English Filters, Display SAP by
+# name,
+# NLSP MIBS, Scaleable RIP/SAP, Modularity, and SAP query by name.
+#
+# Revision 3.3.54.2  1996/04/21  20:48:11  dkatz
+# CSCdi48351:  ISIS P2P handshake is 2-way
+# Branch: California_branch
+# Add upward-compatible 3-way handshake.  Use same state variables for
+# ISIS and NLSP.
+#
+# Revision 3.3.54.1  1996/04/12  00:38:19  sluong
+# CSCdi52812:  show ipx nlsp database/neighbor needs to display all
+# instances
+# Branch: California_branch
+#
+# Revision 3.3  1995/12/01  06:25:00  mschaef
+# CSCdi37234:  Allow fastswitching of certain directed broadcast packets
+#
+# Revision 3.2  1995/11/17  19:21:54  gstovall
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:58:12  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.4  1995/11/08  21:38:31  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.3  1995/10/13  01:04:12  shj
+# CSCdi41571:  atm interface uses wrong ipx node address
+# Backout CSCdi38984, which caused wrong ipx address on non-LANE ATM
+# interfaces.  Instead, LANE now changes ipx address if ipx is already
+# configured when LANE Client configured.
+#
+# Revision 2.2  1995/09/23  21:43:01  dkatz
+# CSCdi38306:  ISIS shouldnt run SPF on leaf route changes
+# Generalize NLSP's interface to the ISIS LSP structure so code and
+# structures can be shared with ISIS-IP.
+#
+# Revision 2.1  1995/06/07  23:27:43  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BEGIN REGISTRY IPX
+
+DEFINE ipx_nlsp_process_packet
+/*
+ * Process an NLSP packet. Returns TRUE if caller does not need to toss packet
+ */
+	STUB
+	void
+	paktype *pak
+END
+
+DEFINE ipx_find_nlsp_pdb
+/*
+ * find_nlsp_pdb - get CLNS PDB part of NLSP PDB pair.
+ */
+	STUB
+	clns_pdbtype *
+	char *tag
+END
+
+DEFINE ipx_isis_union_areas
+/*
+ * ipx_isis_union_areas - 
+ */
+	STUB
+	void
+	clns_pdbtype *pdb, long area, long area_mask
+END
+
+DEFINE nlsp_pdb_init
+/*
+ * nlsp_pdb_init -
+ */
+	STUB
+	novpdbtype *
+	char *router_tag, novpdbtype *nov_pdb
+END
+
+DEFINE ipx_isis_add_ipx_route
+/*
+ * isis_add_ipx_route
+ *
+ * Called by Dijkstra to add an IPX route
+ */
+	STUB
+	void
+	clns_pdbtype *pdb, ulong net_number, ulong netmask, \
+	isis_lspdbtype *lsp_zero,\
+	isis_lspdbtype *current_lsp, isis_lsp_parent *next_hops,\
+	isis_lsp_parent *leaf_params, int metric, boolean external
+END
+
+DEFINE ipx_isis_add_ipx_service
+/*
+ * isis_add_ipx_service
+ *
+ * Called by Dijkstra to add an IPX service advertisement
+ */
+	STUB
+	void
+	clns_pdbtype *pdb, isis_nlsp_svcs_info *svc, isis_lspdbtype *lsp_zero,\
+	isis_lspdbtype *current_lsp, isis_lsp_parent *next_hops,\
+	isis_lsp_parent *leaf_params, int name_length
+END
+
+DEFINE ipx_nlsp_start
+/*
+ * Start up the NLSP pdb
+ */
+	STUB
+	novpdbtype *
+	char *router_tag
+END
+
+DEFINE ipx_isis_insert_ipx_hello
+/*
+ * Insert options into the hello.
+ *
+ * "item" is expected to point just beyond the current end of the PDU.
+ *
+ * Returns the updated item pointer.
+ */
+	STUB
+	isis_info_type *
+	clns_pdbtype *pdb, isis_info_type *item, idbtype *idb, int bytes_left
+END
+
+DEFINE ipx_isis_insert_ipx_lsp_areas
+/*
+ * isis_insert_ipx_lsp_areas
+ *
+ * Insert IPX area addresses into the LSP, if appropriate.
+ */
+	STUB
+	void
+	isis_lspcontext *context
+END
+
+DEFINE ipx_isis_pseudonode_needed
+/*
+ * Return TRUE if we are the designated router on this interface.
+ */
+      STUB
+      boolean
+      clns_pdbtype *pdb, idbtype *idb
+END
+
+DEFINE ipx_nidb_network_changed
+/*
+ * ipx_nidb_network_changed
+ * Called whenever the IPX network number of an nidb changes.
+ * Uses IPX_ROUTE_EVENT to define action:
+ *	IPX_ROUTE_EVENT_DELETED = NIDB about to be deleted
+ *	IPX_ROUTE_EVENT_ADD     = NIDB has JUST BEEN added
+ * A change of net # will be DELETED, followed by ADD...
+ */
+	LIST
+	void
+	nidbtype *nidb, enum IPX_ROUTE_EVENT event
+END
+
+DEFINE ipx_nidb_bw_delay_changed
+/*
+ * Called whenever the *IPX* delay or throughput of an nidb changes.
+ */
+	LIST
+	void
+	nidbtype *nidb
+END
+
+DEFINE ipx_novell_fastswitch_bcast
+/*
+ * Test novell_fastswitch_bcast boolean
+ */
+	STUB
+	boolean
+	-
+END
+
+DEFINE ipx_idb_delay_values
+/*
+ * Return a set of IPX delay values for this IDB
+ */
+	STUB
+	boolean
+	idbtype *idb, ulong *link_delay, ulong *link_throughput, ulong *ipx_ticks
+END
+
+DEFINE ipx_isis_add_one_nlsp_link_ad
+/*
+ * isis_add_one_nlsp_link_ad
+ *
+ * Add a link info entry to an existing LSP (used for incremental adds)
+ *
+ * Pseudo_id is nonzero if we are adding to a pseudonode LSP
+ */
+	STUB
+	void
+	isis_info_type *item, uchar *id, idbtype *idb, ulong metric, uchar pseudo_id
+END
+
+DEFINE ipx_isis_insert_ipx_lsp
+/*
+ * isis_insert_ipx_lsp
+ * 
+ * Insert IPX info into the LSP.
+ *
+ * Returns the length of the added information.
+ *
+ * context->lsp_idb is a pointer to the IDB if this is a pseudonode LSP,
+ * or NULL otherwise.
+ *
+ * Note--this routine may suspend!
+ */
+	STUB
+	void
+	isis_lspcontext *context
+END
+
+DEFINE ipx_nlsp_ipx_sched_spf
+/*
+ * nlsp_ipx_sched_spf
+ *
+ * Utility routine to force SPF (if and only if NLSP is running). In
+ * general this should be called only as a side effect of an administrative
+ * request (e.g., clear ipx route *).
+ */
+	STUB
+	boolean
+	clns_pdbtype *pdb
+END
+
+DEFINE ipx_kludge_enabled
+/*
+ * ipx_kludge_enabled
+ *
+ * Are IPX test specific kludges enabled?
+ */
+	STUB
+	boolean
+	-
+END
+
+
+DEFINE ipx_nlsp_ipx_send_pkt
+/*
+ * nlsp_ipx_send_pkt - send a packet
+ *
+ * Returns TRUE if successful.
+ *
+ * Note that it is assumed that the data is at ipxdatastart(pak) ...
+ * the network layer header will be built at ipxheadstart(pak) before
+ * transmission.
+ */
+	STUB
+	boolean
+	clns_pdbtype *pdb, paktype *pak, int length, idbtype *swidb
+END
+
+DEFINE ipx_nlsp_delete_rdb_from_lsp_list
+/*
+ * novnlsp_delete_rdb_from_lsp_list
+ *
+ * Delete an rdb from the specified lsp chain
+ */
+	STUB
+	void
+	novrdbtype *rdb
+END
+
+DEFINE ipx_nlsp_delete_srdb_from_lsp_list
+/*
+ * novnlsp_delete_srdb_from_lsp_list
+ *
+ * Delete an srdb from the specified lsp chain
+ */
+	STUB
+	void
+	novell_sapentry_rdb *srdb
+END
+
+DEFINE ipx_nlsp_insert_rdb_in_lsp_list
+/*
+ * novnlsp_insert_rdb_in_lsp_list
+ *
+ * Insert an rdb onto the specified lsp chain
+ */
+	STUB
+	void
+	novrdbtype *rdb, isis_lsp_linkage **lh
+END
+
+DEFINE ipx_nlsp_insert_srdb_in_lsp_list
+/*
+ * novnlsp_insert_srdb_in_lsp_list
+ *
+ * Insert an srdb onto the specified lsp chain
+ */
+	STUB
+	void
+	novell_sapentry_rdb *srdb, isis_lsp_linkage **lh
+END
+
+DEFINE ipx_nlsp_valid_adjacency
+/*
+ * Return TRUE if this is a valid NLSP adjacency
+ * call itself recursively in order to implement selected combinations
+ * of functionality.
+ */
+	STUB
+	boolean
+	paktype *pak, int level
+END
+
+DEFINE ipx_nlsp_we_are_designated
+/*
+ * Return TRUE if we are the designated router on this interface.
+ */
+	STUB
+	boolean
+	idbtype *idb
+END
+
+DEFINE ipx_mark_dr_info_change
+/*
+ * Mark down that info pertaining to the designated router has changed on this
+ * interface.
+ */
+	STUB
+	void
+	novpdbtype *pdb, idbtype *idb
+END
+
+DEFINE ipx_return_static_counts
+/*
+ * Return static route and server counts for IPX
+ */
+	STUB
+	void
+	int *route_count, int *server_count
+END
+
+DEFINE ipx_show_nlsp_traffic
+/*
+ * Display NLSP traffic statistics
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE ipx_show_interface
+  /*
+   * Display interface information
+   */
+	LIST
+	void
+  	idbtype *idb
+END
+  
+DEFINE ipx_nlsp_age_ipx_routes_and_services
+/*
+ * Age IPX routes and services for a single LSP
+ */
+	STUB
+	void
+	clns_pdbtype *pdb, ushort index, isis_lspix_type *entry
+END
+
+DEFINE ipx_nlsp_set_default_redist
+/*
+ * Reset default redistribution state between NLSP and RIP
+ */
+	STUB
+	void
+	novpdbtype *pdb
+END
+
+DEFINE ipx_nlsp_clear_neighbors
+/*
+ * Clear adjacencies
+ */
+	STUB
+	void
+	clns_pdbtype *pdb
+END
+
+DEFINE ipx_nlsp_cache_hostname
+/*
+ * Put a hostname into the cache
+ */
+	STUB
+	void
+	clns_pdbtype *pdb, isis_lspdbtype *lsp_db, isis_TLV_parse *tlv_parse
+END
+
+DEFINE ipx_nidb_state_change
+/*
+ * Flag when an NIDB goes up or down.  The network number may possibly
+ * be different when the NIDB goes up.  The new state can be found in
+ * the NIDB.
+ */
+	LIST
+	void
+	nidbtype *nidb
+END
+
+DEFINE ipx_nlsp_validate_tlv
+/*
+ * Validate an NLSP TLV option.
+ */
+	STUB
+	boolean
+	clns_pdbtype *pdb, isis_info_type *opt_ptr, void *packet,\
+	char *error_type
+END
+
+DEFINE ipx_compression_decompress_header
+/*
+ * Decompress an IPX header.
+ */
+	STUB
+ 	paktype *
+ 	paktype *pak
+END
+ 
+DEFINE ipx_compression_exists
+/*
+ * Discover if IPX compression exists in this system
+ */
+ 	STUB
+ 	boolean
+ 	-
+END
+ 
+DEFINE ipx_compression_reset
+/*
+ * Reset the compression state on the NIDB specified
+ */
+ 	STUB
+ 	void
+ 	nidbtype *nidb
+END
+ 
+DEFINE ipx_compression_options_provide
+/*
+ * Provide our current IPX Compression options, in a format handy for IPXWAN
+ */
+ 	STUB
+ 	void
+ 	nidbtype *nidb, boolean *compression_enabled, uchar *compression_type, uchar *compression_options, uchar *compression_slots
+END
+ 	
+DEFINE ipx_compression_options_receive
+/*
+ * Receive our current negotiated IPX Compression options
+ */
+ 	STUB
+ 	void
+ 	nidbtype *nidb, boolean compression_enabled, uchar compression_type, uchar compression_options, uchar compression_slots
+ END
+ 	
+DEFINE ipx_nlsp_update_interface_state
+/*
+ * Update the state of an interface when NLSP is enabled on it.
+ */
+	STUB
+	void
+	idbtype *idb, clns_pdbtype *pdb
+END
+
+DEFINE ipx_nlsp_free_sdb_list
+/*
+ * Display NLSP traffic statistics
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE ipx_nlsp_cost_compare
+/*
+ * Compare order of preference info:
+ */
+	STUB
+	int
+	nov_cost_type *cost1, nov_cost_type *cost2
+END
+
+DEFINE ipx_novcache_increment_version
+/*
+ * Invalidate the FS cache (when tacacs+ changes an accesslist).
+ */
+	STUB
+	void
+	hwidbtype *hwidb, int reason, ulong param, ulong netmask
+END
+
+DEFINE ipx_input_paktype
+/*
+ * Process ipx packets based on Packet type
+ * used by SPX mainly.
+ */
+	RETVAL
+	boolean
+	paktype *pak
+	0
+	uchar packet_type
+END
+
+DEFINE ipx_internal_net_changed
+/*
+ * Report a change to the IPX internal network
+ */
+        STUB
+        void
+	-
+END
+
+DEFINE ipxnhrp_macaddr
+/*
+ * Allow NHRP determine the "link layer" address used during encapsulation.
+ */
+	LOOP
+	boolean
+	paktype *pak, long address, uchar const **macaddr
+END
+
+DEFINE ipxnhrp_macaddr_map
+/*
+ * Like ipxnhrp_macaddr, but also deals with generating a map table entry
+ * for the resolved link layer address, if found.
+ */
+	LOOP
+	boolean
+	paktype *pak, addrtype *proto_addr, boolean bcast, staticmap_type **map
+END
+
+DEFINE ipx_configure_for_lane
+/*
+ * Change node number & enctype for lane, if necessary.
+ */
+        STUB
+        void
+        idbtype *swidb
+END
+
+DEFINE novigrp_process
+/*
+ * Process an EIGRP packet. Returns TRUE if caller does not need to toss packet
+ */
+	STUB
+	void
+	paktype *pak
+END
+
+DEFINE nov_ipxwan_start_nidb
+/*
+ * Start IPXWAN on the given interface
+ */
+        STUB
+        void
+        nidbtype *nidb
+END
+
+DEFINE nov_ipxwan_stop_nidb
+/*
+ * Stop IPXWAN on the given interface
+ */
+        STUB
+        void
+        nidbtype *nidb
+END
+
+DEFINE nov_ipxwan_display
+/*
+ * Display the current IPXWAN state for the given IDB.
+ */
+        STUB
+        void
+        nidbtype *nidb
+END
+
+DEFINE novell_ipxwan_start
+/*
+ * Starts ipxwan process
+ */
+        STUB
+        void
+	-
+END
+
+DEFINE novell_ipxwan_bg_start
+/*
+ * Starts ipxwan_bg process
+ */
+        STUB
+        void
+	-
+END
+
+DEFINE novigrp_start
+/*
+ * Start up the IPX EIGRP pdb
+ */
+	STUB
+	novpdbtype *
+	ushort asystem
+END
+
+DEFINE novigrp_route_adjust
+/*
+ * Called when a directly connected IPX network has changed status.
+ * Inform the DUAL finite state machine about change.
+ */
+	STUB
+	void
+	novpdbtype *inpdb, idbtype *idb
+END
+
+DEFINE novigrp_sap_access_list_work
+/*
+ * An access list either changed its contents, or an access list
+ * usage on an interface was changed.
+ * If inidb is non-NULL, clear neighbors only for that IDB.
+ * If inidb is NULL, clear all neighbors on interfaces using access list 'list'
+ */
+	STUB
+	void
+	ulong list, idbtype *inidb
+END
+
+DEFINE novigrp_network_command
+/*
+ * Process "network" command for an IGRP2 routing process. This function
+ * will obtain the idbs associated with the network number configured.
+ * Each idb will be stored in an igrp2_idbtype data structure that resides
+ * in the ddb.
+ */
+	STUB
+	void
+	novpdbtype *pdb, ulong net, boolean sense
+END
+
+DEFINE novigrp_reload_proto_table
+/*
+ * Reload an EIGRP protocol table, because the IPX routing table has been
+ * reloaded.
+ */
+	STUB
+	void
+	novpdbtype *pdb
+END
+
+DEFINE novigrp_have_peer
+/*
+ * See if an IPX IGRP peer exists out this interface
+ */
+	STUB
+	boolean
+	nidbtype *nidb
+END
+
+DEFINE novigrp_send_sap
+/*
+ * Send a SAP packet to an EIGRP neighbor
+ *
+ * Currently, the only SAP packets supported over EIGRP are general queries
+ * and general responses.
+ */
+	STUB
+	boolean
+        paktype *sappak, enum IPX_DESTINATION destination_type, nidbtype *nidb
+END
+
+DEFINE nov_redistribute
+/*
+ * A redistribute command was entered . Notify DUAL of routes that belong 
+ * to the process being redistributed. DUAL tells IPX what to include in 
+ * routing updates, so IPX must tell DUAL here which routes need to be 
+ * redisributed.
+ */
+	STUB
+	void
+        novpdbtype *pdb, novpdbtype *dist, boolean sense
+END
+
+DEFINE nov_get_backup_servers
+/*
+ * Retrieve any backup servers available now through 'pseudo-updates'
+ */
+	STUB
+        void
+	-
+END
+
+DEFINE novigrp_address_command
+/*
+ * Called when an IPX address is added or deleted from an interface.
+ */
+	STUB
+        void
+	idbtype *idb, ulong net, boolean adding
+END
+
+DEFINE ipx_nlsp_display_all_database
+/*
+ * Called when displaying database detail for all nlsp instances.
+ */
+	STUB
+        void
+	boolean long_display, boolean internal_display
+END
+
+DEFINE ipx_nlsp_mark_all_L1_dr_changed 
+/*
+ * Called when you want to mark all L1 dr changed
+ */
+	STUB
+	void
+	clns_pdbtype *pdb
+END
+
+DEFINE ipx_nlsp_get_peer_network
+/*
+ * Called when you need to know the NLSP peer internal network number
+ */
+	STUB
+	ulong
+	paktype *pak
+END
+
+DEFINE ipx_igrp2_exists_iidb
+/*
+ * Called to test whether iidb exists. Done by checking whether
+ * igrp2_find_iidb returns NULL. igrp2_find_iidb cannot be called
+ * directly in modules that do not include the ipx-eigrp subsystem
+ * Hence the need for this wrapper 
+ */	
+	STUB
+	boolean
+	ddbtype *ddb, idbtype *idb
+END
+
+DEFINE ipx_igrp2_take_nbrs_down
+/*
+ * Wrapper function to call igrp2_take_nbrs down. The wrapper is
+ * needed because igrp2_take_nbrs_down cannot be called 
+ * directly in modules that do not include the ipx-eigrp subsystem.
+ */	
+	LIST
+	void
+	ddbtype *ddb, idbtype *idb, boolean destroy_now, char *reason
+END 
+END REGISTRY
+
+
+
+

@@ -1,0 +1,293 @@
+-- $Id: CISCO-SNA-LLC-CAPABILITY.my,v 3.2 1995/11/17 08:34:53 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-SNA-LLC-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-SNA-LLC-CAPABILITY - Capabilities agent for SNA LLC MIB.
+--
+-- April 1995, Mike Otto
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-SNA-LLC-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:34:53  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:50:34  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.2  1995/10/17  23:55:47  jjohnson
+-- CSCdi42358:  syntax errors in agent capability files
+--
+-- Revision 2.1  1995/06/07  20:01:05  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+CISCO-SNA-LLC-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoSnaLlcCapability MODULE-IDENTITY
+		LAST-UPDATED	"9505100000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for the CISCO-SNA-LLC-MIB"
+		REVISION	"9505100000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 28 }
+
+ciscoSnaLlcCapabilityV11R00 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 11.0"
+STATUS		current
+DESCRIPTION	"IOS 11.0 Cisco SNA LLC MIB capabilities"
+
+SUPPORTS	CISCO-SNA-LLC-MIB
+  INCLUDES	{ llcCorePortGroup,
+                  llcCoreSapGroup,
+                  llcCoreCcGroup 
+                }
+	
+    VARIATION llcPortAdminName
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminMaxSaps
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcPortAdminMaxCcs
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcPortAdminMaxPDUOctets
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminMaxUnackedIPDUsSend
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminMaxUnackedIPDUsRcv
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminMaxRetransmits
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminAckTimer
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminPbitTimer
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminRejTimer
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminBusyTimer
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminInactTimer
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminDelayAckCount
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminDelayAckTimer
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcPortAdminNw
+    ACCESS    read-only
+    DESCRIPTION "write not implemented"
+
+    VARIATION llcSapAdminMaxPDUOctets
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminMaxUnackedIPDUsSend
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminMaxUnackedIPDUsRcv
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminMaxRetransmits
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminAckTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminPbitTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminRejTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminBusyTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminInactTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminDelayAckCount
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminDelayAckTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapAdminNw
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsLocalBusies
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsRemoteBusies
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsIFramesIn
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsIFramesOut
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsIOctetsIn
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsIOctetsOut
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsSFramesIn
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsSFramesOut
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsRetransmitsOut
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsREJsIn
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsREJsOut
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsWwCount
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsTESTCommandsIn
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcSapStatsTESTResponsesOut
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminBounce
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminMaxPDUOctets
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminMaxUnackedIPDUsSend
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminMaxUnackedIPDUsRcv
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminMaxRetransmits
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminAckTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminPbitTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminRejTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminBusyTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminInactTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminDelayAckCount
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminDelayAckTimer
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminNw
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+    VARIATION llcCcAdminRowStatus
+    ACCESS    not-implemented
+    DESCRIPTION "not implemented"
+
+::= { ciscoSnaLlcCapability 1 }
+
+END

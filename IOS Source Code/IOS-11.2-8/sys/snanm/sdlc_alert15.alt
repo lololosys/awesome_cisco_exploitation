@@ -1,0 +1,44 @@
+/* $Id: sdlc_alert15.alt,v 3.2 1995/11/17 18:56:48 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/sdlc_alert15.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management SDLC Alert15
+ *      Loss of EIA signal
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: sdlc_alert15.alt,v $
+# Revision 3.2  1995/11/17  18:56:48  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:15:02  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:47:23  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct SdlcAlert15 ##SDLCALERT15 { ?,01,1000
+  , {3601,3401,3302}
+  , {3400,0205,
+    , ACT = 1320,0200}
+  , 
+  , {3601,3401,3302,F035     
+    , ACT = 0403, 1300, 2011, 32C0 
+    , DET = {82216101,adptNo:1},
+            {82216001,portNum:1}
+   }
+  , {52, {02,remoteDeviceAddr:1},
+         {04,localDeviceAddr:2},
+         {06,linkStatRole:1,nodeType:1},
+         {07,connectionType:1, 
+             fullOrHalfDuplex:1,
+             dlcProtocol:1,
+             pointToPointOrMultipoint:1}}, 
+  , {05, {108009,cpName:8,00F409,adapter:8,0021}}
+  }
+

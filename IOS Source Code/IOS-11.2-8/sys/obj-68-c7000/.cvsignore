@@ -1,0 +1,14 @@
+gs7-*
+test.lock
+cisco*.c
+*only
+lite
+tiny
+mksum
+mksum-*-*
+*_aout-*-*
+*_aout
+dependancies.monlib
+miblib-*-*
+vip_ucode_once
+vip_ucode_needed

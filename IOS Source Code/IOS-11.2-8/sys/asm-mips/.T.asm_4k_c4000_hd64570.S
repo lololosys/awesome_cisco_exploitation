@@ -1,0 +1,31 @@
+
+asm_4k_c4000_hd64570.S,1000
+#define ASMINCLUDE25,853
+#define HD_ISR1_ISR0_OFS 32,935
+#define HD_NONE_ISR2_OFS 33,971
+#define HD_C0_ST1_ST0_OFS 34,1007
+#define HD_C1_ST1_ST0_OFS 35,1043
+#define HD_C0_ST3_ST2_OFS 36,1079
+#define HD_C1_ST3_ST2_OFS 37,1115
+#define QSIM_MDM_INT_0 40,1191
+#define QSIM_MDM_INT_1 41,1242
+#define QSIM_MDM_INT_2 42,1296
+#define QSIM_MDM_INT_3 43,1347
+#define QSIM_SCA_0_INT 44,1398
+#define QSIM_SCA_1_INT 45,1449
+#define QSIM_INT_MASK 47,1501
+#define QSIM_INT_CLEAR 48,1536
+#define HD_S0_RXRDY_MASK 51,1603
+#define HD_S0_RXINT_MASK 52,1660
+#define HD_S0_TXINT_MASK 53,1717
+#define HD_S1_RXRDY_MASK 54,1774
+#define HD_S1_RXINT_MASK 55,1831
+#define HD_S1_TXINT_MASK 56,1888
+#define HD_S0_RERR_MASK 57,1945
+#define HD_S0_RINT_MASK 58,2002
+#define HD_S0_TINT_MASK 59,2059
+#define HD_S1_RERR_MASK 60,2117
+#define HD_S1_RINT_MASK 61,2175
+#define HD_S1_TINT_MASK 62,2233
+#define HD_ST1_UDRN_MASK 65,2320
+        move    s3,a1                       # get slot base address 87,2811

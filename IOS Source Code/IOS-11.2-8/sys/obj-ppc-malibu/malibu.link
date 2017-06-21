@@ -1,0 +1,18 @@
+/* $Id: malibu.link,v 1.1 1996/05/10 23:17:16 hshi Exp $
+ * $Source: /release/112/cvs/Xsys/obj-ppc-malibu/malibu.link,v $
+ *------------------------------------------------------------------
+ * malibu.link - Linker command script for Malibu
+ *
+ * May 1996, Henry Shi
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: malibu.link,v $
+ * Revision 1.1  1996/05/10  23:17:16  hshi
+ * Placeholder
+ *
+ *
+ *------------------------------------------------------------------
+ * $Endlog$
+ */

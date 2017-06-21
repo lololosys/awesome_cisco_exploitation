@@ -1,0 +1,101 @@
+
+nasi.h,3909
+#define __NASI_H__34,1136
+#define NASI_SERVICE_SOCKET 41,1184
+#define NASI_SERVICE_NAME_LEN 42,1254
+#define NASI_MAX_HOSTNAME_LEN 43,1323
+#define NASI_PORT_NAME_MAXLEN 44,1381
+#define NASI_CMD_START 45,1447
+#define NASI_PER_CON_PAK_COUNT 47,1473
+#define NASI_IO_BUFSIZE 48,1547
+#define NASI_MAX_SEND 49,1614
+#define NASI_SRVSTRING_LEN 51,1686
+#define NASI_USTRING_LEN 52,1744
+#define NASI_PWSTRING_LEN 53,1802
+#define NASI_GRPSTRING_SIZE 54,1858
+#define NASI_PORTSTRING_SIZE 55,1927
+#define NASI_LONGSTRING_SIZE 56,1999
+#define NASI_PW_HASH_BYTE 58,2059
+#define NASI_ANYNAME8 64,2152
+#define NASI_ANYNAME12 65,2186
+#define NASI_FILLER_CHAR 70,2259
+#define NASI_ANY_CHAR 71,2288
+#define NASI_NULL_CHAR 72,2314
+#define NASI_MIN_TTY_SPEED 78,2377
+#define NASI_MAX_TTY_SPEED 79,2410
+#define NASI_MAX_SPEED_INDEX 80,2448
+#define NASI_MIN_TTY_WORDLEN 85,2522
+#define NASI_MAX_TTY_WORDLEN 86,2555
+#define NASI_MAX_WORDLEN_INDEX 87,2588
+#define NASI_MIN_TTY_STOPBITS 92,2658
+#define NASI_MAX_TTY_STOPBITS 93,2701
+#define NASI_MAX_STOPBITS_INDEX 94,2744
+#define NASI_MIN_TTY_PARITY 99,2814
+#define NASI_MAX_TTY_PARITY 100,2854
+#define NASI_MAX_PARITY_INDEX 101,2928
+#define NASI_FLOW_NONE 106,2987
+#define NASI_FLOW_SOFT 107,3013
+#define NASI_FLOW_HARD 108,3039
+#define NASI_FLOW_BOTH 109,3065
+#define NASI_PORT_STATUS_IDLE 114,3146
+#define NASI_PORT_STATUS_ALLOCATED 115,3220
+#define NASI_PORT_STATUS_CONNECTED 116,3296
+#define NASI_PORT_STATUS_ONHOLD 117,3351
+#define NASI_READ_SIZE 122,3451
+#define NASI_INITPORT_DELAY 127,3548
+#define NASI_CLOSECON_DELAY 132,3650
+enum NASI_SHOW_TYPES NASI_SHOW_TYPES137,3765
+    SHOW_NASI_CON,138,3788
+    SHOW_NASI_ALL139,3807
+enum NASI_LINE_COMMAND_TYPES NASI_LINE_COMMAND_TYPES145,3893
+    LINE_NASI_AUTH,146,3924
+    LINE_NASI_ENABLE147,3944
+#define NASI_FLAG_NEED_CLOSE 153,4042
+#define NASI_FLAG_NEED_FLUSH 154,4082
+#define NASI_MAIN_RUNNING 160,4207
+#define NASI_MAIN_EXIT 161,4246
+#define NASI_OP_SRV_DISCONNECT 167,4326
+#define NASI_OP_SRV_DATA 168,4394
+#define NASI_OP_SRV_DATA_GOOD_ACK 169,4468
+#define NASI_OP_SRV_DATA_BAD_ACK 170,4538
+#define NASI_OP_QNAME_FFIRST 171,4607
+#define NASI_OP_QNAME_FNEXT 172,4685
+#define NASI_OP_CHECK_SERVER 173,4763
+#define NASI_OP_INFO_SERVER 174,4824
+#define NASI_OP_SET_SERVICE_NAME 175,4890
+#define NASI_OP_GET_SERVICE_NAME 176,4955
+#define NASI_OP_GET_SERVER_NAME 177,5020
+#define NASI_OP_GET_GENERAL_NAME 178,5084
+#define NASI_OP_GET_SPECIFIC_NAME 179,5149
+#define NASI_OP_INITIALIZE_PORT 180,5215
+#define NASI_OP_RELEASE_PORT 181,5290
+#define NASI_OP_CLIENT_DATA 182,5351
+#define NASI_OP_FLUSH_RXBUF 183,5426
+#define NASI_OP_FLUSH_TXBUF 184,5490
+#define NASI_OP_BREAK_OFF 185,5554
+#define NASI_OP_BREAK_ON 186,5621
+#define NASI_OP_DISCONNECT 187,5689
+#define NASI_OP_HOLD 188,5764
+#define NASI_OP_SET_SFLOW 189,5829
+#define NASI_OP_RESET_SFLOW 190,5900
+#define NASI_OP_DEFINE_SFLOW 191,5972
+#define NASI_OP_UNKNOWN_1 196,6090
+#define nasi_foo4 205,6213
+struct nasi_query_port_struct_ nasi_query_port_struct_233,7012
+typedef struct nasi_query_port_struct_ nasi_qport_hdr;nasi_qport_hdr237,7063
+#define sizeofnasi_qport_hdr 238,7118
+#define nasi_foo5 243,7207
+struct nasi_init_port_struct_ nasi_init_port_struct_274,8017
+typedef struct nasi_init_port_struct_ nasi_preq;nasi_preq278,8067
+#define sizeofnasi_preq_info 279,8116
+#define sizeofnasi_preq_data 280,8188
+#define nasi_foo3 285,8281
+struct nasi_hdr3_ nasi_hdr3_299,8532
+typedef struct nasi_hdr3_ nasi_hdr3;nasi_hdr3303,8570
+#define sizeofnasi_hdr3 304,8607
+#define nasi_foo1 309,8697
+struct nasi_check_srv_struct_ nasi_check_srv_struct_328,9140
+typedef struct nasi_check_srv_struct_ nasi_sinfo_hdr;nasi_sinfo_hdr332,9190
+#define sizeofnasi_sinfo_hdr 333,9244
+struct nasi_port_type nasi_port_type341,9423
+typedef struct nasi_port_type nasi_port;nasi_port364,9858

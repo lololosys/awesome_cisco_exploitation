@@ -1,0 +1,24 @@
+-- $Id: CISCO-ATM-CONN-MIB.my,v 3.1 1996/01/18 02:08:07 lcheung Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-ATM-CONN-MIB.my,v $
+-- *****************************************************************
+-- CISCO ATM connection management MIB
+--
+-- Jan 1996, Yunsen Wang
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-ATM-CONN-MIB.my,v $
+-- Revision 3.1  1996/01/18  02:08:07  lcheung
+-- placeholder
+--
+-- Revision 2.1  1996/01/04  19:44:26  ywang
+-- place holder for rhino branch
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+
+
+

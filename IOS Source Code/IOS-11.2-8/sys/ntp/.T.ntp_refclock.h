@@ -1,0 +1,41 @@
+
+ntp_refclock.h,1260
+#define BSD_TTYS113,4650
+#define	REFCLOCKTYPE(REFCLOCKTYPE120,4799
+#define REFCLOCKUNIT(REFCLOCKUNIT121,4859
+struct clktype clktype127,5040
+#define	CLK_HAVETIME1	136,5218
+#define	CLK_HAVETIME2	137,5244
+#define	CLK_HAVEVAL1	138,5270
+#define	CLK_HAVEVAL2	139,5295
+#define	CLK_FLAG1	141,5321
+#define	CLK_FLAG2	142,5343
+#define	CLK_FLAG3	143,5365
+#define	CLK_FLAG4	144,5387
+#define	CLK_HAVEFLAG1	146,5410
+#define	CLK_HAVEFLAG2	147,5437
+#define	CLK_HAVEFLAG3	148,5464
+#define	CLK_HAVEFLAG4	149,5491
+#define REFCLOCK_OWN_STATES	156,5618
+struct refclockstat refclockstat161,5699
+struct refclockio refclockio187,6727
+#define	NCLKBUGVALUES	195,6916
+#define	NCLKBUGTIMES	196,6941
+struct refclockbug refclockbug198,6966
+#define MAXSTAGE	211,7377
+#define BMAX	212,7432
+#define GMT	213,7476
+#define MAXDIAL	214,7521
+#define LDISC_STD	221,7773
+#define LDISC_CLK	222,7810
+#define LDISC_CLKPPS	223,7859
+#define LDISC_ACTS	224,7913
+#define LDISC_CHU	225,7963
+#define LDISC_PPS	226,7999
+struct ntp_refclock_ ntp_refclock_228,8038
+#define METERS_TO_FEET_NUMERATOR 282,10081
+#define METERS_TO_FEET_DENOMINATOR 283,10122
+#define NOPOLLS 284,10168
+#define	NSAMPLES	285,10216
+#define	NOFLAGS	292,10447
+struct refclock refclock294,10493

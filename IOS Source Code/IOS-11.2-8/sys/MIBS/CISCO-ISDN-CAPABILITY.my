@@ -1,0 +1,70 @@
+-- $Id: CISCO-ISDN-CAPABILITY.my,v 3.3 1996/03/05 19:39:45 bdas Exp $
+-- $Source: /release/111/cvs/Xsys/MIBS/CISCO-ISDN-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-ISDN-CAPABILITY.my
+--
+-- January 1995, Bibek Das
+--
+-- Copyright (c) 1995-1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-ISDN-CAPABILITY.my,v $
+-- Revision 3.3  1996/03/05  19:39:45  bdas
+-- CSCdi49512:  ISDN MIB trap needs to specify the direction of the call
+--
+-- Revision 3.2  1995/11/17  08:34:13  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:49:59  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:29  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-ISDN-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoIsdnCapability MODULE-IDENTITY
+		LAST-UPDATED	"9503100000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-isdn@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for CISCO-ISDN-MIB"
+		REVISION	"9503100000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 46 }
+
+ciscoIsdnCapabilityV10R03 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.3"
+STATUS		current
+DESCRIPTION	"Cisco Isdn MIB capabilities"
+
+SUPPORTS	CISCO-ISDN-MIB
+INCLUDES	{ ciscoIsdnMIBGroupRev1 }
+
+	::= { ciscoIsdnCapability 1 }
+
+END

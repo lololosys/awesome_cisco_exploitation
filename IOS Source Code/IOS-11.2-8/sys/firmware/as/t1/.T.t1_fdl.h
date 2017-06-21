@@ -1,0 +1,29 @@
+
+t1_fdl.h,770
+#define HAVE_T1FDL_H48,1810
+#define ESF_DL_RESPONSE_GOOD_CMD 50,1832
+#define ESF_DL_RESPONSE_BAD_CMD 51,1867
+#define LINELOOP_ACT 53,1905
+#define LINELOOP_DEACT 54,1942
+#define PAYLOOP_ACT 55,1979
+#define PAYLOOP_DEACT 56,2016
+#define NUM_T1_CHANNELS	58,2054
+#define NUM_UNUSED_CHANNELS	59,2082
+#define ANSI_PRM_LENGTH 61,2113
+#define CRC_1	63,2142
+#define CRC_1to5 64,2163
+#define CRC_5to10 65,2188
+#define CRC_10to100 66,2218
+#define CRC_100to319 67,2248
+#define CRC_320more 68,2278
+#define FE 69,2308
+#define SE 70,2338
+#define LB 71,2368
+#define LV 72,2398
+#define SL 73,2428
+#define TYPE_ES 75,2459
+#define TYPE_UAS 76,2477
+#define TYPE_BES 77,2496
+#define TYPE_SES 78,2515
+#define TYPE_CSS_LOFC 79,2534
+#define PUTSHORT(PUTSHORT80,2558

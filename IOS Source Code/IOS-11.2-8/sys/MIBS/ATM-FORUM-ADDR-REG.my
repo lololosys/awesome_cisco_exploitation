@@ -1,0 +1,215 @@
+-- $Id: ATM-FORUM-ADDR-REG.my,v 3.2 1995/11/17 08:33:21 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/ATM-FORUM-ADDR-REG.my,v $
+-- *****************************************************************
+-- ATM Address Registration MIB
+--
+-- March, 1995; Kartik Chandrasekhar
+--
+-- Copyright (c) 1995 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: ATM-FORUM-ADDR-REG.my,v $
+-- Revision 3.2  1995/11/17  08:33:21  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:49:12  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.2  1995/09/15  20:29:46  thille
+-- CSCdi40467:  MIBs should reference source documents
+-- Add a comment explaining what draft RFC or ATM Forum document each of
+-- the mibs was derived from.  Also fix a few syntax problems in one of
+-- the MIBs found by smicng.
+--
+-- Revision 2.1  1995/06/07  19:59:43  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+-- This mib was extracted from the ATM Forum ATM UNI 3.1 Specification.
+
+ATM-FORUM-ADDR-REG DEFINITIONS ::= BEGIN
+
+IMPORTS
+    atmForumUni    FROM ATM-FORUM-MIB
+    OBJECT-TYPE    FROM RFC-1212;
+
+-- Textual Convention
+
+-- Representations in this MIB Module of an ATM address
+-- use the data type:
+
+AtmAddress ::= OCTET STRING (SIZE (8 | 20))
+
+-- Representations in this MIB Module of a network-prefix
+-- for an ATM address use the data type:
+
+NetPrefix ::= OCTET STRING (SIZE ( 8 | 13))
+
+-- in both the AtmAddress and NetPrefix conventions, non-NSAP-encoded E.164
+-- addresses are represented as 8 octets using the format specified in
+-- section 5.1.3.1.4.
+-- In contrast, an NSAP-encoded address is 20 octets, and an NSAP-encoded
+-- network prefix is 13 octets long.
+
+-- New MIB Groups
+
+atmfAddressGroup      OBJECT IDENTIFIER ::= { atmForumUni 6 }
+atmfNetPrefixGroup    OBJECT IDENTIFIER ::= { atmForumUni 7 }
+
+
+--    The Network Prefix Table
+--
+-- The Network Prefix Table is implemented by the UNI Management
+-- Entity on the user-side of the UNI
+
+atmfNetPrefixTable OBJECT-TYPE
+    SYNTAX    SEQUENCE OF AtmfNetPrefixEntry
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "A table implemented by the UNI Management Entity on the user-side of
+        an ATM UNI port, containing the network-prefix(es) for ATM-layer
+        addresses in effect on the user-side of the UNI."
+    ::= { atmfNetPrefixGroup 1 }
+
+atmfNetPrefixEntry OBJECT-TYPE
+    SYNTAX    AtmfNetPrefixEntry
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "Information about a single network-prefix for ATM-layer addresses
+        in effect on the user-side of a UNI port.  Note that the index
+        variable atmfNetPrefix is a variable-length string, and as such the
+        rule for variable-length strings in section 4.1.6 of RFC 1212
+        applies."
+    INDEX  { atmfNetPrefixPort, atmfNetPrefixPrefix }
+    ::= { atmfNetPrefixTable 1 }
+
+AtmfNetPrefixEntry ::=
+    SEQUENCE {
+        atmfNetPrefixPort      INTEGER,
+        atmfNetPrefixPrefix    NetPrefix,
+        atmfNetPrefixStatus    INTEGER
+    }
+
+atmfNetPrefixPort OBJECT-TYPE
+    SYNTAX    INTEGER (0..2147483647)
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "A unique value which identifies the UNI port for which the network
+        prefix for ATM addresses is in effect.  The value of 0 has the
+        special meaning of identifying the local UNI."
+    ::= { atmfNetPrefixEntry 1 }
+
+atmfNetPrefixPrefix OBJECT-TYPE
+    SYNTAX    NetPrefix
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "The network previx for ATM addresses which is in effect on the
+        user-side of the ATM UNI port."
+    ::= { atmfNetPrefixEntry 2 }
+
+atmfNetPrefixStatus OBJECT-TYPE
+    SYNTAX    INTEGER { valid(1),invalid(2) }
+    ACCESS    read-write
+    STATUS    mandatory
+    DESCRIPTION
+        "An indication of the validity of the network prefix for ATM
+        addresses on the user-side of the UNI port.  To configure a new
+        network prefix in this table, the network-side must set the
+        appropriate instance of this object to the value valid(1).  To
+        delete an existing network prefix in this table, the network-side
+        must set the appropriate instance of this object to the value
+        invalid(2).
+
+        If circumstances occur on the user-side which cause a prefix to
+        become invalid, the user-side modifies the value of the appropriate
+        instance of this object to invalid(2).
+
+        Whenever the value of this object for a particular prefix becomes
+        invalid(2), the conceptual row for that prefix may be removed from
+        the table at any time, either immediately or subsequently."
+    ::= { atmfNetPrefixEntry 3 }
+
+
+--        The Address Table
+--
+-- The Address Table is implemented by the UNI Management Entity
+-- on the network-side of the UNI
+
+atmfAddressTable OBJECT-TYPE
+    SYNTAX    SEQUENCE OF AtmfAddressEntry
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "A table implemented by the network-side of an ATM UNI port,
+        containing the ATM-layer addresses in effect on the user-side of the
+        UNI."
+    ::= { atmfAddressGroup 1 }
+
+atmfAddressEntry OBJECT-TYPE
+    SYNTAX    AtmfAddressEntry
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "Information about a single ATM-layer address in effect on the
+        user-side of a UNI port.  Note that the index variable
+        atmfAddressAtmAddress is a variable-length string, and as such the
+        rule for variable-length strings in section 4.1.6 of RFC 1212
+        applies."
+    INDEX  { atmfAddressPort, atmfAddressAtmAddress }
+    ::= { atmfAddressTable 1 }
+
+AtmfAddressEntry ::=
+    SEQUENCE {
+        atmfAddressPort          INTEGER,
+        atmfAddressAtmAddress    AtmAddress,
+        atmfAddressStatus        INTEGER
+    }
+
+atmfAddressPort OBJECT-TYPE
+    SYNTAX    INTEGER (0..2147483647)
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "A unique value which identifies the UNI port for which the ATM
+        address is in effect.  The value of 0 has the special meaning of
+        identifying the local UNI."
+    ::= { atmfAddressEntry 1 }
+
+atmfAddressAtmAddress OBJECT-TYPE
+    SYNTAX    AtmAddress
+    ACCESS    not-accessible
+    STATUS    mandatory
+    DESCRIPTION
+        "The ATM address which is in effect on the user-side of the ATM UNI
+        port."
+    ::= { atmfAddressEntry 2 }
+
+atmfAddressStatus OBJECT-TYPE
+    SYNTAX    INTEGER { valid(1), invalid(2) }
+    ACCESS    read-write
+    STATUS    mandatory
+    DESCRIPTION
+        "An indication of the validity of the ATM address at the user-side
+        of the UNI port.  To configure a new address in this table, the
+        user-side must set the appropriate instance of this object to the
+        value valid(1).  To delete an existing address in this able, the
+        user-side must set the appropriate instance of this object to the
+        value invalid(2).
+
+        If circumstance occur on the network-side which cause an address to
+        become invalid, the network-side modifies the value of the
+        appropriate instance of this object ot invalid(2).
+    
+        Whenever the value of this object for a particular address becomes
+        invalid(2), the conceptual row for that address may be removed from
+        the table at any time, either immediately or subsequently."
+    ::= { atmfAddressEntry 3 }
+
+END

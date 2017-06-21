@@ -1,0 +1,22 @@
+-- $Id: CISCO-RHINO-MIB.my,v 3.1 1996/01/18 02:08:12 lcheung Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-RHINO-MIB.my,v $
+-- *****************************************************************
+-- The interim Chassis MIB for Rhino ATM switch
+--
+-- Nov 1995, Yunsen Wang
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-RHINO-MIB.my,v $
+-- Revision 3.1  1996/01/18  02:08:12  lcheung
+-- placeholder
+--
+-- Revision 2.1  1995/11/21  21:44:20  ywang
+-- Placeholer for Rhino_branch
+--
+-- *****************************************************************
+-- $Endlog$
+--
+
+

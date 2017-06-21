@@ -1,0 +1,5 @@
+
+asm_4k_c4000_tms380.S,96
+#define ASMINCLUDE25,848
+#define TMS380_SYSINT_MASK	32,920
+	lhu	a2,TRIM_A_SIFSTS_OFS(61,1455

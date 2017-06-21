@@ -1,0 +1,55 @@
+
+envm.h,1682
+#define FORMAT_MSK 42,1368
+#define POLARITY_MSK 43,1405
+#define ENV_SHUTDOWN 44,1442
+#define ENV_REFRESH 45,1479
+#define WARN_REFRESH 46,1556
+#define CELSIUS_BASELINE	47,1636
+#define ENV_MAGIC 48,1665
+#define ENV_NV_VERSION 49,1704
+#define ENV_NVMAXBYTES 66,2425
+#define ENV_VALID	68,2462
+#define ENV_DIRTY	69,2483
+#define ENV_INVALID	70,2504
+#define NOT_INSTALLED	71,2527
+#define T_DESCRIPT_LEN 72,2554
+#define MAX_PWR_INSTALLED 73,2633
+#define NORMAL	76,2737
+#define WARNING	77,2755
+#define CRITICAL	78,2774
+#define SHUTDOWN	79,2793
+#define NOT_PRESENT 80,2812
+#define ECTEST_TEST 83,2910
+#define ECTEST_V_P12 84,2981
+#define ECTEST_V_P5 85,3052
+#define ECTEST_V_N12 86,3123
+#define ECTEST_V_P24 87,3194
+#define ECTEST_RES_1 88,3265
+#define ECTEST_RES_2 89,3336
+#define ECTEST_T_EXHAUST 90,3407
+#define ECTEST_FAN_0 91,3478
+#define ECTEST_FAN_1 92,3549
+#define ECTEST_FAN_2 93,3620
+#define ECTEST_FAN_3 94,3691
+#define ECTEST_FAN_4 95,3762
+#define ECTEST_FAN_5 96,3833
+#define ECTEST_RES_3 97,3904
+#define ECTEST_T_INLET 98,3975
+#define ECTEST_NTESTS 99,4046
+#define CELSIUS(CELSIUS101,4089
+#define SENSE_BITS(SENSE_BITS102,4143
+#define PWR_FAIL_BIT(PWR_FAIL_BIT103,4203
+#define ENV_VOLT_LOW 105,4272
+#define ENV_VOLT_HIGH 106,4296
+#define C7000_PS_TYPE_700W_DC 111,4350
+#define C7000_PS_TYPE_700W_AC 112,4388
+#define C7010_PS_TYPE_600W_AC 113,4426
+#define C7010_PS_TYPE_600W_DC 114,4464
+} ectest_t;ectest_t121,4905
+} ecps_t;ecps_t128,5215
+struct ecshow_t_ ecshow_t_131,5303
+} ec_t;ec_t158,6751
+} voltage_bounds_t;voltage_bounds_t167,7167
+} temp_bounds_t;temp_bounds_t174,7474
+} print_bounds_t print_bounds_t182,7804

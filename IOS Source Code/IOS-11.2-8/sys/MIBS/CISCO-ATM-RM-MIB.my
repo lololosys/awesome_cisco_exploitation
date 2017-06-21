@@ -1,0 +1,20 @@
+-- $Id: CISCO-ATM-RM-MIB.my,v 3.1 1996/01/18 02:08:10 lcheung Exp $
+-- $Source: /vws/aam/cherf.111/ios/sys/MIBS/CISCO-ATM-RM-MIB.my,v $
+-- *****************************************************************
+-- C I S C O  A T M  R e s o u r c e  M a n a g e m e n t  M I B
+--
+-- December 1995, Michael Grobelch
+--
+-- Copyright (c) 1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-ATM-RM-MIB.my,v $
+-- Revision 3.1  1996/01/18  02:08:10  lcheung
+-- placeholder
+--
+-- Revision 2.1  1995/12/09  01:25:57  grobelch
+-- - Create placeholder.
+--
+-- *****************************************************************
+-- $Endlog$
+--

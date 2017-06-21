@@ -1,0 +1,19 @@
+/* $Id: c5rspczip.link,v 1.1 1996/07/25 06:24:02 pitargue Exp $
+ * $Source: /release/112/cvs/Xsys/obj-4k-c5rsp/c5rspczip.link,v $
+ *------------------------------------------------------------------
+ * Loader command script for Yosemite self decompressor image
+ * borrowed heavily from rspczip.link
+ *
+ * July 1996, Michael Beesley
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: c5rspczip.link,v $
+# Revision 1.1  1996/07/25  06:24:02  pitargue
+# placeholder for yosemite
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */ 
+

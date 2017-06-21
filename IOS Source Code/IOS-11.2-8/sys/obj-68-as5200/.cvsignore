@@ -1,0 +1,12 @@
+cisco*.c
+as5200-*
+cpa*
+test.lock
+*only
+lite
+tiny
+mksum
+relocate
+reloc_ld-*-*
+reloc_mksum-*-*
+

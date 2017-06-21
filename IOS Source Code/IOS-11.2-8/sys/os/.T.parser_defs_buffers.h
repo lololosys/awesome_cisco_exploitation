@@ -1,0 +1,13 @@
+
+parser_defs_buffers.h,340
+#define BUF_CMD_SMALL	30,950
+#define BUF_CMD_MIDDLE	31,976
+#define	BUF_CMD_BIG	32,1003
+#define BUF_CMD_LARGE 33,1027
+#define BUF_CMD_HUGE 34,1054
+#define BUF_CMD_INIT	35,1080
+#define BUF_CMD_MINFREE	36,1105
+#define BUF_CMD_MAXFREE	37,1133
+#define BUF_CMD_PERM	38,1161
+#define BUF_CMD_SIZE 39,1186
+#define BUF_CMD_VERYBIG 40,1212

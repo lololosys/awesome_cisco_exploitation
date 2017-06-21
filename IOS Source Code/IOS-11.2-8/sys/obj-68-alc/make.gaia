@@ -1,0 +1,127 @@
+# $Id: make.gaia,v 3.1.2.3 1996/09/14 05:35:07 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/obj-68-alc/make.gaia,v $
+#------------------------------------------------------------------
+# Makefile definitions and rules for GAIA builds
+#
+# September, 1996   Rich Livingston
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.gaia,v $
+# Revision 3.1.2.3  1996/09/14  05:35:07  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.2.2  1996/09/04  19:39:33  mvenugop
+# CSCdi68050:  Gaia make.feature for each platform
+# Branch: California_branch
+#
+# Revision 3.1.2.1  1996/09/03  18:48:47  richl
+# CSCdi67863:  commit gaia stuff, and crypto top-level target
+# Branch: California_branch
+#
+# Revision 3.1  1996/09/03  15:05:13  richl
+# Placeholder.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+######################################################################
+#
+#	GAIA Rules begin here
+#
+######################################################################
+
+include make.features
+
+demo-data-build: 
+	@echo "$@: Built $* DEMO Generic feature data"
+
+internal-data-build: 
+	@echo "$@: No $* Generic internal data"
+
+feature-data-build: $(FEATURE_DATA_TARGETS)
+	@echo "$@: Built $* Generic feature data"
+
+feature-pack-data-build: $(FEATURE_PACK_DATA_TARGETS)
+	@echo "$@: Built $* feature pack data"
+
+platform-data-build: $(PLATFORM_DATA_TARGETS) platform_ui platform_nm_ui
+	@echo "$@: Built $* Platform feature data"
+
+feature-images-build:
+	@echo "$@: Built $* Generic feature images"
+
+platform-images-build: $(PLATFORM_IMAGE_TARGETS)
+	@echo "$@: Built $* Platform feature images"
+
+######################################################################
+#
+# Feature Based Image build targets
+#
+######################################################################
+
+fbi_production_images = fbi-alc-a-m
+
+fbi_production: $(fbi_production_images)
+
+fbi_oddball_images = 
+
+fbi_oddball: $(fbi_oddball_images)                                                                                                  
+fbi-alc-%-l.relocbin: fbi-alc-%-l.sun
+	./$(RELOC_MKSUM) $(RELOC_MKSUM_OPTIONS) $@
+	ls -l $@
+
+fbi-alc-%-l.sun: lock main-alc-%-l alc-%.fbilego \
+	$(RELOC_LD) $(RELOC_MKSUM) $(RELOC_PIC)
+	$(ALC_MKWBU_DEP)
+	$(ALC_MKWBU_LIB)
+	$(QUIET_COM)echo Linking $@...
+	$(QUIET_CC)$(LD) $(RELOC_LDFLAGS) -o alc-$*-l.reloctemp \
+	Main_main-alc-$*-l.o cisco-alc-$*-l.o $(shell $(SYSROOT)/scripts/order_find $(linkorder-template) : $(feature-based-images-alc-$*))
+	mv alc-$*-l.reloctemp alc-$*-l.reloctemp
+	./$(RELOC_LD) $(RELOC_LD_OPTIONS) alc-$*-l.reloctemp \
+	$(RELOC_PIC) alc-$*-l.relocbin alc-$*-l.temp
+	rm -f alc-$*-l.reloctemp
+	mv alc-$*-l.temp $@
+	rm -f test.lock
+
+fbi-alc-%-m.sun: lock main-alc-%-m alc-%.fbilego
+	$(ALC_MKWBU_DEP)
+	$(ALC_MKWBU_LIB)
+	$(QUIET_COM)echo Linking $@...
+	$(QUIET_CC)$(LD) $(RAM_LDFLAGS) -o alc-$*-m.temp \
+	Main_main-alc-$*-m.o cisco-alc-$*-m.o $(shell $(SYSROOT)/scripts/order_find $(linkorder-template) : $(feature-based-images-alc-$*))
+	rm -f test.lock
+	mv alc-$*-m.temp $@
+
+#
+# Special post-processing to strip a.out file for input to BBI tool.
+# Now we also drive the final BBI image from here.
+#
+fbi-alc-%-m.ios: fbi-alc-%-m.sun
+	$(NM) -n $< > $<.nmap
+	objcopy.$(TOOLS_VER).68k -S -v -F "a.out-zero-big" $< $@
+	rm -f atmiponly
+	ln $< atmiponly
+	$(ALC_MKWBU_BBI)
+
+fbi-alc-%-m: fbi-alc-%-m.ios # alc-%-m.tftp
+	@
+
+######################################################################
+#
+#      Gaia linkorder template for obj-68-alc
+#
+######################################################################
+linkorder-template =  shr_core.o sub_core_platform.o shr_ukernel.o sub_ukernel_platform.o shr_ipcore.o shr_ipudptcp.o \
+	shr_tunnel.o shr_gre.o shr_ipip.o shr_tacacs_plus.o shr_tacacs.o shr_ipdiag.o shr_ipdns.o shr_ipaccount.o \
+	shr_ipalias.o shr_atm.o shr_atmmib.o shr_snmp.o shr_entity.o shr_config_history.o shr_lane.o sub_biga.o sub_alc.o \
+	shr_arp.o shr_ether.o shr_serial.o 
+######################################################################
+#
+#       End of GAIA
+#
+######################################################################

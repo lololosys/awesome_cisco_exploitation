@@ -1,0 +1,4 @@
+
+parser_defs_callback.h,87
+#define PARSER_CALLBACK_FORCEDWAIT 32,1040
+#define PARSER_CALLBACK_NODSRWAIT 33,1077

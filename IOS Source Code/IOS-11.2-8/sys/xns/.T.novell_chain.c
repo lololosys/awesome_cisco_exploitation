@@ -1,0 +1,15 @@
+
+novell_chain.c,371
+#define ALTERNATE 133,4566
+#define ALTERNATE 142,4728
+#define ALTERNATE 151,4889
+#define ALTERNATE 160,5048
+#define ALTERNATE 169,5212
+#define ALTERNATE 178,5377
+#define ALTERNATE 187,5566
+#define	ALTERNATE	196,5735
+#define	OALTERNATE	197,5758
+#define	ALTERNATE	209,6054
+#define	ALTERNATE	220,6336
+#define ALTERNATE 242,6968
+void novell_parser_init 280,8464

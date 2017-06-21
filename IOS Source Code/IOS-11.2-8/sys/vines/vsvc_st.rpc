@@ -1,0 +1,403 @@
+# $Id: vsvc_st.rpc,v 3.2 1995/11/17 17:59:59 hampton Exp $
+# $Source: /swtal/cherf.111/ios/sys/vines/vsvc_st.rpc,v $
+#------------------------------------------------------------------
+# vsvc_st.rpc - Definition of the `Streettalk' RPC calls.
+#
+# April 1994, David Hampton
+#
+# Copyright (c) 1994 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: vsvc_st.rpc,v $
+# Revision 3.2  1995/11/17  17:59:59  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:46:22  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  23:16:23  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+SERVICE ST
+  /*
+   * This is the VINES Streettalk Service.
+   */
+  NAME		Streettalk
+  WKP		0x000F
+  DEFAULT	REJECT	VST_ERR_UNKNOWN
+  MAINTAINS	DATA
+  VERSIONS	55050	32299	69999
+  PERIODIC	VST_SEARCH_INTERVAL	VST_SUMMARY_INTERVAL
+
+  STRUCT      server
+    address     port
+    ushort	hop_count
+    ulong       reinforce_id
+    ulong       change_id
+    ulong       database_id
+  END	      STRUCT
+
+  STRUCT      group
+    orgname     org
+    domainname  domain
+    ushort      misc_info
+    ushort      domain_seq
+    ulong       netgroup_id
+  END	      STRUCT
+
+  STRUCT        rec_user
+    Cardinal      category
+    description	  descrip
+    Cardinal	  flags
+    address	  TalkPorts array VST_MAXTPORTS
+    Byte	  dummy1
+    Byte	  dummy2
+    Byte	  dummya1 array 2
+    LongCardinal  lastlogin
+    Boolean	  secrec
+    Byte	  expires array 6
+    Byte	  dummy3
+    Byte	  dummya2
+    Cardinal	  disabled
+    LongCardinal  lastpwdchg
+    Boolean	  chgpwd
+    Byte	  dummy4 array 6
+  END	 	STRUCT
+
+  STRUCT	rec_svc
+    cardinal	  category
+    description	  description
+    cardinal	  flags
+    address	  port
+    domainname	  ssname
+  END		STRUCT    
+
+  STRUCT	rec_list
+    cardinal	  category
+    description	  description
+  END		STRUCT
+
+  STRUCT	rec_alias
+    cardinal      category
+    stname        realname
+  END		STRUCT
+
+  STRUCT	rec_enum
+    ushort	  enum_names_count
+    struct	  enum_names 	LIMIT ENUMSET
+      stname        name
+    end		  struct
+  END		STRUCT
+
+  STRUCT	rec_lstmemb
+    ushort	  list_names_count
+    struct	  list_names 	LIMIT MAXLSTSET
+      stname        name
+    end		  struct
+  END		STRUCT
+
+  STRUCT	rec_assocrec
+    uchar         data		sequence VST_AREC_DATASIZE
+  END		STRUCT
+
+  STRUCT	st_record
+    ushort	  class_type
+    union	  class
+      case	    unknown	VST_REC_UNKNOWN
+        uchar	      dummy	array 0
+      case	    user	VST_REC_USER
+        rec_user      user
+      case	    service	VST_REC_SERVICE
+        rec_svc       service
+      case	    list	VST_REC_LIST
+        rec_list      list
+      case	    alias	VST_REC_ALIAS
+        rec_alias     alias
+      case	    stenum	VST_REC_ENUM
+        rec_enum      stenum
+      case	    lstmemb	VST_REC_LSTMEMB
+        rec_lstmemb   lstmemb
+      case	    assocrec	VST_REC_ASSOCREC
+        rec_assocrec  assocrec
+    END		  UNION
+  END		STRUCT
+
+  ROUTINE	Lookup
+    /*
+     *
+     */
+    NAME	Lookup Item
+    NUMBER	0
+    RECEIVE     ACCEPT
+    CONTENT	QUERY
+      ulong	  handle
+      ushort	  class
+      ushort	  category
+      string	  name	VST_TOTALLEN
+    END		CONTENT
+    CONTENT	REPLY
+      string	  full_name	VST_TOTALLEN
+      st_record	  st_info
+    END		REPLY
+  END ROUTINE
+
+  ROUTINE	Logout
+    /*
+     * Cancel a currently existing Streettalk session.  This is not the
+     * same thing as logging out of network.  This just indicates that
+     * the client does not need any further services from streettalk, and
+     * the the session allocated for it may be released.
+     */
+    NAME	Logout
+    NUMBER	14
+    RECEIVE     ACCEPT
+    CONTENT	QUERY
+      ulong	  handle
+    END		CONTENT
+    CONTENT	REPLY	EMPTY
+  END ROUTINE
+
+  ROUTINE	Operate
+    /*
+     *
+     */
+    NAME	Operate
+    NUMBER	16
+    SEND
+    RECEIVE     ACCEPT
+    NOTIFY	ABORT
+    STRUCT	lookup
+      orgname	  org_name
+      domainname  domain_name
+      itemname	  item_name
+      st_record	  st_info
+      ushort	  pointer_count
+      STRUCT	  pointer	LIMIT 10
+        string	    item	50
+      END	  struct
+      ushort	  cardinal	sequence 10
+      ushort	  misc_count
+      struct	  misc		LIMIT 10
+        ushort	    data_type
+	union	    data
+	  case	      unknown   0
+	    uchar       dummy	array 0
+	  case	      enumerate_state 1
+	    boolean     exclude_flag
+	    ushort	catalog_count
+	    boolean	more_flag
+	    boolean	org_processed
+	    orgname	org_name
+	    address     org_port
+	    boolean	domain_processed
+	    domainname  domain_name
+	    address	domain_port
+	    boolean	object_processed
+	    itemname    object_name
+	    address	object_port
+	    ushort	object_class
+	  case	      nonce	4
+	    nonce	user_nonce
+	END	    UNION
+      END	  STRUCT
+      ushort	  chaining_count
+    END		STRUCT    
+    CONTENT	QUERY
+      ushort	  procedure_id
+      stname	  user_name
+      ushort	  item_class
+      ushort	  assoc_number
+      lookup	  lookup_info
+    END CONTENT
+    CONTENT	REPLY
+      lookup	  lookup_info
+    END CONTENT
+  END ROUTINE
+
+  ROUTINE	GetPorts
+    /*
+     *
+     */
+    NAME	Get Ports
+    NUMBER	24
+    RECEIVE	ACCEPT
+    CONTENT	QUERY		PADDED
+      ulong	  handle
+      string	  name		VST_TOTALLEN
+      ushort	  class
+    END		CONTENT
+    CONTENT	REPLY
+      string	  name		VST_TOTALLEN
+      ushort	  talk_port_count
+      struct	  talk_port	LIMIT 3
+        uchar	    index
+	address	    port
+      end	  struct
+    END		CONTENT
+  END ROUTINE
+
+  ROUTINE	ServerInfo
+    /*
+     *
+     */
+    NAME	Server Info
+    NUMBER	26
+    RECEIVE	REJECT 101
+    CONTENT	QUERY
+      ulong	  handle
+      ulong	  unknown2
+      ulong	  unknown3
+      ulong	  unknown4
+      ulong	  unknown5
+      domainname  servername
+    END		CONTENT
+    CONTENT	REPLY
+      uchar	  unknown
+    END		CONTENT
+  END ROUTINE
+
+  ROUTINE	Begin
+    /*
+     * A client (or service) wishes to begin using the services of
+     * Streettalk.  It is providing its nonce, which is its network wide
+     * authentication token.  A positice response is to return a session
+     * handle, which the client will use for all future communication.
+     */
+    NAME	Begin Session
+    NUMBER	28
+    RECEIVE	ACCEPT
+    CONTENT	QUERY
+      nonce	  client_nonce
+    END		CONTENT
+    CONTENT	REPLY
+      ulong	  handle
+    END		CONTENT
+  END ROUTINE
+
+  ROUTINE	Cold_Dump
+    /*
+     *
+     */
+    NAME	Cold Dump
+    NUMBER	34
+    SEND
+    RECEIVE     ACCEPT
+    CONTENT	QUERY
+      string	  pass		VST_TOTALLEN
+    END CONTENT
+    CONTENT	REPLY
+      string      pass		VST_TOTALLEN
+      ushort	  server_count
+      struct	  server	LIMIT VST_COLDDUMP_MAX_GROUPS
+        orgname     org
+	domainname  domain
+	address	    port
+	ulong       netgroup_id
+	ulong       database_id
+	ulong       change_id
+	ushort      misc_info
+	ushort      domain_seq
+      end struct
+    END CONTENT
+  END ROUTINE
+
+  ROUTINE	NI
+    /*
+     * The workhorse message for StreetTalk database synchronization.
+     * The name derives from the VINES V3.x "Income" message, eliminated
+     * because of the network overhead associated with 15 hop broadcasts.
+     * The "New Income" message is always a zero hop broadcast, and is
+     * selectively propagated by the Streettalk services on each node.
+     *
+     * This message is actually four messages rolled into one.  These are:
+     *
+     *     1) Summary - A keepalive message sent every three (formerly
+     *         twelve) hours.
+     *
+     *     2) Detail - A list of all groups maintained by a server.
+     *
+     *     3) Need - A request for a list of all groups maintained by a
+     *        server or servers.
+     *
+     *     4) Welcome - A list of all known StreetTalk instances.
+     */
+    NAME	New Income
+    NUMBER	35
+    SEND	NOREPLY
+    RECEIVE	ACCEPT NOREPLY
+    CONTENT	QUERY
+      ushort	  data_type
+      union	  data
+        case        summary	VST_NI_SUMMARY
+	  ushort      server_count
+	  server      server	LIMIT VST_SUMMARY_COUNT
+	case	    detail 	VST_NI_DETAIL
+	  server      source
+	  ulong	      checksum
+	  ushort      group_count
+	  group       group	LIMIT VST_DETAIL_COUNT
+	case	    need	VST_NI_NEED
+	  address     origin
+	  ulong       reinforce_id
+	  ushort      hop_count
+	  address     wanted	sequence VST_NEED_COUNT
+	case	    welcome	VST_NI_WELCOME
+	  ushort      server_count
+	  server      server	LIMIT VST_SUMMARY_COUNT
+      END UNION
+    END CONTENT
+  END ROUTINE
+
+  ROUTINE	RtnDetail
+    /*
+     * Return all available information about a specific server.  This
+     * includes all of the various IDs maintained by the server, as well
+     * as all of the groups maintained on that server.  This message is
+     * always directed to a specific host.  This reply contains no
+     * data.  Don't ask why it even exists, it just does.
+     */
+    NAME	Return Detail
+    NUMBER	36
+    SEND	
+    RECEIVE	ACCEPT
+    CONTENT	QUERY
+      ushort	  data_type
+      union	  data
+	case	    detail 	VST_NI_DETAIL
+	  server      source
+	  ulong	      checksum
+	  ushort      group_count
+	  group       group	LIMIT VST_DETAIL_COUNT
+      END UNION
+    END CONTENT
+    CONTENT	REPLY	EMPTY
+  END ROUTINE
+
+  ROUTINE	GetDetail
+    /*
+     * A server is requesting all available information for a specific
+     * host, including the groups maintained on that host.  Look this
+     * information in the local tables and return it to the requestor.
+     * This routine should not initiate any traffic other than the
+     * response.  This message is always directed to a specific host.
+     */
+    NAME	Get Details
+    NUMBER	37
+    SEND	NOREPLY
+    RECEIVE	ACCEPT NOREPLY
+    CONTENT	QUERY
+      address     wanted	sequence VST_NEED_COUNT
+    END CONTENT
+  END ROUTINE
+
+END SERVICE
+
+###
+### Local Variables:
+### mode: Indented-Text
+### End:
+###

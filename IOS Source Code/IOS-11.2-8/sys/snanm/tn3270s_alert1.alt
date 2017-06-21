@@ -1,0 +1,70 @@
+/* $Id: tn3270s_alert1.alt,v 3.1.4.1 1996/05/17 11:42:35 ppearce Exp $
+ * $Source: /release/112/cvs/Xsys/snanm/tn3270s_alert1.alt,v $
+ *------------------------------------------------------------------
+ * tn3270 server alert template
+ *
+ * Jan 1996, Barry Chan
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *
+ *------------------------------------------------------------------
+ * $Log: tn3270s_alert1.alt,v $
+# Revision 3.1.4.1  1996/05/17  11:42:35  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.1  1996/03/21  03:31:39  bchan
+# CSCdi52147:  Add tn3270 server new files to IbuMod_Calif_branch
+# Branch: IbuMod_Calif_branch
+#
+# Revision 3.1  1996/03/20  07:07:56  bchan
+# *** empty log message ***
+#
+ * $Endlog$
+ */
+/* $Id: tn3270s_alert1.alt,v 3.1.4.1 1996/05/17 11:42:35 ppearce Exp $
+ * $Source: /release/112/cvs/Xsys/snanm/tn3270s_alert1.alt,v $
+ *------------------------------------------------------------------
+ * One line description here.
+ *
+ * Jan 96, Barry Chan
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: tn3270s_alert1.alt,v $
+# Revision 3.1.4.1  1996/05/17  11:42:35  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.1  1996/03/21  03:31:39  bchan
+# CSCdi52147:  Add tn3270 server new files to IbuMod_Calif_branch
+# Branch: IbuMod_Calif_branch
+#
+# Revision 2.1.2.2  1996/02/04  04:04:36  mboe
+# Branch: Tn3270server_branch
+# add DLUR alerts; add another tn3270s generic alert.
+#
+# Revision 2.1.2.1  1996/01/04  10:19:07  bchan
+# Branch: Tn3270server_branch
+#
+ * Revision 2.1  1996/01/04  03:15:17  bchan
+ * *** empty log message ***
+ *
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+/*
+** - TN3270S Alert 1:  generic lu-pool depletion
+*/
+static const struct Tn3270S1 ##TN3270S1 { ?,01,5003   // capacity exceeded
+  , {0106,800A}         // p-causes: memory,out-of-resource
+  ,                     // u-causes: none 
+  , {8029,32D0          // i-causes: not enough memory in ctl-blk pools
+    , ACT = 1530        // defined another resource to system (ie a PU)
+    , DET = {82213d01,cardSlotAndPort:7},
+            {8221FE11,ipAddrAndPortLcl:21}
+    }
+  , {8029}              // f-causes: none
+  ,
+  }

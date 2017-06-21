@@ -1,0 +1,41 @@
+/* $Id: x25_alert1.alt,v 3.2 1995/11/17 18:57:34 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/x25_alert1.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management X25 Alert1
+ *     CLEAR/RESET IND received by DTE
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: x25_alert1.alt,v $
+# Revision 3.2  1995/11/17  18:57:34  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:15:27  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:47:56  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct X25Alert1 ##X25ALERT1 { ?,01,3320
+  , {2050,2008,2006,2200}
+  ,
+  ,
+  , {20C1,2006,2200  
+    , ACT = 3302,3107,32D0,F0A0,3123  
+    , DET = {82211A00,pakTypeCauseCode:1}, 
+            {82211D00,diagnosticCode:1},
+            {82215611,DTEAddrCalled:0F}, 
+            {82215711,DTEAddrCalling:0F},
+            {82215811,localDTEAddress:0F},
+            {82216701,locInitialedLogicalChannel:2} 
+    }
+  , {52, {07,LCSLinkAttributes:4}}
+  , {05, {108009,adapter:8,002109,port:8,003F}}
+  }
+

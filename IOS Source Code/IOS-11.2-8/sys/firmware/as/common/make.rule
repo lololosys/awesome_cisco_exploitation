@@ -1,0 +1,233 @@
+# $Id: make.rule,v 1.8.6.1 1997/02/21 07:40:55 jliu Exp $
+# $Source: /cscka/t1_neat/src/common/make.rule,v $
+#------------------------------------------------------------------
+# Makefile defines the common making rules.
+#
+# October 1996, Chiung-Hsi Jonathan Lin
+#
+# Copyright (c) 1996-1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.rule,v $
+# Revision 1.8.6.1  1997/02/21 07:40:55  jliu
+#    o Resolved CSCdi85835 bug and fix a problem in make.rule file
+#
+# Revision 1.8  1996/10/29 23:14:59  jchlin
+# o       gid doesn't work under common directory. Fix it now.
+#
+# Revision 1.7  1996/10/29 02:31:08  jchlin
+# o       New rule can select to share objects between t1 and e1.
+#         The default is set to nonsharable.
+#
+# Revision 1.6  1996/10/29 01:08:13  jchlin
+# o       Add the header files for TAG. gid now can search under
+#         header files.
+#
+# Revision 1.5  1996/10/28 23:43:02  jchlin
+# o       Add the TAG id. We can do gid from now on.
+#
+# Revision 1.4  1996/10/25 22:26:02  jchlin
+# o       Make objects dependent on dependancies.
+# o       Make timer_timeout_process() sharable between t1 and e1.
+#
+# Revision 1.3  1996/10/23 23:29:48  jchlin
+# o       Move the dependancy file include from Makefile to make.rule.
+#
+# Revision 1.2  1996/10/23  03:38:52  jchlin
+# o       Restructure the respository so that T1 and E1 codes can share
+#         common code.
+# o       Restructure the makefile so that it adapts new tree structures
+#         and also rewrite the makefile for automatically generating the
+#         dependancies. The old one doesn't work properly.
+#
+# Revision 1.1  1996/10/23  02:50:14  jchlin
+# Create commonly shared sub makefiles.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+#####################################################################
+# Common Variables
+#
+#SHARING_OBJECTS :=
+#
+DEPEND_FILE     := $(OBJ_DIR)/dependancies
+VPATH           := $(COMMON_DIR):$(SRC_DIR)
+SOURCES_NOPREFIX:= $(SRC_FILES) $(COMMON_SRC)
+SOURCES         := $(addprefix $(SRC_DIR)/, $(SRC_FILES)) \
+                   $(addprefix $(COMMON_DIR)/, $(COMMON_SRC))
+DEPEND_SRC      := $(join $(dir $(SOURCES)), \
+                   $(addprefix .D., $(notdir $(SOURCES))))
+TAG_SRC         := $(SOURCES) $(wildcard ../*/*.h)
+TAG_SRC_ROOT    := $(patsubst ../%, %, $(TAG_SRC))
+TAG_SRC_T       := $(join $(dir $(TAG_SRC)), \
+                   $(addprefix .T., $(notdir $(TAG_SRC))))
+ifdef SHARING_OBJECTS
+OBJECTS         := $(SOURCES:.c=.o)
+else
+OBJECTS         := $(SOURCES_NOPREFIX:.c=.o)
+endif
+OBJECTS         := $(OBJECTS:.C=.o)
+OBJECTS         := $(OBJECTS:.s=.o)
+OBJECTS         := $(OBJECTS:.S=.o)
+
+#####################################################################
+# Make rules
+#
+.SUFFIXES: .o .lis .s .S .c .C
+
+ifdef SHARING_OBJECTS
+.c.o: ; $(CC) $(CFLAGS) -c $< -o $@
+.C.o: ; $(CC) $(CFLAGS) -c $< -o $@
+.S.o: ; $(CC) $(CFLAGS) $(ASMFLAGS) -c $< -o $@
+.c.s: ; $(CC) $(CFLAGS) -S $< -o $@
+.C.s: ; $(CC) $(CFLAGS) -S $< -o $@
+.s.o: ;
+	sed -e 's/^\.data$$/.text/g' $< > /tmp/$<
+	mv /tmp/$< $<
+	$(CC) -c $< -o $@
+
+else
+.c.o: ; $(CC) $(CFLAGS) -c $<
+.C.o: ; $(CC) $(CFLAGS) -c $<
+.S.o: ; $(CC) $(CFLAGS) $(ASMFLAGS) -c $<
+.c.s: ; $(CC) $(CFLAGS) -S $<
+.C.s: ; $(CC) $(CFLAGS) -S $<
+.s.o: ;
+	sed -e 's/^\.data$$/.text/g' $< > /tmp/$<
+	mv /tmp/$< $<
+	$(CC) -c $<
+
+endif
+
+%.lis: %.c
+	lister3 CC="$(CC) $(CFLAGS)" $(LISFLAGS) $< > $*.lis
+
+all:   image $(FIRMWARE)
+
+image: neat.ram.srec neat.ram.aout
+
+$(OBJECTS): $(DEPEND_FILE) $(COMMON_DIR)/make.rule
+
+neat.ram.srec: $(OBJECTS) $(LDFLAGSRAM)
+	$(LD) -M -T $(LDFLAGSRAM) -o $@ $(OBJECTS) | \
+	awk '/ABS/ { showem = 1; next; } showem==1\
+	{ print $$0; }' | sort +0.20 | egrep '^(        |\.(text|data|bss))' \
+	 > $(SYM_FILE)
+
+srec2c: $(SREC_TO_C)
+	gcc -o srec2c $(SREC_TO_C)
+
+$(FIRMWARE): neat.ram.srec srec2c
+	$(SRC_DIR)/srec2c neat.ram.srec $(FIRMWARE)
+
+neat.ram.aout: $(OBJECTS) $(LDFLAGAOUT)
+	$(LD) -M -T $(LDFLAGAOUT) -o $@ $(OBJECTS) | \
+	awk '/ABS/ { showem = 1; next; } showem==1\
+	{ print $$0; }' | sort +0.20 | egrep '^(        |\.(text|data|bss))' \
+	 > $(ASYM_FILE)
+
+clean:
+	rm -f $(DEPEND_FILE) *.o *.lis *.sym *.cxc neat.ram.*
+	rm -f ../TAGS ../ID .T.* ../common/.T.*
+	@echo
+
+variables:
+	@echo SOURCES=$(SOURCES)
+	@echo
+	@echo OBJECTS=$(OBJECTS)
+	@echo
+	@echo DEPEND_SRC=$(DEPEND_SRC)
+	@echo
+	@echo TAG_SRC_T=$(TAG_SRC_T)
+	@echo
+
+#####################################################################
+# Generate the Tags
+#
+# makefile invokes tags-id.make with empty target list, or "TAGS" or "id".
+# if TAGS_TYPE is not defined, continue to make emacs-style tags; if it is
+# defined (expected values are "ctags", "etags", or "ctags etags" for both),
+# use it to determine which tags files get created.
+ifeq ($(origin TAGS_TYPE), undefined)
+TAGS_TYPE=etags
+endif
+
+TAGS:	$(TAGS_TYPE)
+
+id:
+	@echo "Computing Firmware ID file"
+	@cd ..;/bin/ls $(TAG_SRC_ROOT) | \
+	mkid -S.S=asm -Sasm-c\| -Sasm+u -Sasm+p -S.C=c -S.regh=c -S.regc=c \
+	  -S.rpch=c -S.rpcc=c -fID.temp - ; mv ID.temp ID
+
+ctags:
+	@echo "Computing Firmware TAGS file for vi"
+	@cd ..; ctags -t -f tags.temp $(TAG_SRC) > tags.log 2>&1; \
+	mv tags.temp ../tags
+
+etagsintro:
+	@echo
+	@echo "Computing Firmware TAGS file for emacs"
+
+.T.%.c : %.c
+	@etags -t -f $@ $<
+
+.T.%.C : %.C
+	@etags -t -f $@ $<
+
+.T.%.S : %.S
+	@etags -f $@ $<
+
+.T.%.h : %.h
+	@etags -t -f $@ $<
+
+.T.%.regh : %.regh
+	@etags -t -f $@ $<
+
+.T.%.regc : %.regc
+	@etags -t -f $@ $<
+
+.T.%.rpcc : %.rpcc
+	@etags -t -f $@ $<
+
+.T.%.rpch : %.rpch
+	@etags -t -f $@ $<
+
+etags: etagsintro $(TAG_SRC_T)
+	@cat $(TAG_SRC_T) > TAGS.temp; mv TAGS.temp ../TAGS
+
+%: %,v
+
+%: RCS/%,v
+
+tags_id: TAGS id
+#####################################################################
+# Generate the dependancies
+#
+.D.%.c:
+	@gcc -MM $(BOARDTYPE) $(HEADER_DIR) -c $*.c >> $(DEPEND_FILE)
+
+.D.%.s:
+	@gcc -MM $(BOARDTYPE) $(HEADER_DIR) $(ASMFLAGS) -c $*.s >> $(DEPEND_FILE)
+
+.D.%.C:
+	@gcc -MM $(BOARDTYPE) $(HEADER_DIR) -c $*.C >> $(DEPEND_FILE)
+
+.D.%.S:
+	@gcc -MM $(BOARDTYPE) $(HEADER_DIR) $(ASMFLAGS) -c $*.S >> $(DEPEND_FILE)
+
+remove_depend:
+	@rm -f $(DEPEND_FILE)
+	@touch $(DEPEND_FILE)
+
+dependancies: remove_depend $(DEPEND_SRC)
+	@echo "Firmware $(DEPEND_FILE)" is generated successfully.
+
+depend: remove_depend $(DEPEND_SRC) tags_id
+	@echo "Firmware $(DEPEND_FILE)" is generated successfully.
+
+$(DEPEND_FILE):
+	@echo "Firmware "$(DEPEND_FILE)": No such file "
+
+-include $(DEPEND_FILE)

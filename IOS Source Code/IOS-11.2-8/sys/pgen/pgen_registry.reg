@@ -1,0 +1,43 @@
+# $Id: pgen_registry.reg,v 3.1 1995/11/09 12:59:16 shaker Exp $ 
+# $Source: /swtal/cherf.111/ios/sys/pgen/pgen_registry.reg,v $ 
+#------------------------------------------------------------------
+# Pagent Service Points
+#
+# July 1995, Brian Jackson
+#
+# Copyright (c) 1995 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: pgen_registry.reg,v $
+# Revision 3.1  1995/11/09  12:59:16  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/09/14  01:52:10  biren
+# CSCdi40312:  Move pakgen and pgen (Pagent 2.2) to seperate subsystems
+# 
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BEGIN REGISTRY PGEN pgen_regcode
+
+DEFINE pgen_send
+/*
+ * This service implements Pagent fast packet transmission on the RSP
+ */
+	STUB
+	void
+	paktype *firstpak, paktype *lastpak, int repeat, int delay
+END
+
+DEFINE pgen_count
+/*
+ * This service turns fast counting on or off or returns status
+ */
+	STUB
+	void
+	hwidbtype *hwidb, unsigned mode
+END
+
+END REGISTRY

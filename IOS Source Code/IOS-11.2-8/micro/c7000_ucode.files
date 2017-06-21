@@ -1,0 +1,339 @@
+# $Id: c7000_ucode.files,v 3.29.4.16 1996/09/10 14:30:33 loreilly Exp $
+# $Source: /release/112/cvs/Xmicro/c7000_ucode.files,v $
+#------------------------------------------------------------------
+# List used by mkbndl to make microcode bundle in hes/ucode_bndl.c 
+#
+# October 1993, Stig Thormodsrud
+#
+# Copyright (c) 1988-1997 by cisco Systems, Inc.
+# All rights reserved.
+#-------------------------------------------------------------------
+# $Log: c7000_ucode.files,v $
+# Revision 3.29.4.16  1996/09/10  14:30:33  loreilly
+# CSCdi68197:  bundle fsip10-18 in 11.0(10.4) and 11.2(0.24)
+# Branch: California_branch
+# fsip10-18 fixes CSCdi60447.
+#
+# Revision 3.29.4.15  1996/09/05  04:33:36  mkirk
+# CSCdi68143:  Virtually bundle cip22-9 as the default CIP image.
+# Branch: California_branch
+#
+# Revision 3.29.4.14  1996/08/29  02:11:27  xtang
+# CSCdi60447:  FSIP max MTU=14816 not 18000
+# Branch: California_branch
+#              Implemented new FSIP command 93 to pass the available
+#              buffer size in the controller to the system.
+#              The corresponding microcode change are in
+#              cvs -d /micro fsip_q (fsip187-0)
+#              and cvs -d /micro fsip_i (rsp_fsip204-0).
+#
+# Revision 3.29.4.13  1996/08/20  13:50:53  loreilly
+# CSCdi66447:  bundle fsip10-17
+# Branch: California_branch
+# fsip10-17 fixes:
+#  CSCdi64735:  FSIP does not see DCE leads during cutover from 2501
+#  serial
+#
+# Revision 3.29.4.12  1996/08/20  13:26:31  loreilly
+# CSCdi66543:  bundle aip10-15 into 11.2(0.22)
+# Branch: California_branch
+# aip10-15 fixes:
+#   CSCdi62445: Getting %AIP-3-AIPREJCMD with error code 0x8000
+#
+# Revision 3.29.4.11  1996/08/19  20:15:14  loreilly
+# CSCdi62583:  Bundle mip12-0 microcode into 11.1(5)
+# Branch: California_branch
+# mip12-0 fixes CSCdi44333.
+#
+# Revision 3.29.4.10  1996/08/19  17:43:17  loreilly
+# CSCdi62894:  bundle s/sp11-15 microcode into 11.1
+# Branch: California_branch
+# s/sp11-15 fixes:
+#  191-1: patch code to same level as sp+.184-2.  Includes: Rewrite
+#  mode of the SSE IPX posprocessing code to get Novell to work. Add
+#  more extensive comments to the thing generally. This should address
+#  CSCdi42802, CSCdi45139, CSCdi46156 as per jperkins.
+#
+# Revision 3.29.4.9  1996/08/19  14:30:15  loreilly
+# CSCdi61223:  Bundle feip10-4 microcode
+# Branch: California_branch
+# feip10-4 fixes: FX port adapter support and CSCdi48337
+#
+# Revision 3.29.4.8  1996/08/15  07:03:04  lchang
+# CSCdi62445:  Getting %AIP-3-AIPREJCMD with error code 0x8000
+# Branch: California_branch
+#
+# Revision 3.29.4.7  1996/08/01  07:28:37  mkirk
+# CSCdi64809:  Virtually bundle cip209-13 as the default CIP image.
+# Branch: California_branch
+#
+# Revision 3.29.4.6  1996/07/08  23:36:11  mwu
+# CSCdi60922:  11.2 Core Features Commit
+# Branch: California_branch
+#
+# Revision 3.29.4.5  1996/07/08  06:41:23  mkirk
+# CSCdi61976:  Replace cip22-0 with tn3270-server capable cip209-10
+# Branch: California_branch
+#
+# Revision 3.29.4.4  1996/06/22  07:45:19  rramacha
+# CSCdi58194:  FSIP causing cbus restart
+# Branch: California_branch
+#
+# Revision 3.29.4.3  1996/06/21  08:10:23  lchang
+# CSCdi60561:  CSCdi55512 <new aip ucode> breaks ATM on RSP
+# Branch: California_branch
+#
+# Revision 3.29.4.2  1996/06/08  08:30:10  rramacha
+# RSP & 7000
+# o CSCdi58196  Transmitter-delay broken on FSIP DCE interfaces
+#
+# RSP
+# o Add panic message facility.
+# o CSCdi45512  X.21 DTE should not send data when Control is OFF
+# o CSCdi32813  SDLC Multidrops need router to ignore DCD for High-End
+#               Platform
+# o CSCdi38317  STUN: cannot IPL a 3725 using FSIP
+# o CSCdi39024  Permit variable length in buffers to be passed to tx lcl
+#                buffer throttling
+# Branch: California_branch
+#
+# Revision 3.29.4.1  1996/06/06  23:22:15  gchristy
+# CSCdi42802:  enabling SSE for IPX blocks SPX packets (case B50178)
+# Branch: California_branch
+#   Change the way we count back from the line to insert the 802.3 length
+#   field from words to bytes.  Requires ssp215-1 or later ucode.
+#
+# Revision 3.29  1996/03/11  07:26:41  jwelder
+#         Pull the VIP microcode out of normal c7000 images, add the
+#         following images: gs7-kv-mz, gs7-akv-mz, gs7-jv-mz, gs7-ajv-mz,
+#         gs7-pv-mz
+#
+# CSCdi48845:  must restrict VIP ucode to specific GS7 subsets
+#
+# Revision 3.28  1996/03/06  13:35:03  csilva
+# CSCdi50491:  Bundling of aip10-13 microcode.
+# Replaced  aip176-2 with aip10-13, aip10-13 fixes CSCdi45807.
+#
+# Revision 3.27  1996/02/28  22:38:46  mkamson
+# CSCdi50194:  New VIP ucode for 11.1(1.0.4) release
+#
+# Revision 3.26  1996/02/27  05:01:45  rharagan
+# CSCdi49431:  FSIP resets with error 8010 disable - fsip_reset
+# Enable ctrlr resync.
+#
+# Revision 3.25  1996/02/23  03:06:45  mkamson
+# CSCdi49666:  New VIP ucode for 11.1(1.0.4) release
+#
+# Revision 3.24  1996/02/14  02:38:35  mkamson
+# CSCdi48954:  New VIP ucode for 11.1(1.0.3) release
+#
+# Revision 3.23  1996/02/10  00:35:33  sju
+# CSCdi45807:  Ping failed with SMDS config
+#
+# Revision 3.22  1996/02/07  22:11:10  mkamson
+# CSCdi48364:  New VIP ucode for 11.1(1.0.2) release
+#
+# Revision 3.21  1996/02/01  18:58:37  mkamson
+# CSCdi47997:  New VIP ucode for 11.1(1.0.1) release
+#
+# Revision 3.20  1996/01/29  05:58:05  csilva
+# CSCdi47689:  Bundling of fsip10-12 microcode.
+# Replacde fsip10-11 with fsip10-12
+#
+# Revision 3.19  1996/01/29  05:48:19  csilva
+# CSCdi47686:  Bundling of trip10-3 microcode.
+# Replaced trip10-2 with trip10-3
+#
+# Revision 3.18  1996/01/29  05:32:39  csilva
+# CSCdi47694:  Bundling of sp11-14 & ssp11-14
+# Replaced sp&ssp190-15 with sp&ssp11-14 in c7000_ucode.files
+# Replaced sp10-12 with sp11-14 in srs_ucode.files
+#
+# Revision 3.17  1996/01/29  04:47:32  csilva
+# CSCdi47246:  Bundling of aip10-12 microcode.
+# Replaced aip176-1 with aip10-12
+#
+# Revision 3.16  1996/01/28  16:03:15  csilva
+# CSCdi47245:  Bundling of mip11-4 microcode
+# Replaced mip179-1 with mip11-4.
+#
+# Revision 3.15  1996/01/26  21:06:09  banderse
+# CSCdi47644:  CIP ucode for 11.1 (0.19)
+# replace cip182-0 with cip22-0.
+#
+# Revision 3.14  1996/01/25  02:20:05  nitin
+# CSCdi47369:  New VIP ucode for 11.1(0.18) release
+#
+# Revision 3.13  1996/01/23  03:55:36  mmcneali
+# CSCdi44895:  Bi-Directional IP (eg. TCP), Broken over ISL-IP datagrams
+# Lopped!!
+#
+# ISL encapsulation size passed between IOS and the FEIP should be
+# 26 bytes.
+#
+# Revision 3.12  1996/01/18  00:44:00  nitin
+# CSCdi46997:  New vip ucode for 11.1(0.17) release
+#
+# Revision 3.11  1996/01/12  00:32:32  sju
+# CSCdi32192:  AIP not passing data to the RP on active vcs
+# Bundle aip176-1 and rsp_aip204-1 into 11.1
+#
+# Revision 3.10  1996/01/11  01:20:00  nitin
+# CSCdi46702:  vip ucode is not picked correctly.
+# Changed vip21-1 to vip21-2
+#
+# Revision 3.9  1996/01/09  18:31:35  sju
+# CSCdi41868:  Fast-switched frames from FDDI to ATM-LANE not being padded
+#
+# Revision 3.8  1996/01/07  13:45:11  banderse
+# CSCdi45351:  show microcode should display CIP flash default
+# Add CIP microcode as FLASH default.
+#
+# Revision 3.7  1996/01/04  20:58:38  nitin
+# CSCdi46435:  VIP ucode for 11.1(0.15) release
+# New vip ucode (21-1) for 11.1(0.15) release.
+#
+# Revision 3.6  1996/01/04  00:05:49  wmay
+# CSCdi46383:  mip will drop packets in bursts - prelim fix - make mip
+# buffer size smaller (from 1024 to 512), so we absorb more smaller
+# packets before dropping
+#
+# Revision 3.5  1995/12/27  21:19:57  nitin
+# CSCdi46151:  New vip microcode for 11.1(0.13) release
+# New vip microcode for 11.1(0.13) release (vip21-0).
+#
+# Revision 3.4  1995/12/19  21:19:44  nitin
+# CSCdi45138:  VIP firmware version numbers, not current in arkansas
+# New VIP microcode for 11.1(0.12) build.
+#
+# Revision 3.3  1995/12/11  15:15:09  banderse
+# CSCdi45350:  CIP image still in system bundle
+#
+# Revision 3.2  1995/11/17  07:43:31  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  09:26:10  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.26  1995/11/08  20:14:14  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.25  1995/10/17  14:49:29  csilva
+# CSCdi42088:  Bundling of aip10-9 microcode.
+# Replaced aip10-8 with aip10-9
+#
+# Revision 2.24  1995/09/18  17:18:01  pitoscia
+# CSCdi40448:  Change in fpga parts ->>> failure in margin timing on FEIPs
+#
+# Revision 2.23  1995/09/12  06:09:04  pitoscia
+# CSCdi40155:  Bundle cip11-1
+# Plus updated c7000_ucode.files
+#
+# Revision 2.22  1995/09/11  22:20:36  pitoscia
+# CSCdi39921:  Bundling of mip11-3 microcode
+# Plus updated c7000_ucode.files
+#
+# Revision 2.21  1995/08/29  04:36:58  izhu
+# Changes made for(fsip180-0):
+# CSCdi32813:  SDLC Multidrops need router to ignore DCD for High-End
+# Platform
+# and also
+# CSCdi38317  STUN: cannot IPL a 3725 using FSIP
+#
+# Convert to midrange signal model for line state (RTS/CTS state not
+# used),
+# permit DCD to be ignored.
+#
+# Revision 2.20  1995/08/25  00:26:29  csilva
+# CSCdi39299:  Bundling of fsip10-10 microcode
+# Replaced fsip179-0 with fsip10-10.
+#
+# Revision 2.19  1995/08/18  21:58:24  wmay
+# CSCdi38132:  MIP select took forever
+#
+# Revision 2.18  1995/08/14  03:24:24  rharagan
+# CSCdi30344:  CBUS-3-INITERR: Error (D10E) rx_setup - cbus_init()
+# Add fsip179-0 to bundle.
+#
+# Revision 2.17  1995/08/11  15:36:26  csilva
+# CSCdi38629:  Bundling of sp&ssp10-12 microcode.
+# Replaced sp&ssp180-6 with sp&ssp10-12.
+#
+# Revision 2.16  1995/08/10  21:45:02  csilva
+# CSCdi38418:  Bundling of aip10-8 microcode.
+# Replaced aip10-7 with aip10-8.
+#
+# Revision 2.15  1995/08/09  00:26:09  kramling
+# CSCdi38439:  FEIP product is now supported in 11.0.  Update support to
+# 10.3.
+#
+# Revision 2.14  1995/08/08  18:07:34  mhoerler
+# CSCdi38403:  Microcode bundle - cip180-20
+#
+# Revision 2.13  1995/08/04  14:47:42  csilva
+# CSCdi38215:  Bundling of cip11-0 microcode.
+# Replaced cip180-3 with cip11-0
+#
+# Revision 2.12  1995/07/31  20:47:49  csilva
+# CSCdi37924:  Bundling of feip10-0 microcode
+# Added feip10-0 microcode
+#
+# Revision 2.11  1995/07/31  13:53:47  csilva
+# CSCdi37779:  Bundling of aip10-7 microcode
+# Replaced aip175-1 with aip10-7
+#
+# Revision 2.10  1995/07/28  22:31:48  csilva
+# CSCdi37780:  Bundling of fsip10-9 microcode
+# Replaced fsip178-0 with fsip10-9
+#
+# Revision 2.9  1995/07/24  18:43:32  kmitchel
+# CSCdi37549:  Microcode bundle - cip180-3
+#
+# Revision 2.8  1995/07/21  18:08:43  csilva
+# CSCdi37369:  Bundling of mip11-2 microcode
+# Replaced mip177-2 with mip11-2
+#
+# Revision 2.7  1995/07/18  02:31:43  sma
+# CSCdi33079:  FSIP causes CXBUS reset - %CBUS-3-INITERR: (D104)
+# Add fsip178-0 to bundle.
+#
+# Revision 2.6  1995/07/14  21:36:54  sju
+# CSCdi36762:  AIP rejects cells with congestion experienced bit set
+# aip175-1, fix to receive packet experienced congestion
+#
+# Revision 2.5  1995/06/27  00:08:47  wmay
+# CSCdi36414:  CE1 framer wont frame on 0s in timeslot 16 - workaround
+# for Brooktree chip bug
+#
+# Revision 2.4  1995/06/19  20:57:54  wmay
+# CSCdi36002:  CE1 layer 1 fails Australia Homologation - mip177-1,
+# rsp_mip201-1
+#
+# Revision 2.3  1995/06/16  16:20:41  rharagan
+# CSCdi35574:  ucode should not override MTU values set by system code
+# (SSE only)
+# Put sp/ssp180-6 in the bundle
+#
+# Revision 2.2  1995/06/13  14:59:38  csilva
+# CSCdi35676:  Bundling of fsip10-8 microcode
+# Replaced fsip177-1 with fsip10-8
+#
+# Revision 2.1  1995/06/07  19:23:55  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+../../micro/sp11-15			COMPRESS
+../../micro/ssp11-15			COMPRESS
+../../micro/eip10-1			COMPRESS
+../../micro/trip10-4	    		COMPRESS
+../../micro/fip10-2			COMPRESS
+../../micro/hip10-3			COMPRESS
+../../micro/fsip10-19			COMPRESS
+../../micro/mip12-2			COMPRESS
+../../micro/aip10-20			COMPRESS
+# Note: the FEIP is already compressed, so we don't compress it here
+../../micro/feip10-7
+# Note: the CIP moves out of the bundle - to flash, begining with 11.1
+../../micro/cip22-22			FLASH

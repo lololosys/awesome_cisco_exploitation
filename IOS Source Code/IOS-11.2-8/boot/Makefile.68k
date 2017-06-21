@@ -1,0 +1,39 @@
+# $Id: Makefile.68k,v 3.2 1995/11/17 07:40:47 hampton Exp $
+# $Source: /swtal/cherf.111/ios/boot/Makefile.68k,v $
+#------------------------------------------------------------------
+# makefile.68k - 68K common definitions
+#
+# March 25, 1992, Mark D. Baushke
+#
+# Copyright (c) 1993-1995 by cisco Systems, Inc.
+# All rights reserved.
+# 
+# This file contains the common definitions for doing "makes" of 68k-based
+# boot images.
+#------------------------------------------------------------------
+# $Log: Makefile.68k,v $
+# Revision 3.2  1995/11/17  07:40:47  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  09:03:53  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  19:11:22  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BSUN3=
+TOOLS_VER= 95q1
+GCC_NATIVE= gcc.$(TOOLS_VER)
+GCC=	gcc.$(TOOLS_VER).68k -fno-builtin
+ASMCC=  $(GCC)
+AS=	$(GCC)
+CC=	$(GCC)
+LD=	$(GCC)
+SIZE=	size.$(TOOLS_VER).68k
+NM=	nm.$(TOOLS_VER).68k
+STRIP=	strip.$(TOOLS_VER).68k
+CPSTRIP=cpstrip.aout

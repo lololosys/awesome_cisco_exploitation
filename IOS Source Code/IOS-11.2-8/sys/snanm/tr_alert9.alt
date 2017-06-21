@@ -1,0 +1,35 @@
+/* $Id: tr_alert9.alt,v 3.2 1995/11/17 18:57:32 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/snanm/tr_alert9.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management TR Alert9
+ *      ring beacon, not supported
+ *
+ * Jan 95, Silvana Zdravkovski
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: tr_alert9.alt,v $
+# Revision 3.2  1995/11/17  18:57:32  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:15:26  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:47:54  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+static const struct TrAlert9 ##TRALERT9 { ?,01,3215
+  , {3703}
+  , 
+  , 
+  ,{3703
+    , ACT = 2010,3101,0105,32A0
+    , DET = {82211700,RingStatus:2}    
+    } 
+  , {51, {06,downstreamMAC:6,upstreamMAC:6},{07,beacon:1}}
+  , {05, {108009,lanName:8,003909,ringName:8,002E}}
+  }

@@ -1,0 +1,48 @@
+# $Id: rmon_registry.reg,v 3.3 1996/02/09 07:57:20 jjohnson Exp $
+# $Source: /release/111/cvs/Xsys/rmon/rmon_registry.reg,v $
+#------------------------------------------------------------------
+# Remote Monitoring MIB Support
+#
+# September 1995, Jeffrey T. Johnson
+#
+# Copyright (c) 1995-1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: rmon_registry.reg,v $
+# Revision 3.3  1996/02/09  07:57:20  jjohnson
+# CSCdi48524:  Need mechanism to display RMON tables
+# parse chains are in place.  checkpoint work so that anke can take over.
+#
+# Revision 3.2  1995/11/17  18:39:15  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:03:05  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BEGIN REGISTRY RMON rmon_regcode
+
+DEFINE	rmon_event
+/*
+ * This service is called when an rmon event occurs
+ */
+	LIST
+	void
+	long eventIndex
+END
+
+DEFINE	rmon_show_command
+/*
+ * This service is called when "show rmon [foo]..." exec command
+ * is executed.  The flagword indicates which keywords were
+ * entered.
+ */
+	LIST
+	void
+	uint flagword
+END
+
+END REGISTRY

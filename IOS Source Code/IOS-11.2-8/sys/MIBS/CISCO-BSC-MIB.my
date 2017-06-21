@@ -1,0 +1,513 @@
+-- $Id: CISCO-BSC-MIB.my,v 3.2.58.1 1996/06/11 19:38:07 snyder Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/CISCO-BSC-MIB.my,v $
+-- *****************************************************************
+-- CISCO-BSC-MIB.my:  Binary Synchronous MIB file
+--
+-- Mar 1995, Sandy Logie
+--
+-- Copyright (c) 1995-1996 by cisco Systems, Inc.
+-- Prepared by Metaplex
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-BSC-MIB.my,v $
+-- Revision 3.2.58.1  1996/06/11  19:38:07  snyder
+-- CSCdi60118:  MIB doc spellink errors
+-- Branch: California_branch
+--
+-- Revision 3.2  1995/11/17  08:33:31  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:49:23  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.2  1995/08/21  20:32:43  thille
+-- CSCdi37883:  Mib changes needed to facilitate automatic publication
+-- Do a lot of MIB fixups.  Fix problems with negative indexes, fix
+-- problems where a SEQUENCE clause specifies one syntax and a SYNTAX
+-- statement specifies another for the same mib variable.  Fix other
+-- random bogosity.
+--
+-- Revision 2.1  1995/06/07  19:59:53  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+-- Original source document:  None
+
+
+CISCO-BSC-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY, OBJECT-TYPE, Counter32
+		FROM SNMPv2-SMI
+	MODULE-COMPLIANCE, OBJECT-GROUP
+		FROM SNMPv2-CONF
+	ifIndex
+		FROM IF-MIB 
+	ciscoMgmt
+		FROM CISCO-SMI;
+
+
+ciscoBscMIB MODULE-IDENTITY
+	LAST-UPDATED	"9508210000Z"
+	ORGANIZATION	"Cisco Systems, Inc."
+	CONTACT-INFO
+		"	Cisco Systems
+			Customer Service
+
+		Postal: 170 W. Tasman Drive
+			San Jose, CA 95134
+			USA
+
+		   Tel: +1 800 553-NETS
+		E-mail: cs-snmp@cisco.com"
+	DESCRIPTION
+		"The MIB module for BSC.
+
+   Overview of BSC MIB
+  
+   MIB description
+   
+   The BSC MIB provides the configuration and operational information 
+   on Cisco's Binary Synchronous Communications implementation.  The 
+   following entities are managed:
+    1) BSC ports (serial interfaces)
+    2) BSC Control Units (stations on a port)
+  
+   The BSC ports are identified by the interface index, and additional 
+   information about this interface can be obtained from the Cisco Serial 
+   Interface MIB.  
+   The BSC Control Units are identified by the Control Unit address; this 
+   is the address used by BSTUN to route the BSC traffic - it is therefore 
+   equivalent to the bstunRouteStationAddress in the bstunRouteTable MIB.
+            "
+	REVISION	"9508210000Z"
+	DESCRIPTION
+		"Minor cleanups to pacify mib compiler."
+    ::= { ciscoMgmt 36 }  
+
+bscObjects	OBJECT IDENTIFIER ::= { ciscoBscMIB 1}
+bscPorts	OBJECT IDENTIFIER ::= { bscObjects 1}
+bscControlUnits	OBJECT IDENTIFIER ::= { bscObjects 2}
+    
+-- *********************************************************************
+-- * Bsc Port Table
+-- *********************************************************************
+
+bscPortTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BscPortEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "A list of port (serial interfaces) which have been configured to 
+         support a BSC BSTUN group."
+    ::= { bscPorts 1 }
+
+bscPortEntry OBJECT-TYPE
+    SYNTAX BscPortEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "Status and parameter values for a port."
+    INDEX { ifIndex }
+    ::= { bscPortTable 1 }
+
+BscPortEntry ::=
+    SEQUENCE {
+        bscPortRole
+            INTEGER,
+        bscPortCodeSet
+            INTEGER,
+        bscPortPause
+            INTEGER,
+        bscPortServlim
+            INTEGER,
+        bscPortPollTimeout
+            INTEGER,
+        bscPortRecoveryRetries
+            INTEGER,
+        bscPortUnknownControlUnitsReceived
+            Counter32,
+        bscPortSoftErrors
+            Counter32,
+        bscPortHardErrors
+            Counter32,
+        bscPortProtocolViolations
+            Counter32
+    }
+
+bscPortRole OBJECT-TYPE
+    SYNTAX INTEGER { primary(1), secondary(2), contention(3) }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "The router's DLC role to the attached node.
+         (If the bscPortRole is primary, this implies that
+         the port is connected to a remote secondary device.)"
+    ::= { bscPortEntry 1 }
+
+
+bscPortCodeSet OBJECT-TYPE
+    SYNTAX INTEGER { ebcdic(1), ascii(2) }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "The code set used for the line controls."
+    ::= { bscPortEntry 2 }
+
+bscPortPause OBJECT-TYPE
+    SYNTAX INTEGER (0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "For primary, it is the minimum time to be taken 
+         for a cycle round the active poll table; if this 
+         time has not elapsed when the bottom of the poll 
+         table is reached, then polling will pause until 
+         this timer expires. A value of zero means there 
+         will be no pause between cycles round the poll 
+         table. 
+         For secondary, the pause time out is the delay 
+         taken before sending a response to a poll 
+         when it has no data frame to send.
+         The units are tenths of a second.  The default
+         is 10 (1 second)."
+    ::= { bscPortEntry 3 }
+
+bscPortServlim OBJECT-TYPE
+    SYNTAX INTEGER (1..50)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "This parameter is valid for primary only.  It is
+         the number of times the active poll table will
+         be cycled before a non-responding control unit
+         will be polled.  The default is 3."
+    ::= { bscPortEntry 4 }
+
+bscPortPollTimeout OBJECT-TYPE
+    SYNTAX INTEGER (1..100)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "This parameter is valid for primary only.  It is
+         the time that the primary will wait for a response
+         to a poll or select.  The units are tenths of a second.
+         The default is 10 (1 second)."
+    ::= { bscPortEntry 5 }
+
+bscPortRecoveryRetries OBJECT-TYPE
+    SYNTAX INTEGER (1..100)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "This is the number of times that a recovery sequence
+         will be retried before the connection is considered
+         to have failed.  The default is 5."
+    ::= { bscPortEntry 6 }
+
+
+bscPortUnknownControlUnitsReceived OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of frames received from the serial
+         interface with an unsupported control unit 
+         address.  If this value is non-zero it indicates
+         a problem in the configuration."
+    ::= { bscPortEntry 7 }
+
+
+bscPortSoftErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of soft errors; these are errors 
+         which have been recovered.  This includes
+         CRC errors received, frames which were
+         retransmitted for any reason (NAK received
+         or the wrong ACK received), etc.  This count
+         is a measure of the quality of the port/line,
+         but should be considered in relation to the
+         amount of traffic on the port (frames
+         or bytes sent and received).
+         This count includes all control unit soft
+         errors on this port, plus errors which were
+         not for a specific control unit."
+    ::= { bscPortEntry 8 }
+
+bscPortHardErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of hard errors; these are errors which 
+         have not been recovered after bscPortRecoveryRetries
+         number of retries, and therefore the connection 
+         has been terminated.
+         These errors could be caused by a hardware error
+         in the line or in the remote device; or possibly
+         the bscPortRecoveryRetries value is set too low 
+         for the quality of the line.
+         This count includes all control unit hard
+         errors on this port, plus errors which were
+         not for a specific control unit."
+    ::= { bscPortEntry 9 }
+
+bscPortProtocolViolations OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of protocol violations.  This counter is
+         incremented when an unexpected BSC Data Link Control 
+         character is received from the remote device; that
+         is, the control character is invalid in the current
+         state of the local BSC FSM.
+         This indicates that there is an incompatibility
+         between the two implementations of the BSC protocol.         
+         This count includes all control unit protocol violations
+         on this port, plus errors which were not for a specific 
+         control unit."
+    ::= { bscPortEntry 10 }
+
+-- *********************************************************************
+-- *  Control Unit Table
+-- *********************************************************************
+
+bscControlUnitTable OBJECT-TYPE
+    SYNTAX   SEQUENCE OF BscCUEntry
+    MAX-ACCESS   not-accessible
+    STATUS   current
+    DESCRIPTION
+       "A table containing information about specific 
+        Control Units."
+    ::= { bscControlUnits 1 }
+
+bscCUEntry OBJECT-TYPE
+    SYNTAX   BscCUEntry
+    MAX-ACCESS   not-accessible
+    STATUS   current
+    DESCRIPTION
+       "The information regarding a single Control Unit."
+    INDEX { ifIndex, bscCUAddress }
+    ::= { bscControlUnitTable 1 }
+
+
+BscCUEntry ::=
+    SEQUENCE {
+         bscCUAddress
+            INTEGER,
+         bscCUState
+            INTEGER,
+         bscCUBytesSent
+            Counter32,
+         bscCUBytesReceived
+            Counter32,
+         bscCUTotalFramesSent
+            Counter32,
+         bscCUTotalFramesReceived
+            Counter32,
+         bscCUDataFramesSent
+            Counter32,
+         bscCUDataFramesReceived
+            Counter32,
+         bscCUSoftErrors
+            Counter32,
+         bscCUHardErrors
+            Counter32,
+         bscCUProtocolViolations
+            Counter32
+    }
+
+
+bscCUAddress OBJECT-TYPE
+    SYNTAX      INTEGER (1..255)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"This value is the poll address of the
+	 BSC Control Unit.  This address must be unique
+         within a BSTUN Group."
+    ::= { bscCUEntry 1 }
+
+bscCUState OBJECT-TYPE
+    SYNTAX INTEGER { inactive(1), active(2) }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "State of the BSC Control Unit; when active this indicates that the 
+         remote Control Unit is polling or responding to polls."
+    ::= { bscCUEntry 2 }
+
+bscCUBytesSent OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of sent bytes (octets). 
+         Includes all control characters."
+    ::= { bscCUEntry 3 }
+
+
+bscCUBytesReceived OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of received bytes (octets).
+         Includes all control characters."
+    ::= { bscCUEntry 4 }
+
+
+bscCUTotalFramesSent OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of sent frames (blocks).
+         Includes all control frames."
+    ::= { bscCUEntry 5 }
+
+
+bscCUTotalFramesReceived OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of received frames (blocks).
+         Includes all control frames."
+    ::= { bscCUEntry 6 }
+
+bscCUDataFramesSent OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of sent data frames (blocks)."
+    ::= { bscCUEntry 7 }
+
+
+bscCUDataFramesReceived OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of received data frames (blocks)."
+    ::= { bscCUEntry 8 }
+
+bscCUSoftErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of soft errors; these are errors 
+         which have been recovered.  This includes
+         CRC errors received, frames which were
+         retransmitted for any reason (NAK received
+         or the wrong ACK received), etc.  This count
+         is a measure of the quality of the connection,
+         but should be considered in relation to the
+         amount of traffic on the connection (frames
+         or bytes sent and received)."
+    ::= { bscCUEntry 9 }
+
+bscCUHardErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of hard errors; these are errors which 
+         have not been recovered after bscPortRecoveryRetries
+         number of retries, and therefore the connection 
+         has been terminated.
+         These errors could be caused by a hardware error
+         in the link or in the remote device; or possibly
+         the bscPortRecoveryRetries value is set too low 
+         for the quality of the connection."
+    ::= { bscCUEntry 10 }
+
+bscCUProtocolViolations OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Count of protocol violations.  This counter is
+         incremented when an unexpected BSC Data Link Control 
+         character is received from the remote device; that
+         is, the control character is invalid in the current
+         state of the local BSC FSM.
+         This indicates that there is an incompatibility
+         between the two implementations of the BSC protocol."         
+    ::= { bscCUEntry 11 }
+
+-- *************************************************************************
+-- * Conformance Information
+-- *************************************************************************
+
+bscMibConformance   OBJECT IDENTIFIER ::= { ciscoBscMIB 3 }
+bscMibCompliances   OBJECT IDENTIFIER ::= { bscMibConformance 1 }
+bscMibGroups        OBJECT IDENTIFIER ::= { bscMibConformance 2 }
+--
+-- *************************************************************************
+-- * Compliance Statements
+-- *************************************************************************
+bscMibCompliance    MODULE-COMPLIANCE
+        STATUS current
+        DESCRIPTION
+                "The compliance statement for BSTUN."
+        MODULE  -- this module
+                MANDATORY-GROUPS {
+                        bscPortsGroup,
+			bscControlUnitsGroup
+		}
+         ::= { bscMibCompliances 1 }
+         
+bscPortsGroup OBJECT-GROUP
+        OBJECTS {
+                bscPortRole,
+                bscPortCodeSet,
+                bscPortPause,
+                bscPortServlim,
+                bscPortPollTimeout,
+                bscPortRecoveryRetries,
+                bscPortUnknownControlUnitsReceived,
+                bscPortSoftErrors,
+                bscPortHardErrors,
+                bscPortProtocolViolations
+        }
+        STATUS current
+        DESCRIPTION
+                "A collection of objects providing information about
+                 BSC enabled interfaces."
+        ::= { bscMibGroups 1}
+         
+bscControlUnitsGroup OBJECT-GROUP
+        OBJECTS {
+                bscCUState,
+                bscCUBytesSent,
+                bscCUBytesReceived,
+                bscCUTotalFramesSent,
+                bscCUTotalFramesReceived,
+                bscCUDataFramesSent,
+                bscCUDataFramesReceived,
+                bscCUSoftErrors,
+                bscCUHardErrors,
+                bscCUProtocolViolations
+        }
+        STATUS current
+        DESCRIPTION
+                "A collection of objects providing information about 
+                 BSC Control Units ."
+        ::= { bscMibGroups 2 }
+
+
+END
+
+
+
+
+

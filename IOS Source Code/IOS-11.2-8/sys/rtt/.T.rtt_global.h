@@ -1,0 +1,60 @@
+
+rtt_global.h,4201
+#define _RTTGLOBAL_H_51,1676
+#define RTT_MAX_DELAY_MINUTES 58,1822
+#define RTT_MAX_DELAY_SECONDS 59,1906
+#define RTT_MAX_DELAY_CENTISECONDS 60,1981
+typedef struct _short_rttMonStatsCaptureEntry_t _short_rttMonStatsCaptureEntry_t67,2177
+} short_rttMonStatsCaptureEntry_t;short_rttMonStatsCaptureEntry_t76,2632
+typedef struct _short_rttMonStatsCollectEntry_t _short_rttMonStatsCollectEntry_t78,2668
+} short_rttMonStatsCollectEntry_t;short_rttMonStatsCollectEntry_t88,3082
+typedef struct _short_rttMonHistoryCollectionEntry_t _short_rttMonHistoryCollectionEntry_t90,3118
+} short_rttMonHistoryCollectionEntry_t;short_rttMonHistoryCollectionEntry_t97,3466
+typedef struct connectHandleList_ connectHandleList_99,3507
+} connectHandleList;connectHandleList105,3674
+typedef struct pathList_ pathList_107,3696
+} pathList;pathList111,3792
+typedef struct rttMonReactTriggerAdminQItem_ rttMonReactTriggerAdminQItem_113,3805
+} rttMonReactTriggerAdminQItem;rttMonReactTriggerAdminQItem117,3979
+typedef struct rttMonReactTriggerAdminQHead_ rttMonReactTriggerAdminQHead_120,4013
+} rttMonReactTriggerAdminQHead;rttMonReactTriggerAdminQHead123,4170
+typedef struct rttMonStatsCaptureDistQItem_ rttMonStatsCaptureDistQItem_127,4228
+} rttMonStatsCaptureDistQItem;rttMonStatsCaptureDistQItem132,4433
+typedef struct rttMonStatsCaptureDistQItem_ rttMonStatsCaptureDistQItem_136,4472
+} rttMonStatsCaptureDistQItem;rttMonStatsCaptureDistQItem141,4682
+typedef struct rttMonStatsCaptureDistQHead_ rttMonStatsCaptureDistQHead_145,4722
+} rttMonStatsCaptureDistQHead;rttMonStatsCaptureDistQHead148,4875
+typedef struct rttMonStatsCaptureHopQItem_ rttMonStatsCaptureHopQItem_150,4907
+} rttMonStatsCaptureHopQItem;rttMonStatsCaptureHopQItem156,5168
+typedef struct rttMonStatsCaptureHopQHead_ rttMonStatsCaptureHopQHead_158,5199
+} rttMonStatsCaptureHopQHead;rttMonStatsCaptureHopQHead161,5348
+typedef struct rttMonStatsCapturePathQItem_ rttMonStatsCapturePathQItem_163,5379
+} rttMonStatsCapturePathQItem;rttMonStatsCapturePathQItem168,5583
+typedef struct rttMonStatsCapturePathQHead_ rttMonStatsCapturePathQHead_170,5615
+} rttMonStatsCapturePathQHead;rttMonStatsCapturePathQHead175,5872
+typedef struct rttMonStatsCaptureStartTimeQItem_ rttMonStatsCaptureStartTimeQItem_177,5904
+} rttMonStatsCaptureStartTimeQItem;rttMonStatsCaptureStartTimeQItem183,6182
+typedef struct rttMonStatsCaptureStartTimeQHead_ rttMonStatsCaptureStartTimeQHead_185,6219
+} rttMonStatsCaptureStartTimeQHead;rttMonStatsCaptureStartTimeQHead190,6540
+typedef struct rttMonHistoryCollectionSampleQItem_ rttMonHistoryCollectionSampleQItem_192,6577
+} rttMonHistoryCollectionSampleQItem;rttMonHistoryCollectionSampleQItem196,6774
+typedef struct rttMonHistoryCollectionSampleQHead_ rttMonHistoryCollectionSampleQHead_198,6813
+} rttMonHistoryCollectionSampleQHead;rttMonHistoryCollectionSampleQHead202,7071
+#define D_rttMonHistoryCollectionBucketFull_True 204,7110
+#define D_rttMonHistoryCollectionBucketFull_False 205,7165
+typedef struct rttMonHistoryCollectionBucketQItem_ rttMonHistoryCollectionBucketQItem_207,7221
+} rttMonHistoryCollectionBucketQItem;rttMonHistoryCollectionBucketQItem213,7506
+typedef struct rttMonHistoryCollectionBucketQHead_ rttMonHistoryCollectionBucketQHead_215,7545
+} rttMonHistoryCollectionBucketQHead;rttMonHistoryCollectionBucketQHead219,7803
+typedef struct rttMonHistoryCollectionLifeQItem_ rttMonHistoryCollectionLifeQItem_221,7842
+} rttMonHistoryCollectionLifeQItem;rttMonHistoryCollectionLifeQItem226,8077
+typedef struct rttMonHistoryCollectionLifeQHead_ rttMonHistoryCollectionLifeQHead_228,8114
+} rttMonHistoryCollectionLifeQHead;rttMonHistoryCollectionLifeQHead233,8435
+#define MAX_ThresholdXofYArrayBuckets 235,8472
+#define MAX_ThresholdAveArrayBuckets 236,8552
+typedef struct rttMonReactCtrlValues_ rttMonReactCtrlValues_238,8631
+} rttMonReactCtrlValues;rttMonReactCtrlValues253,9244
+typedef struct rttMonCtrlAdminQItem_ rttMonCtrlAdminQItem_255,9270
+} rttMonCtrlAdminQItem;rttMonCtrlAdminQItem283,10313
+typedef struct rttMonCtrlAdminQHead_ rttMonCtrlAdminQHead_286,10339
+} rttMonCtrlAdminQHead;rttMonCtrlAdminQHead297,10700

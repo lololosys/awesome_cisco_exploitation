@@ -1,0 +1,80 @@
+# $Id: make.gaia,v 3.1.2.3 1996/09/14 05:35:10 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/obj-4k-rvip/make.gaia,v $
+#------------------------------------------------------------------
+# Makefile definitions and rules for GAIA builds
+#
+# September, 1996   Rich Livingston
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.gaia,v $
+# Revision 3.1.2.3  1996/09/14  05:35:10  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.2.2  1996/09/04  19:42:54  mvenugop
+# CSCdi68050:  Gaia make.feature for each platform
+# Branch: California_branch
+#
+# Revision 3.1.2.1  1996/09/03  18:48:50  richl
+# CSCdi67863:  commit gaia stuff, and crypto top-level target
+# Branch: California_branch
+#
+# Revision 3.1  1996/09/03  15:05:16  richl
+# Placeholder.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+######################################################################
+#
+# 	GAIA Rules begin here
+#
+######################################################################
+
+include make.features
+
+demo-data-build:
+	@echo "$@: No DEMO Generic feature data"
+
+internal-data-build: 
+	@echo "$@: No Generic internal data for this platform"
+
+feature-data-build:
+	@echo "$@: No Generic feature data for this platform"
+
+feature-pack-data-build: $(FEATURE_PACK_DATA_TARGETS)
+	@echo "$@: No feature pack data for this platform"
+
+platform-data-build: $(PLATFORM_DATA_TARGETS) platform_ui platform_nm_ui
+	@echo "$@: Built $* Platform feature data"
+
+feature-images-build: 
+	@echo "$@: No Generic feature images for this platform"
+
+platform-images-build: $(platform_feature_images)
+	@echo "$@: Built $* Platform feature images"
+
+######################################################################
+#
+#  Feature Based Image build targets
+#
+######################################################################
+
+#feature based image targets will eventually appear here
+
+fbi_production_images =
+
+fbi_production: $(fbi_production_images)
+
+fbi_oddball_images =
+
+fbi_oddball: $(fbi_oddball_images)
+
+######################################################################
+#
+#       End of GAIA
+#
+######################################################################

@@ -1,0 +1,245 @@
+# $Id: chassismib_registry.reg,v 3.1.2.1 1996/05/21 06:38:36 mordock Exp $
+# $Source: /release/112/cvs/Xsys/snmp/chassismib_registry.reg,v $
+#------------------------------------------------------------------
+# chassismib_registry.reg Service Points for the Chassis MIB
+#
+# May 1996, Scott R. Mordock
+#
+# Copyright (c) 1996-1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: chassismib_registry.reg,v $
+# Revision 3.1.2.1  1996/05/21  06:38:36  mordock
+# Branch: California_branch
+# Improve snmp modularity via creating services to register interfaces
+# and chassis cards.
+# Add syslog mib.
+#
+# Revision 3.1  1996/05/20  17:02:12  mordock
+# placeholders for california
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY CHASSISMIB 
+
+DEFINE chassismib_add_card_entry
+/*
+ * Define a card to be managed by the chassis mib.
+ * INPUTS:
+ *	type		== card type
+ *	remkey		== key for removable cards
+ *	descr		== human consumable card description
+ *	serial		== card's serial number
+ *			   (NO_SERIALNUM if not applicable/determinable)
+ *	hw_version	== hardware version string
+ *			   (NO_HWVERSION if not applicable/determinable)
+ *	sw_version	== software version string
+ *			   (NO_SWVERSION if not applicable/determinable)
+ *	slot_number	== chassis slot number
+ *			   (NO_SLOTNUMBER if not applicable/determinable)
+ */
+	LIST	
+	void
+	int type, \
+	void* remkey, \
+	char* descr, \
+	uint serial, \
+	char* hw_version, \
+	char* sw_version, \
+	int slot_number
+END
+
+DEFINE chassismib_add_sub_card_entry
+/*
+ * Define a card to be managed by the chassis mib.  Unlike
+ * chassismib_add_card_entry, this service can handle multiple
+ * layer card/component containment, such as VIP cards.
+ * INPUTS:
+ *	type		== card type
+ *	remkey		== key for removable cards
+ *	descr		== human consumable card description
+ *	serial		== card's serial number
+ *			   (NO_SERIALNUM if not applicable/determinable)
+ *	hw_version	== hardware version string
+ *			   (NO_HWVERSION if not applicable/determinable)
+ *	sw_version	== software version string
+ *			   (NO_SWVERSION if not applicable/determinable)
+ *	slot_number	== chassis slot number
+ *			   (NO_SLOTNUMBER if not applicable/determinable)
+ *	card_contained_by_index == card table index of the parent card
+ *			   (0 if contained by chassis, -1 if not
+ *  			   applicable/determinable)
+ *	card_slots	== number of daughter cards slots in this card
+ *			   (0 if no slots or not applicable, -1 if
+ *			    not determinable)
+ */
+	LIST
+	void
+	int type, \
+	void* remkey, \
+	char* descr, \
+	uint serial, \
+	char* hw_version, \
+	char* sw_version, \
+	int slot_number, \
+	uint card_contained_by_index, \
+	int card_slots
+END
+
+DEFINE chassismib_update_sub_card_entry
+/* Update the serial number, h/w and s/w version information for a
+ * card.
+ * INPUTS:
+ *	card_index	== index of card entry to be updated
+ *	serial		== card's serial number
+ *			   (NO_SERIALNUM if not applicable/determinable)
+ *	hw_version	== hardware version string
+ *			   (NO_HWVERSION if not applicable/determinable)
+ *	sw_version	== software version string
+ *			   (NO_SWVERSION if not applicable/determinable)
+*/
+	LIST
+	void
+	uint card_index, \
+	uint serial, \
+	char* hw_version, \
+	char* sw_version
+END
+
+DEFINE chassismib_remove_card_entry
+/* Remove a card from the chassis mib such that it will no longer be
+ * managed by SNMP.
+ * INPUTS:
+ *	remkey		== the key that was provided when the card
+ *			   was added
+ */
+	LIST
+	void
+	void* remkey
+END
+
+DEFINE chassismib_find_slot_card_index
+/* Given a slot number, return the index of the "master" card in that
+ * slot - i.e. if there are multilevel cards in this slot, the
+ * returned index will be for the highest level card.
+ * INPUTS:
+ *	slot	== desired slot
+ * RETURNS:
+ *	card index, or -1 if the given slot cannot be found
+ */
+	STUB
+	int
+	int slot
+END
+
+DEFINE chassismib_find_sub_card_index
+/* Given a bay (slot) number and the index of a parent card in that
+ * bay, return the index of the daughter card
+ * INPUTS:
+ *	card_index	== desired parent card
+ *	bay		== desired bay/slot
+ * RETURNS:
+ *	daughter card index, or -1 if the given card_index/bay combo
+ *	cannot be found
+ */
+	STUB
+	int
+	long card_index, \
+	int bay
+END
+
+DEFINE chassismib_get_cep
+/* Find a card entry
+ * INPUTS:
+ *	searchType	== EXACT or NEXT
+ *	cardIndex	== index of card to find (if EXACT), or index
+ *			   to begin search from (if NEXT)
+ * RETURNS:
+ *	pointer to card_entry, or NULL if nothing found to match
+ *	search criteria
+ */
+	STUB
+	card_entry*
+	int searchType, \
+	long* cardIndex
+END
+
+DEFINE cardifmib_get_card_index
+/*
+ * INPUTS:
+ *      cdb ptr
+ * RETURNS:
+ *     int value for cardIndex
+ */
+        STUB
+        int
+        cdbtype *cdb
+END
+
+DEFINE cardifmib_get_slot_number
+/*
+ * INPUTS:
+ *      cdb ptr
+ * RETURNS:
+ *     long value for slot no
+ */
+        STUB
+        long
+        cdbtype *cdb
+END
+
+DEFINE cardifmib_get_port_number
+/*
+ * INPUTS:
+ *      cdb ptr
+ * RETURNS:
+ *     long value for slot no
+ */
+        STUB
+        long
+        cdbtype *cdb
+END
+
+DEFINE cardifmib_get_connector_type
+/*
+ * INPUTS:
+ *      cdb ptr
+ * RETURNS:
+ *     long value for slot no
+ */
+        STUB
+        long
+        cdbtype *cdb
+
+END
+
+END REGISTRY CHASSISMIB

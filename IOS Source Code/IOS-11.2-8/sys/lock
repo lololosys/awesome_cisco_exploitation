@@ -1,0 +1,50 @@
+: # use perl -*-Perl-*-
+eval 'exec perl5 -S $0 ${1+"$@"}'
+    if 0;
+#
+# $Id: lock,v 3.2 1995/11/17 08:32:08 hampton Exp $
+# $Source: /swtal/cherf.111/ios/sys/lock,v $
+#------------------------------------------------------------------
+# Copyright (c) 1994-1995, 1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: lock,v $
+# Revision 3.2  1995/11/17  08:32:08  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  10:48:05  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.2  1995/11/08  20:47:09  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+$ppid=getppid;
+if( $#ARGV == -1 ) {
+    $lock='test.lock';
+} else {
+    $lock=$ARGV[0];
+}
+
+if ( -f $lock ) {
+    open(LOCK, $lock) || die "Unable to read $lock: $!";
+    chop($make=<LOCK>);
+    close(LOCK);
+    $cnt = kill 0, $make;
+    if ($cnt) {
+	$uid = (stat($lock))[4];
+	$locker = (getpwuid($uid))[0] || "uid$uid";
+	print STDERR "$locker is currently compiling here (pid $make).\n";
+	kill 'HUP', $ppid;
+	exit 1;
+    }
+}
+umask(0222);
+open(LOCK, '>.'.$lock) || die "Unable to open .$lock: $!";
+print LOCK $ppid,"\n";
+close(LOCK);
+rename(".$lock",$lock);
+exit 0;

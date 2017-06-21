@@ -1,0 +1,87 @@
+-- $Id: CISCO-RFC1398-CAPABILITY.my,v 3.2 1995/11/17 08:34:44 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-RFC1398-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-RFC1398-CAPABILITY.my:  RFC1398-MIB AGENT-CAPABILITIES
+-- 
+-- August 1994, Jeffrey T. Johnson
+-- 
+-- Copyright (c) 1994 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-RFC1398-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:34:44  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:50:26  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:56  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-RFC1398-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoRFC1398Capability MODULE-IDENTITY
+		LAST-UPDATED	"9408180000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for RFC1398-MIB (Ethernet MIB)."
+		REVISION	"9408180000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 111 }
+
+ciscoRFC1398CapabilityV10R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.2"
+STATUS		current
+DESCRIPTION	"IOS 10.2 Ethernet MIB capabilities"
+
+SUPPORTS	RFC1398-MIB
+INCLUDES	{ dot3Group }
+
+VARIATION	dot3StatsSQETestErrors
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	dot3StatsInternalMacTransmitErrors
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	dot3CollIndex
+ACCESS		not-implemented
+DESCRIPTION	"Table for dot3CollEntry not supported"
+
+VARIATION	dot3CollCount
+ACCESS		not-implemented
+DESCRIPTION	"Table for dot3CollEntry not supported"
+
+VARIATION	dot3CollFrequencies
+ACCESS		not-implemented
+DESCRIPTION	"Table for dot3CollEntry not supported"
+
+	::= { ciscoRFC1398Capability 1 }
+
+END

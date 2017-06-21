@@ -1,0 +1,6 @@
+
+asm_4k_c4000_bsi.S,118
+#define ASMINCLUDE30,1056
+#define BSI_MAR_OFFSET	37,1126
+#define BSI_MNR_OFFSET	38,1155
+	lw	s2,LEV2_IDB_A(67,1736

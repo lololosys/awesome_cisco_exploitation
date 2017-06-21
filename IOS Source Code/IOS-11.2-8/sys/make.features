@@ -1,0 +1,1342 @@
+# $Id: make.features,v 3.1.10.11 1996/09/14 05:23:23 mvenugop Exp $
+# $Source: /release/112/cvs/Xsys/make.features,v $
+#------------------------------------------------------------------
+# Make all the GAIA based features
+#
+# May 13, 1996, Vicki Ralls
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: make.features,v $
+# Revision 3.1.10.11  1996/09/14  05:23:23  mvenugop
+# CSCdi69188:  Updating Gaia changes
+# Branch: California_branch
+#
+# Revision 3.1.10.10  1996/08/10  23:43:59  irfan
+# CSCdi64746:  DHCP proxy client included in BOOT
+# Branch: California_branch
+# rename DHCP to DHCP_CLIENT. boot it out of BOOT.
+#
+# Revision 3.1.10.9  1996/08/06  18:10:06  skalahas
+# CSCdi65242:  GAIA makefile enhancements
+# Branch: California_branch
+#
+# Revision 3.1.10.8  1996/07/31  22:45:30  ralls
+# CSCdi64782:  Commit make.features clean-up
+# Branch: California_branch
+#
+# Revision 3.1.10.7  1996/07/08  18:21:48  ralls
+# CSCdi62184:  Fixing small problems with make.features
+# Branch: California_branch
+#
+# Revision 3.1.10.6  1996/07/02  18:15:46  ralls
+# CSCdi61900:  Update make.features
+# Branch: California_branch
+#
+# Revision 3.1.10.5  1996/07/02  00:46:28  jpfeifer
+# CSCdi61850:  adding support for gaia based production images
+# Branch: California_branch
+#
+# Revision 3.1.10.4  1996/06/22  05:25:50  ralls
+# CSCdi61107:  Update make.features
+# Branch: California_branch
+#
+# Revision 3.1.10.3  1996/06/11  23:07:41  ralls
+# CSCdi60023:  Gaia update
+# Branch: California_branch
+#
+# Revision 3.1.10.2  1996/06/10  20:01:53  ralls
+# CSCdi60025:  Gaia, small fixes...
+# Branch: California_branch
+#
+# Revision 3.1.10.1  1996/06/04  23:27:07  ralls
+# CSCdi57580:  Update gaia features, onec more
+# Branch: California_branch
+#
+# Revision 3.1  1996/05/14  00:47:56  ralls
+# Adding GAIA feature file
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+ifeq ($(origin SYSROOT), undefined)
+SYSROOT :=     $(shell ../scripts/sysroot)
+endif
+
+# GAIA Definition of GAIA Herself and features
+
+#######################################################################
+# 
+#	There are really three types of features. Drivers, purely platform
+#	dependent. Limited support features such as IBM which are supported
+#	on some platforms, and pure generic features like apollo which are
+#	supported on all platform. 
+#
+#	Drivers are both built and described in the platform makefile.
+#	Limited support features are built in the platform, but they
+#	are described in the sys makefile.
+#
+#	Pure generic features are both built and described in the sys
+#	makefile.
+# 
+# To add a new feature for the gaia modularity builds.
+#
+#	1. Use the template below to add a feature description.
+#	   Add it at the end of the list. Platform specific description
+#	   such as drivers should be defined in the platform specific
+#	   makefile. All other features (even those that are not
+#	   supported on all platforms should go in the sys makefile)
+#
+# 
+# name_DESCRIPTION = "Short decription of the features"
+# name_ABBREV = name
+# name_HELP = "pointer to online docs"
+# name_TEST_SCRIPT = "script to test name"
+# name_FEATURE = 	<all required subsystems, all dependent subsystems>
+#
+#	2. Add the ABBREV tag to the correct list.
+#	   Platform dependent features, or features that are not
+#	   supported on *all* platforms will have to go into each
+#	   makefile that supports them. The list is called
+#	   PLATFORM_FEATURE_ABBRV. (In the platform makefile)
+#
+#	   Generic features go in the /sys/makefile.
+#	   The name of the list is FEATURE_ABBRV.
+#
+#	   Any given feature will go into only one list.
+#	   Keep in mind that the abbrev list controls what will be built.
+#
+#	3. Add the image rule for the feature
+#	   image-feature-name = $(GAIA) $(name_FEATURE). 
+#	   There is only one list for image features. It's in sys/makefile.
+#
+#
+#######################################################################
+#
+
+NONMODULAR_REQ = $(ETHER) $(SERIAL)
+
+GAIA_CPRO = $(MIBS_CPRO) $(CISCOPRO)
+
+GAIA = $(CORE_SYSTEM) $(IPBASIC) \
+	$(NONMODULAR_PLATFORM_REQ) $(NONMODULAR_REQ) \
+	$(FASTSWITCH_CORE) $(FASTSWITCH_7000) $(PLATFORM_SUPPORT)
+
+GAIAV = $(CORE_SYSTEM) $(IPBASIC) \
+	$(NONMODULAR_PLATFORM_REQ) $(NONMODULAR_REQ) \
+	$(FASTSWITCH_CORE) $(FASTSWITCH_7000) $(PLATFORM_SUPPORT_V)
+
+GAIA_DW = $(CORE_SYSTEM) $(SRBCORE)
+
+#######################################################################
+#
+# Feature to .o mapping
+#
+#######################################################################
+
+APOLLO_DESCRIPTION = "Support for the apollo protocol"
+APOLLO_ABBREV = APOLLO
+APOLLO_HELP = ""
+APOLLO_TEST_SCRIPT = ""
+APOLLO_FEATURE = 	 shr_apollo.o shr_griproute.o
+
+AT_ARAP_DESCRIPTION = "Appletalk Remote Access Protocol"
+AT_ARAP_ABBREV = AT_ARAP
+AT_ARAP_HELP = ""
+AT_ARAP_TEST_SCRIPT = ""
+AT_ARAP_FEATURE = 	 shr_arap.o $(ATALK_FEATURE) $(TACACS_FEATURE)
+
+ATALK_DESCRIPTION = "Appletalk protocol"
+ATALK_ABBREV = ATALK
+ATALK_HELP = ""
+ATALK_TEST_SCRIPT = ""
+ATALK_FEATURE = 	 shr_atalk.o shr_atdomain.o $(FAST_ATALK)
+ATALK_GNMIB =		shr_atalkmib.o
+
+AT_CP_DESCRIPTION = "Appletalk NCP protocol"
+AT_CP_ABBREV = AT_CP
+AT_CP_HELP = ""
+AT_CP_TEST_SCRIPT = ""
+AT_CP_FEATURE = 	 shr_atcp.o $(ATALK_FEATURE) $(PPP_FEATURE)
+
+ATALK_T_DESCRIPTION = "Appletalk protocol with test"
+ATALK_T_ABBREV = ATALK_T
+ATALK_T_HELP = ""
+ATALK_T_TEST_SCRIPT = ""
+ATALK_T_FEATURE = 	 shr_atalktest.o $(ATALK_FEATURE)
+ATALK_T_GNMIB =		shr_atalkmib.o
+
+AT_IP_DESCRIPTION = "Appletalk IP support"
+AT_IP_ABBREV = AT_IP
+AT_IP_HELP = ""
+AT_IP_TEST_SCRIPT = ""
+AT_IP_FEATURE = 	 shr_atip.o $(ATALK_FEATURE) $(IP_BASE_FEATURE) \
+	$(IP_DNS_FEATURE) $(TUNNEL_FEATURE)
+
+AT_EIGRP_DESCRIPTION = "Appletalk EIGRP support"
+AT_EIGRP_ABBREV = AT_EIGRP
+AT_EIGRP_HELP = ""
+AT_EIGRP_TEST_SCRIPT = ""
+AT_EIGRP_FEATURE = 	 shr_ateigrp.o $(ATALK_FEATURE) $(IP_BASE_FEATURE)
+
+
+ATM_DXI_DESCRIPTION = "ATM DXI \(Wan\)"
+ATM_DXI_ABBREV = ATM_DXI
+ATM_DXI_HELP = ""
+ATM_DXI_TEST_SCRIPT = ""
+ATM_DXI_FEATURE = 	 shr_atm_dxi.o shr_serial.o $(FAST_ATMDXI)
+
+BGP_DESCRIPTION = "Border gateway protocol"
+BGP_ABBREV = BGP
+BGP_HELP = ""
+BGP_TEST_SCRIPT = ""
+BGP_FEATURE = 	 shr_bgp.o $(IP_BASE_FEATURE)
+BGP_GNMIB =		shr_bgpmib.o
+
+BRIDGET_DESCRIPTION = "Generic functions for transparent bridging, fast"
+BRIDGET_ABBREV = BRIDGET
+BRIDGET_HELP = ""
+BRIDGET_TEST_SCRIPT = ""
+BRIDGET_FEATURE = 	  $(BRIDGET_SLOW_FEATURE) $(FAST_TBRIDGE)
+BRIDGET_GNMIB =	shr_tbmib.o
+
+BRIDGET_SLOW_DESCRIPTION = "Generic functions for transparent bridging"
+BRIDGET_SLOW_ABBREV = BRIDGET_SLOW
+BRIDGET_SLOW_HELP = ""
+BRIDGET_SLOW_TEST_SCRIPT = ""
+BRIDGET_SLOW_FEATURE = 	 shr_bridge_t.o shr_bridge_t_ui.o shr_serial.o
+BRIDGET_SLOW_GNMIB =	shr_tbmib.o
+
+BRIDGET_CMF_DESCRIPTION = "Constrained Multicast Flooding"
+BRIDGET_CMF_ABBREV = BRIDGET_CMF
+BRIDGET_CMF_HELP = ""
+BRIDGET_CMF_TEST_SCRIPT = ""
+BRIDGET_CMF_FEATURE = 	 shr_bridge_t_cmf.o $(BRIDGET_FEATURE) $(IP_MULTICAST_FEATURE)
+#IP_MULICAST added for modularity reasons
+
+DIALER_DESCRIPTION = "Dialer support"
+DIALER_ABBREV = DIALER
+DIALER_HELP = ""
+DIALER_TEST_SCRIPT = ""
+DIALER_FEATURE = 	 shr_dialer.o shr_serial.o
+
+COMPRESS_DESCRIPTION = "Compression"
+COMPRESS_ABBREV = COMPRESS
+COMPRESS_HELP = ""
+COMPRESS_TEST_SCRIPT = ""
+COMPRESS_FEATURE = 	 shr_compress.o
+
+COMPRESS_CP_DESCRIPTION = "Compression"
+COMPRESS_CP_ABBREV = COMPRESS_CP
+COMPRESS_CP_HELP = ""
+COMPRESS_CP_TEST_SCRIPT = ""
+COMPRESS_CP_FEATURE = 	 shr_ccp.o $(PPP_FEATURE)
+
+CDP_DESCRIPTION = "Cisco Discovery Protocol \(used by NM\)"
+CDP_ABBREV = CDP
+CDP_HELP = ""
+CDP_TEST_SCRIPT = ""
+CDP_FEATURE = 	 shr_cdp.o
+CDP_GNMIB = 		shr_cdpmib.o
+
+CDP_NCP_DESCRIPTION = "CDP NCP \(used by NM\)"
+CDP_NCP_ABBREV = CDP_NCP
+CDP_NCP_HELP = ""
+CDP_NCP_TEST_SCRIPT = ""
+CDP_NCP_FEATURE = 	 shr_cdp_ncp.o $(CDP_FEATURE) $(PPP_FEATURE)
+
+CLNS_DESCRIPTION = "CLNS support \(Connectionless Network Services\)"
+CLNS_ABBREV = CLNS
+CLNS_HELP = ""
+CLNS_TEST_SCRIPT = ""
+CLNS_FEATURE	 = 	 shr_clns.o shr_eon.o shr_isis_clns.o shr_isis_ip.o \
+	$(FAST_CLNS) $(IP_BASE_FEATURE) $(ISIS_NLSP_FEATURE) $(TUNNEL_FEATURE)
+
+CHAT_DESCRIPTION = "Chat"
+CHAT_ABBREV = CHAT
+CHAT_HELP = ""
+CHAT_TEST_SCRIPT = ""
+CHAT_FEATURE = 	 shr_chat.o $(DIALER_FEATURE)
+
+TS_DESCRIPTION = "Basic Terminal Server"
+TS_ABBREV = TS
+TS_HELP = ""
+TS_TEST_SCRIPT = ""
+TS_FEATURE =  $(COMM_FEATURE) $(MODEMCAP_FEATURE) $(XREMOTE_FEATURE) \
+		$(MENU_FEATURE)	
+
+MENU_DESCRIPTION = "Support for Menus"
+MENU_ABBREV = MENU
+MENU_HELP = ""
+MENU_SCRIPT = ""
+MENU_FEATURE =  shr_menus.o
+
+TN_DESCRIPTION = "TN3270 support"
+TN_ABBREV = TN
+TN_HELP = ""
+TN_TEST_SCRIPT = ""
+TN_FEATURE = 	 shr_tn3270.o
+TN_GNMIB = shr_appnmib.o
+
+LPD_DESCRIPTION = "Line Printer Daemon"
+LPD_ABBREV = LPD
+LPD_HELP = ""
+LPD_TEST_SCRIPT = ""
+LPD_FEATURE = 	 shr_lpd.o
+
+MODEMCAP_DESCRIPTION = " Automatic modem discovery"
+MODEMCAP_ABBREV = MODEMCAP
+MODEMCAP_HELP = ""
+MODEMCAP_TEST_SCRIPT = ""
+MODEMCAP_FEATURE = 	 shr_modem_discovery.o shr_modemcap.o
+
+RADIUS_DESCRIPTION = "Support for Livingston\'s radius"
+RADIUS_ABBREV = RADIUS
+RADIUS_HELP = ""
+RADIUS_TEST_SCRIPT = ""
+RADIUS_FEATURE = 	 shr_radius.o $(TUNNEL_FEATURE)
+
+TACACS_PLUS_DESCRIPTION = "Tacacs Plus Authentacation"
+TACACS_PLUS_ABBREV = TACACS_PLUS
+TACACS_PLUS_HELP = ""
+TACACS_PLUS_TEST_SCRIPT = ""
+TACACS_PLUS_FEATURE = 	 shr_tacacs_plus.o $(TACACS_FEATURE)
+
+TACACS_DESCRIPTION = "Tacacs Authentacation"
+TACACS_ABBREV = TACACS
+TACACS_HELP = ""
+TACACS_TEST_SCRIPT = ""
+TACACS_FEATURE = 	 shr_tacacs.o
+
+DECNET_IV_DESCRIPTION = "DECnet Phase IV"
+DECNET_IV_ABBREV = DECNET_IV
+DECNET_IV_HELP = ""
+DECNET_IV_TEST_SCRIPT = ""
+DECNET_IV_FEATURE = 	 shr_decnet.o $(FAST_DECNET)
+DECNET_IV_GNMIB =		shr_decnetmib.o
+
+DECNET_DESCRITPION = "DECnet post phase IV \(OSI\)"
+DECNET_ABBREV = DECNET
+DECNET_HELP = ""
+DECNET_TEST_SCRIPT = ""
+DECNET_FEATURE = 	 shr_dncnv.o $(CLNS_FEATURE) $(DECNET_IV_FEATURE)
+DECNET_GNMIB =		shr_decnetmib.o
+
+DHCP_CLIENT_DESCRIPTION = "Dynamic Host Configuration Protocol \(proxy client implementation\)"
+DHCP_CLIENT_ABBREV = DHCP_CLIENT
+DHCP_CLIENT_HELP = ""
+DHCP_CLIENT_TEST_SCRIPT = ""
+DHCP_CLIENT_FEATURE = 	 shr_dhcp_client.o
+
+EGP_DESCRIPTION = "Exterior gateway protocol"
+EGP_ABBREV = EGP
+EGP_HELP = ""
+EGP_TEST_SCRIPT = ""
+EGP_FEATURE = 	 shr_egp.o $(IP_BASE_FEATURE)
+EGP_GNMIB =		shr_egpmib2.o
+
+FRAME_RELAY_DESCRIPTION = "Basic Frame Relay support"
+FRAME_RELAY_ABBREV = FRAME_RELAY
+FRAME_RELAY_HELP = ""
+FRAME_RELAY_TEST_SCRIPT = ""
+FRAME_RELAY_FEATURE = 	 shr_frame.o shr_serial.o $(DIALER_FEATURE) \
+	$(FAST_FR) $(X25_FEATURE)
+FRAME_RELAY_GNMIB =	shr_frmib.o
+#X25 added because of a modularity break
+
+FRAME_RELAY_TRAFFIC_DESCRIPTION = "Basic Frame relay traffic support"
+FRAME_RELAY_TRAFFIC_ABBREV = FRAME_RELAY_TRAFFIC
+FRAME_RELAY_TRAFFIC_HELP = ""
+FRAME_RELAY_TRAFFIC_TEST_SCRIPT = ""
+FRAME_RELAY_TRAFFIC_FEATURE = 	 shr_frame_traffic.o \
+	$(FRAME_RELAY_FEATURE)
+
+FRAME_RELAY_ARP_DESCRIPTION = "Frame Relay ARP support"
+FRAME_RELAY_ARP_ABBREV = FRAME_RELAY_ARP
+FRAME_RELAY_ARP_HELP = ""
+FRAME_RELAY_ARP_TEST_SCRIPT = ""
+FRAME_RELAY_ARP_FEATURE = 	 shr_frame_arp.o $(FRAME_RELAY_FEATURE)
+
+FRAME_RELAY_SVC_DESCRIPTION = "Frame Relay SVC support"
+FRAME_RELAY_SVC_ABBREV = FRAME_RELAY_SVC
+FRAME_RELAY_SVC_HELP = ""
+FRAME_RELAY_SVC_TEST_SCRIPT = ""
+FRAME_RELAY_SVC_FEATURE = 	 shr_frame_svc.o $(FRAME_RELAY_FEATURE)
+
+FRAME_RELAY_TUNNEL_DESCRIPTION = "Frame Relay Tunnel support"
+FRAME_RELAY_TUNNEL_ABBREV = FRAME_RELAY_TUNNEL
+FRAME_RELAY_TUNNEL_HELP = ""
+FRAME_RELAY_TUNNEL_TEST_SCRIPT = ""
+FRAME_RELAY_TUNNEL_FEATURE = 	 shr_frame_tunnel.o \
+	$(FRAME_RELAY_FEATURE)
+
+FTP_DESCRIPTION = "File Transfer Protocol"
+FTP_ABBREV = FTP
+FTP_HELP = ""
+FTP_TEST_SCRIPT = ""
+FTP_FEATURE = 	 shr_ftp.o
+
+BASE_DESCRIPTION = "Base router and platform support, required for all images"
+BASE_ABBREV = BASE
+BASE_HELP = ""
+BASE_TEST_SCRIPT = ""
+BASE_FEATURE = 	  $(GAIA)
+
+IP_BASE_DESCRIPTION = "IP base \(No routing\), required for any IP service."
+IP_BASE_ABBREV = IP_BASE
+IP_BASE_HELP = ""
+IP_BASE_TEST_SCRIPT = ""
+IP_BASE_FEATURE = 	 shr_eigrp.o shr_ipfast.o shr_iprouting.o \
+	shr_routing.o $(DIALER_FEATURE) $(FAST_IP) $(IP7000) $(IPRSP) \
+	$(IP_FAST_RSP)
+IP_BASE_GNMIB = shr_tcpmib2.o 
+
+IP_SERVICES_DESCRIPTION = "Basic IP services, TCP, DNsix, DMDP"
+IP_SERVICES_ABBREV = IP_SERVICES
+IP_SERVICES_HELP = ""
+IP_SERVICES_TEST_SCRIPT = ""
+IP_SERVICES_FEATURE = 	 shr_ipservices.o $(IP_BASE_FEATURE)
+
+IP_CP_DESCRIPTION = "IP Network control Protocol"
+IP_CP_ABBREV = IP_CP
+IP_CP_HELP = ""
+IP_CP_TEST_SCRIPT = ""
+IP_CP_FEATURE = 	 shr_ipcp.o $(PPP_FEATURE)
+
+IP_NACL_DESCRIPTION = "IP NACL"
+IP_NACL_ABBREV = IP_NACL
+IP_NACL_HELP = ""
+IP_NACL_TEST_SCRIPT = ""
+IP_NACL_FEATURE = 	 shr_ipnacl.o
+
+IP_RARP_DESCRIPTION = "IP reverse ARP"
+IP_RARP_ABBREV = IP_RARP
+IP_RARP_HELP = ""
+IP_RARP_TEST_SCRIPT = ""
+IP_RARP_FEATURE = 	 shr_iprarp.o $(IP_BASE_FEATURE)
+
+IP_COMPRESS_DESCRIPTION = "IP header compression"
+IP_COMPRESS_ABBREV = IP_COMPRESS
+IP_COMPRESS_HELP = ""
+IP_COMPRESS_TEST_SCRIPT = ""
+IP_COMPRESS_FEATURE = 	 shr_ipcomprs.o $(IP_BASE_FEATURE)
+
+IP_TTCP_DESCRIPTION = "TCP performance client/server"
+IP_TTCP_ABBREV = IP_TTCP
+IP_TTCP_HELP = ""
+IP_TTCP_TEST_SCRIPT = ""
+IP_TTCP_FEATURE = 	 shr_ipttcp.o
+
+ISPY_DESCRIPTION = "Spy on a TTY line"
+ISPY_ABBREV = ISPY
+ISPY_HELP = ""
+ISPY_TEST_SCRIPT = ""
+ISPY_FEATURE = 	 shr_ispy.o
+
+TUNNEL_DESCRIPTION = "IP tunnel, fastswitching"
+TUNNEL_ABBREV = TUNNEL
+TUNNEL_HELP = ""
+TUNNEL_TEST_SCRIPT = ""
+TUNNEL_FEATURE = 	  $(FAST_TUNNEL) $(TUNNEL_SLOW_FEATURE)
+
+TUNNEL_SLOW_DESCRIPTION = "IP tunnel, no fastswitching"
+TUNNEL_SLOW_ABBREV = TUNNEL_SLOW
+TUNNEL_SLOW_HELP = ""
+TUNNEL_SLOW_TEST_SCRIPT = ""
+TUNNEL_SLOW_FEATURE = 	 shr_gre.o shr_ipip.o shr_tunnel.o \
+	$(IP_BASE_FEATURE)
+
+IDENT_DESCRIPTION = "Support for RFC1413, the Ident protocol"
+IDENT_ABBREV = IDENT
+IDENT_HELP = ""
+IDENT_TEST_SCRIPT = ""
+IDENT_FEATURE = 	 shr_ident.o $(X25_FEATURE)
+
+IGRP_DESCRIPTION = "Interior Gateway Routing Protocol, cisco proprietary routing protocol"
+IGRP_ABBREV = IGRP
+IGRP_HELP = ""
+IGRP_TEST_SCRIPT = ""
+IGRP_FEATURE = 	 shr_igrp.o $(IP_BASE_FEATURE)
+
+IP_MULTICAST_DESCRIPTION = "IP multicast support, PIM, TUNNEL"
+IP_MULTICAST_ABBREV = IP_MULTICAST
+IP_MULTICAST_HELP = ""
+IP_MULTICAST_TEST_SCRIPT = ""
+IP_MULTICAST_FEATURE = 	 shr_ipmulticast.o $(FAST_IPMCAST) \
+	$(IP_BASE_FEATURE) $(TUNNEL_FEATURE)
+IP_MULTICAST_GNMIB =	shr_pimmib.o shr_igmpmib.o shr_ipmroutemib.o
+
+IP_NHRP_DESCRIPTION = "IP, Next Hop Routing Protocol"
+IP_NHRP_ABBREV = IP_NHRP
+IP_NHRP_HELP = ""
+IP_NHRP_TEST_SCRIPT = ""
+IP_NHRP_FEATURE = 	 shr_ipnhrp.o shr_nhrp.o $(IP_BASE_FEATURE)
+
+IP_POLICY_DESCRIPTION = "IP policy based routing support"
+IP_POLICY_ABBREV = IP_POLICY
+IP_POLICY_HELP = ""
+IP_POLICY_TEST_SCRIPT = ""
+IP_POLICY_FEATURE = 	 shr_ip_policy.o $(IP_BASE_FEATURE)
+
+IPX_NHRP_DESCRIPTION = "IPX support for Next Hop Routing Protocol"
+IPX_NHRP_ABBREV = IPX_NHRP
+IPX_NHRP_HELP = ""
+IPX_NHRP_TEST_SCRIPT = ""
+IPX_NHRP_FEATURE = 	 shr_ipxnhrp.o $(IPX_FEATURE) $(IP_NHRP_FEATURE)
+
+IPX_COMPRESSION_DESCRIPTION = "IPX compression"
+IPX_COMPRESSION_ABBREV = IPX_COMPRESSION
+IPX_COMPRESSION_HELP = ""
+IPX_COMPRESSION_TEST_SCRIPT = ""
+IPX_COMPRESSION_FEATURE = 	 shr_ipxcompression.o $(IPX_FEATURE)
+
+IPX_DESCRIPTION = "Basic IPX routing protocol support"
+IPX_ABBREV = IPX
+IPX_HELP = ""
+IPX_TEST_SCRIPT = ""
+IPX_FEATURE = shr_ipx.o shr_isis_nlsp_debug.o $(FAST_IPX) \
+	$(IP_BASE_FEATURE) $(NETBIOS_ACL_FEATURE) shr_ipxeigrp.o
+IPX_GNMIB	 =	shr_ipxmib.o shr_ripsapmib.o shr_novellmib.o
+#shr_ipxeigrp was added because of modularity
+
+IPX_NASI_DESCRIPTION = "Netware Asynchronous Services Interface \(Server code\)"
+IPX_NASI_ABBREV = IPX_NASI
+IPX_NASI_HELP = ""
+IPX_NASI_TEST_SCRIPT = ""
+IPX_NASI_FEATURE = 	 shr_ipxnasi.o $(IPX_FEATURE)
+
+IPX_CP_DESCRIPTION = " IPX NCP"
+IPX_CP_ABBREV = IPX_CP
+IPX_CP_HELP = ""
+IPX_CP_TEST_SCRIPT = ""
+IPX_CP_FEATURE = 	 shr_ipxcp.o $(IPX_FEATURE) $(PPP_FEATURE)
+
+IPX_NLSP_DESCRIPTION = "IPX Network Link State Protocol"
+IPX_NLSP_ABBREV = IPX_NLSP
+IPX_NLSP_HELP = ""
+IPX_NLSP_TEST_SCRIPT = ""
+IPX_NLSP_FEATURE = 	 shr_ipxnlsp.o $(IPX_FEATURE) $(ISIS_NLSP_FEATURE)
+IPX_NLSP_GNMIB = shr_nlspmib.o
+
+ISIS_NLSP_DESCRIPTION = "ISIS Network Link State Protocol"
+ISIS_NLSP_ABBREV = ISIS_NLSP
+ISIS_NLSP_HELP = ""
+ISIS_NLSP_TEST_SCRIPT = ""
+ISIS_NLSP_FEATURE = 	 shr_clns_adj.o shr_isis.o shr_isis_nlsp_debug.o
+
+KEYMAN_DESCRIPTION = "Lock and Key support"
+KEYMAN_ABBREV = KEYMAN
+KEYMAN_HELP = ""
+KEYMAN_TEST_SCRIPT = ""
+KEYMAN_FEATURE = 	 shr_keyman.o
+
+LAT_DESCRIPTION = "Local Area Transport LAT \(DEC\) terminal services"
+LAT_ABBREV = LAT
+LAT_HELP = ""
+LAT_TEST_SCRIPT = ""
+LAT_FEATURE = 	 shr_comm.o shr_lat.o
+
+MOP_DESCRIPTION = "Maintenace Operation Protocol \(DEC booting\)"
+MOP_ABBREV = MOP
+MOP_HELP = ""
+MOP_TEST_SCRIPT = ""
+MOP_FEATURE = 	 shr_mop.o
+
+NETBIOS_ACL_DESCRIPTION = "Netbios Access Lists"
+NETBIOS_ACL_ABBREV = NETBIOS_ACL
+NETBIOS_ACL_HELP = ""
+NETBIOS_ACL_TEST_SCRIPT = ""
+NETBIOS_ACL_FEATURE = 	 shr_ibuint.o shr_netbios_acl.o \
+	shr_netbios_acl_ui.o $(BRIDGET_FEATURE)
+
+NETBIOS_CP_DESCRIPTION = "Netbios Access Lists, NCP"
+NETBIOS_CP_ABBREV = NETBIOS_CP
+NETBIOS_CP_HELP = ""
+NETBIOS_CP_TEST_SCRIPT = ""
+NETBIOS_CP_FEATURE = 	 shr_nbfcp.o $(NETBIOS_ACL_FEATURE) \
+	$(PPP_FEATURE)
+
+NETBIOS_AS_DESCRIPTION = "NBF \(NetBIOS Frames or NETBEUI\) Access Server Support"
+NETBIOS_AS_ABBREV = NETBIOS_AS
+NETBIOS_AS_HELP = ""
+NETBIOS_AS_TEST_SCRIPT = ""
+NETBIOS_AS_FEATURE = 	 shr_dlc_base.o shr_llc2.o shr_netbios_as.o
+
+NTP_DESCRIPTION = "Network Time Protocol support"
+NTP_ABBREV = NTP
+NTP_HELP = ""
+NTP_TEST_SCRIPT = ""
+NTP_FEATURE = 	 shr_ntp.o shr_ntp_refclock.o \
+		shr_ntp_refclock_master.o shr_ntp_refclock_pps.o \
+		shr_ntp_refclock_telsol.o
+
+OSPF_DESCRIPTION = "Open Shortest Path First protocol support"
+OSPF_ABBREV = OSPF
+OSPF_HELP = ""
+OSPF_TEST_SCRIPT = ""
+OSPF_FEATURE = 	 shr_ospf.o $(IP_BASE_FEATURE)
+OSPF_GNMIB =		shr_ospfmib.o
+
+RIP_DESCRIPTION = "Routing Information Protocol"
+RIP_ABBREV = RIP
+RIP_HELP = ""
+RIP_TEST_SCRIPT = ""
+RIP_FEATURE = 	 shr_rip.o $(IP_BASE_FEATURE)
+
+PPP_DESCRIPTION = "Point to Point protocol"
+PPP_ABBREV = PPP
+PPP_HELP = ""
+PPP_TEST_SCRIPT = ""
+PPP_FEATURE = 	 shr_ppp.o $(CHAT_FEATURE) $(COMPRESS_FEATURE) \
+	$(DIALER_FEATURE) $(IP_COMPRESS_FEATURE) $(TACACS_FEATURE)
+
+VTEMP_DESCRIPTION = "V-template support for access server and ppp"
+VTEMP_ABBREV = VTEMP
+VTEMP_HELP = ""
+VTEMP_TEST_SCRIPT = ""
+VTEMP_FEATURE = 	 shr_vtemplate.o
+
+RMON_DESCRIPTION = "Remote NM Monitoring \(requires SNMP\) "
+RMON_ABBREV = RMON
+RMON_HELP = ""
+RMON_TEST_SCRIPT = ""
+RMON_FEATURE = shr_rmon.o $(ETHER_FEATURE) $(SNMP_FEATURE)
+
+RMONLITE_DESCRIPTION = "Smaller version of RMON"
+RMONLITE_ABBREV = RMONLITE
+RMONLITE_HELP = ""
+RMONLITE_TEST_SCRIPT = ""
+RMONLITE_FEATURE = 	 shr_rmonlite.o $(SNMP_FEATURE) $(ATM_FEATURE)
+
+SMDS_DESCRIPTION = "Switched Mulitmegabit Data Service \(SMDS\) support"
+SMDS_ABBREV = SMDS
+SMDS_HELP = ""
+SMDS_TEST_SCRIPT = ""
+SMDS_FEATURE = 	 shr_serial.o shr_smds.o
+
+AT_SMRP_DESCRIPTION = "Simple Multicast Routing Protocol \(SMRP\) for AppleTalk"
+AT_SMRP_ABBREV = AT_SMRP
+AT_SMRP_HELP = ""
+AT_SMRP_TEST_SCRIPT = ""
+AT_SMRP_FEATURE = 	 shr_atsmrp.o shr_smrp.o $(ATALK_FEATURE) \
+	$(FAST_ATSMRP)
+
+AT_AURP_DESCRIPTION = "Aurp for Apple Talk"
+AT_AURP_ABBREV = AT_AURP
+AT_AURP_HELP = ""
+AT_AURP_TEST_SCRIPT = ""
+AT_AURP_FEATURE = 	 shr_ataurp.o $(ATALK_FEATURE) $(TUNNEL_FEATURE)
+
+AT_SMRP_T_DESCRIPTION = "Simple Multicast Routing Protocol \(SMRP\) for AppleTalk, with testing"
+AT_SMRP_T_ABBREV = AT_SMRP_T
+AT_SMRP_T_HELP = ""
+AT_SMRP_T_TEST_SCRIPT = ""
+AT_SMRP_T_FEATURE = 	 shr_smrptest.o $(AT_SMRP_FEATURE)
+
+SNAPSHOT_DESCRIPTION = "Snapshot routing"
+SNAPSHOT_ABBREV = SNAPSHOT
+SNAPSHOT_HELP = ""
+SNAPSHOT_TEST_SCRIPT = ""
+SNAPSHOT_FEATURE = 	 shr_snapshot.o
+SNAPSHOT_GNMIB =	shr_snapshotmib.o shr_queuemib.o
+
+TARP_DESCRIPTION = "Target ID Address Resolution Protocol"
+TARP_ABBREV = TARP
+TARP_HELP = ""
+TARP_TEST_SCRIPT = ""
+TARP_FEATURE = 	 shr_tarp.o $(CLNS_FEATURE)
+
+VINES_DESCRIPTION = "Vines protocol"
+VINES_ABBREV = VINES
+VINES_HELP = ""
+VINES_TEST_SCRIPT = ""
+VINES_FEATURE = 	 shr_tring.o shr_vines.o $(FAST_VINES) shr_srbcore.o
+VINES_GNMIB = 		shr_vinesmib.o
+# shr_srbcore and shr_tring added for modularity
+
+VINES_T_DESCRIPTION = "Vines protocol with testing support"
+VINES_T_ABBREV = VINES_T
+VINES_T_HELP = ""
+VINES_T_TEST_SCRIPT = ""
+VINES_T_FEATURE = 	 shr_vinestest.o $(VINES_FEATURE)
+VINES_T_GNMIB = 	shr_vinesmib.o
+
+X25_DESCRIPTION = "X25 support"
+X25_ABBREV = X25
+X25_HELP = ""
+X25_TEST_SCRIPT = ""
+X25_FEATURE = 	 shr_dlc_base.o shr_llc2.o shr_pad.o shr_serial.o \
+	shr_x25.o $(COMPRESS_FEATURE) $(IP_COMPRESS_FEATURE)
+X25_GNMIB = 		shr_x25mib.o shr_lapbmib.o
+
+XNS_DESCRIPTION = "Xerox Network Services \(XNS\) protocol support"
+XNS_ABBREV = XNS
+XNS_HELP = ""
+XNS_TEST_SCRIPT = ""
+XNS_FEATURE = 	 shr_griproute.o shr_tring.o shr_xns.o $(FAST_XNS) shr_srbcore.o
+XNS_GNMIB =		shr_xnsmib.o
+# shr_srbcore and shr_tring added for modularity
+
+XREMOTE_DESCRIPTION = "Xremote support"
+XREMOTE_ABBREV = XREMOTE
+XREMOTE_HELP = ""
+XREMOTE_TEST_SCRIPT = ""
+XREMOTE_FEATURE = 	 shr_pt.o shr_pt_lat.o shr_xremote.o $(LAT_FEATURE) \
+	$(PPP_FEATURE)
+
+DES_DESCRIPTION = "Data Encryption Algorithm support"
+DES_ABBREV = DES
+DES_HELP = ""
+DES_TEST_SCRIPT = ""
+DES_FEATURE = 	 shr_des.o
+
+HPPROBE_DESCRIPTION = "Support for HP PROBE"
+HPPROBE_ABBREV = HPPROBE
+HPPROBE_HELP = ""
+HPPROBE_TEST_SCRIPT = ""
+HPPROBE_FEATURE = 	 shr_hpprobe.o
+
+IP_GDP_DESCRIPTION = "Support for Gateway Protocol"
+IP_GDP_ABBREV = IP_GDP
+IP_GDP_HELP = ""
+IP_GDP_TEST_SCRIPT = ""
+IP_GDP_FEATURE = 	 shr_ipgdp.o
+
+IP_DNS_DESCRIPTION = "Support for IP Distributed Name Server"
+IP_DNS_ABBREV = IP_DNS
+IP_DNS_HELP = ""
+IP_DNS_TEST_SCRIPT = ""
+IP_DNS_FEATURE = 	 shr_ipdns.o
+
+IP_APPS_DESCRIPTION = "Support for IP Applications"
+IP_APPS_ABBREV = IP_APPS
+IP_APPS_HELP = ""
+IP_APPS_TEST_SCRIPT = ""
+IP_APPS_FEATURE = 	 shr_ipapps.o
+
+IP_UDPTCP_DESCRIPTION = "Support for IP UDP TCP"
+IP_UDPTCP_ABBREV = IP_UDPTCP
+IP_UDPTCP_HELP = ""
+IP_UDPTCP_TEST_SCRIPT = ""
+IP_UDPTCP_FEATURE = 	 shr_ipudptcp.o
+
+IP_ALIAS_DESCRIPTION = "Support for IP Alias"
+IP_ALIAS_ABBREV = IP_ALIAS
+IP_ALIAS_HELP = ""
+IP_ALIAS_TEST_SCRIPT = ""
+IP_ALIAS_FEATURE = 	 shr_ipalias.o
+
+COMM_DESCRIPTION = "Commserver basic functions"
+COMM_ABBREV = COMM
+COMM_HELP = ""
+COMM_TEST_SCRIPT = ""
+COMM_FEATURE = 	 shr_comm.o
+
+IP_AUTHSVCS_DESCRIPTION = "Kerberos support"
+IP_AUTHSVCS_ABBREV = IP_AUTHSVCS
+IP_AUTHSVCS_HELP = ""
+IP_AUTHSVCS_TEST_SCRIPT = ""
+IP_AUTHSVCS_FEATURE = 	 shr_kerberos.o
+
+LLC2_DESCRIPTION = "Logical Link Control LLC2 protocol"
+LLC2_ABBREV = LLC2
+LLC2_HELP = ""
+LLC2_TEST_SCRIPT = ""
+LLC2_FEATURE = 	 shr_dlc_base.o shr_llc2.o
+
+PT_PROTO_MIN_DESCRIPTION = "Minimum Protocl translator support"
+PT_PROTO_MIN_ABBREV = PT_PROTO_MIN
+PT_PROTO_MIN_HELP = ""
+PT_PROTO_MIN_TEST_SCRIPT = ""
+PT_PROTO_MIN_FEATURE = 	 shr_comm.o shr_lat.o shr_pt.o shr_pt_lat.o \
+	shr_pt_latslip.o shr_pt_slip_ppp.o shr_pt_tcp.o shr_pt_tcplat.o \
+	shr_pt_tcpslip.o $(IP_COMPRESS_FEATURE) $(PPP_FEATURE)
+
+PT_PROTO_DESCRIPTION = "Basic Protocol Translator support"
+PT_PROTO_ABBREV = PT_PROTO
+PT_PROTO_HELP = ""
+PT_PROTO_TEST_SCRIPT = ""
+PT_PROTO_FEATURE = 	 shr_pad.o shr_pt_auto.o shr_pt_latpad.o \
+	shr_pt_pad.o shr_pt_padtcp.o $(PT_PROTO_MIN_FEATURE) $(X25_FEATURE)
+
+PT_PROTO_FULL_DESCRIPTION = "Full Protocol Translator support"
+PT_PROTO_FULL_ABBREV = PT_PROTO_FULL
+PT_PROTO_FULL_HELP = ""
+PT_PROTO_FULL_TEST_SCRIPT = ""
+PT_PROTO_FULL_FEATURE = 	 shr_pt_latauto.o shr_pt_padauto.o \
+	shr_pt_padslip.o shr_pt_tcpauto.o $(PT_PROTO_FEATURE)
+
+######################################################################
+#
+# Features with a platform dependent component
+#
+######################################################################
+
+VDLC_DESCRIPTION = "Internal CLS connections between two CLS-DLUS"
+VDLC_ABBREV = VDLC
+VDLC_HELP = ""
+VDLC_TEST_SCRIPT = ""
+VDLC_FEATURE = 	 shr_dlc_base.o shr_vdlc.o $(BRIDGE_SR_FEATURE)
+
+LANE_DESCRIPTION = "LAN Emulation support"
+LANE_ABBREV = LANE
+LANE_HELP = ""
+LANE_TEST_SCRIPT = ""
+LANE_FEATURE = 	 shr_lane.o $(ATM_FEATURE) $(ATM_GNMIB) $(FAST_LANE) \
+	 $(SNMP_FEATURE) $(LANEMIB)
+
+ATM_DESCRIPTION = "ATM support"
+ATM_ABBREV = ATM
+ATM_HELP = ""
+ATM_TEST_SCRIPT = ""
+ATM_FEATURE = 	 shr_atm.o shr_atm_arp.o shr_serial.o
+ATM_GNMIB =		shr_atmmib.o
+
+APPN_DESCRIPTION = "Advanced Peer to Peer networking - APPN"
+APPN_ABBREV = APPN
+APPN_HELP = ""
+APPN_TEST_SCRIPT = ""
+APPN_FEATURE = 	 shr_appn.o shr_appnutil.o shr_cls.o shr_dlur.o \
+	$(BRIDGE_SR_FEATURE) $(LLC2_FEATURE)
+APPN_GNMIB = shr_rp_appnmib.o shr_appnmib.o
+
+SNMP_DESCRIPTION = " SNMP, required for managed images "
+SNMP_ABBREV = SNMP
+SNMP_HELP = ""
+SNMP_TEST_SCRIPT = ""
+SNMP_FEATURE = shr_chassismib.o shr_snmp.o shr_entity.o \
+		 $(CONFIG_HISTORY) $(SNMP_GNMIB) 
+SNMP_GNMIB =  $(CONFIG_HISTORY) $(FLASHMIB) $(IMAGEMIB) \
+              $(IFMIB) $(CONFMANMIB) $(RS232MIB) $(TSMIB) \
+		$(IPBASIC_GNMIB) $(PLATFORM_MIBS) $(MEMPOOLMIB)
+
+IBM_BASE_DESCRIPTION = "IBM base, "
+IBM_BASE_ABBREV = IBM_BASE
+IBM_BASE_HELP = ""
+IBM_BASE_TEST_SCRIPT = ""
+IBM_BASE_FEATURE = 	  $(FAST_IBM_SRS) $(PCBUS_FEATURE) $(PCBUS_LNM) \
+	$(SNANM_FEATURE) $(VDLC_FEATURE)
+IBM_BASE_GNMIB = shr_srbmib.o shr_rsrbmib.o shr_snasdlcmib.o \
+			shr_stunmib.o shr_sdllcmib.o
+
+BRIDGE_SR_DESCRIPTION = "Source Route Bridging"
+BRIDGE_SR_ABBREV = BRIDGE_SR
+BRIDGE_SR_HELP = ""
+BRIDGE_SR_TEST_SCRIPT = ""
+BRIDGE_SR_FEATURE = 	  $(BRIDGE_SR_SLOW_FEATURE) $(FAST_IBM)
+BRIDGE_SR_GNMIB = 	shr_srbmib.o shr_rsrbmib.o shr_snasdlcmib.o \
+			shr_stunmib.o shr_sdllcmib.o shr_cdlswmib.o
+
+BRIDGE_SR_SLOW_DESCRIPTION = "Source Route Bridging, no fastswitching"
+BRIDGE_SR_SLOW_ABBREV = BRIDGE_SR_SLOW
+BRIDGE_SR_SLOW_HELP = ""
+BRIDGE_SR_SLOW_TEST_SCRIPT = ""
+BRIDGE_SR_SLOW_FEATURE = 	 shr_bridge_rsrb_ui.o shr_bridge_sr.o \
+	shr_bridge_srb_ui.o shr_cls.o shr_dlc_base.o shr_dlcsw.o shr_dlsw.o \
+	shr_ibmnm.o shr_lack.o shr_lanmgr.o shr_lanmgr_ui.o shr_llc2.o \
+	shr_netbios.o shr_netbios_ui.o shr_sdlc.o shr_sdlc_ui.o shr_sdllc.o \
+	shr_serial.o shr_stun.o shr_stun_ui.o shr_tring.o $(BRIDGET_FEATURE) \
+	$(FAST_SRB) $(IP_BASE_FEATURE) $(NETBIOS_ACL_FEATURE) srb_sb.o \
+	$(SNA_PRIORITY_FEATURE)
+BRIDGE_SR_SLOW_GNMIB = 	shr_srbmib.o shr_rsrbmib.o shr_snasdlcmib.o \
+			shr_stunmib.o shr_sdllcmib.o shr_cdlswmib.o
+
+DLSW_DESCRIPTION = "Data Link Switching"
+DLSW_ABBREV = DLSW
+DLSW_HELP = ""
+DLSW_TEST_SCRIPT = ""
+DLSW_FEATURE = 	 fastsrb_les.o $(DLSW_SLOW_FEATURE) $(FAST_IBM)
+DLSW_GNMIB = shr_cdlswmib.o
+
+DLSW_SLOW_DESCRIPTION = "Data Link Switching, no fastswitching"
+DLSW_SLOW_ABBREV = DLSW_SLOW
+DLSW_SLOW_HELP = ""
+DLSW_SLOW_TEST_SCRIPT = ""
+DLSW_SLOW_FEATURE = 	 shr_bridge_sr.o shr_bridge_t.o shr_cls.o \
+	shr_dlc_base.o shr_dlsw.o shr_ibmnm.o shr_iprouting.o shr_lack.o \
+	shr_lanmgr.o shr_llc2.o shr_netbios.o shr_netbios_acl.o shr_serial.o \
+	shr_sna.o shr_tring.o $(BRIDGET_FEATURE) $(DIALER_FEATURE) $(FAST_SRB) \
+	$(IP_BASE_FEATURE)
+DLSW_SLOW_GNMIB = shr_cdlswmib.o
+ 
+DLC_DESCRIPTION = "Data Link Control Base"
+DLC_ABBREV = DLC
+DLC_HELP = ""
+DLC_TEST_SCRIPT = ""
+DLC_FEATURE = 	 shr_dlc_base.o
+
+BSTUN_DESCRIPTION = "Bi-sync tunnel"
+BSTUN_ABBREV = BSTUN
+BSTUN_HELP = ""
+BSTUN_TEST_SCRIPT = ""
+BSTUN_FEATURE = 	  $(BRIDGE_SR_FEATURE) $(BSC) $(BSTUN)
+BSTUN_GNMIB =  $(BSTUNMIB)
+
+QLLC_DESCRIPTION = "Qualified Logical Link Control"
+QLLC_ABBREV = QLLC
+QLLC_HELP = ""
+QLLC_TEST_SCRIPT = ""
+QLLC_FEATURE = 	 shr_qllc.o shr_sdlc.o $(BRIDGE_SR_FEATURE) \
+	$(SNMP_FEATURE) $(X25_FEATURE)
+
+SNANM_DESCRIPTION = "SNA network management"
+SNANM_ABBREV = SNANM
+SNANM_HELP = ""
+SNANM_TEST_SCRIPT = ""
+SNANM_FEATURE = 	 shr_cls.o shr_sna_pu.o shr_snanm.o \
+	$(BRIDGE_SR_FEATURE)
+
+DSPU_DESCRIPTION = "Downstream PU \(DSPU\)"
+DSPU_ABBREV = DSPU
+DSPU_HELP = ""
+DSPU_TEST_SCRIPT = ""
+DSPU_FEATURE = 	 shr_dspu_ui.o $(SNANM_FEATURE)
+DSPU_GNMIB = shr_dspumib.o
+
+VLANS_DESCRIPTION = "Virtual LAN support"
+VLANS_ABBREV = VLANS
+VLANS_HELP = ""
+VLANS_TEST_SCRIPT = ""
+VLANS_FEATURE = 	 shr_vlan.o $(BRIDGET_FEATURE) $(FAST_VLANS) \
+	$(IPX_FEATURE)
+
+SNA_PRIORITY_DESCRIPTION = "System Network Architecture \(IBM\) support"
+SNA_PRIORITY_ABBREV = SNA_PRIORITY
+SNA_PRIORITY_HELP = ""
+SNA_PRIORITY_TEST_SCRIPT = ""
+SNA_PRIORITY_FEATURE = 	 shr_sna.o
+
+V120_DESCRIPTION = "v.120 protocol over isdn"
+V120_ABBREV = V120
+V120_HELP = ""
+V120_TEST_SCRIPT = ""
+V120_FEATURE = 	 shr_v120.o $(DIALER_FEATURE)
+
+ISDN_HTTP_DESCRIPTION = "ISDN with http support"
+ISDN_HTTP_ABBREV = ISDN_HTTP
+ISDN_HTTP_HELP = ""
+ISDN_HTTP_TEST_SCRIPT = ""
+ISDN_HTTP_FEATURE = 	 sub_isdn_http.o $(HTTP_FEATURE) $(ISDN_FEATURE)
+
+SERIAL_HTTP_DESCRIPTION = "SERIAL with http support"
+SERIAL_HTTP_ABBREV = SERIAL_HTTP
+SERIAL_HTTP_HELP = ""
+SERIAL_HTTP_TEST_SCRIPT = ""
+SERIAL_HTTP_FEATURE = 	 shr_async_serial_http.o $(HTTP_FEATURE)
+
+FRAME_RELAY_HTTP_DESCRIPTION = "Frame relay support with http"
+FRAME_RELAY_HTTP_ABBREV = FRAME_RELAY_HTTP
+FRAME_RELAY_HTTP_HELP = ""
+FRAME_RELAY_HTTP_TEST_SCRIPT = ""
+FRAME_RELAY_HTTP_FEATURE = 	 shr_fr_http.o $(FRAME_RELAY_FEATURE) \
+	$(HTTP_FEATURE)
+
+HTTP_DESCRIPTION = "Basic http support"
+HTTP_ABBREV = HTTP
+HTTP_HELP = ""
+HTTP_TEST_SCRIPT = ""
+HTTP_FEATURE = 	 shr_http.o $(IP_DNS_FEATURE)
+
+HTTP_EZ_DESCRIPTION = "Basic ez setup http support"
+HTTP_EZ_ABBREV = HTTP_EZ
+HTTP_EZ_HELP = ""
+HTTP_EZ_TEST_SCRIPT = ""
+HTTP_EZ_FEATURE = 	 shr_http_ezsetup.o $(HTTP_FEATURE)
+
+# Drivers that are on most platforms
+# actual content must be defined in the platform
+# makefile
+
+ETHER_DESCRIPTION = "Ethernet driver"
+ETHER_ABBREV = ETHER
+ETHER_HELP = ""
+ETHER_TEST_SCRIPT = ""
+ETHER_FEATURE = 	  $(ETHER_GAIA)
+ETHER_GNMIB =	$(ETHERMIB)
+
+ISDN_DESCRIPTION = "Isdn support"
+ISDN_ABBREV = ISDN
+ISDN_HELP = ""
+ISDN_TEST_SCRIPT = ""
+ISDN_FEATURE = 	  $(ISDN_GAIA)
+ISDN_GNMIB = $(ISDNMIB) $(CALLMIB)
+
+SERIAL_DESCRIPTION = "Serial driver"
+SERIAL_ABBREV = SERIAL
+SERIAL_HELP = ""
+SERIAL_TEST_SCRIPT = ""
+SERIAL_FEATURE = 	  $(SERIAL_GAIA)
+
+TRING_DESCRIPTION ="Multiring support for routed protocols, Token ring driver"
+TRING_ABBREV = TRING
+TRING_HELP = ""
+TRING_TEST_SCRIPT = ""
+TRING_FEATURE = 	  $(TRING_GAIA)
+TRING_GNMIB = $(TRINGMIB)
+
+RSVP_DESCRIPTION = "Resource reservation protocol"
+RSVP_ABBREV = RSVP
+RSVP_HELP = ""
+RSVP_TEST_SCRIPT = ""
+RSVP_FEATURE = 	 shr_rsvp.o $(IP_MULTICAST_FEATURE)
+RSVP_GNMIB = shr_rsvpmib.o
+
+STUB_DESCRIPTION = "STUB Routing"
+STUB_ABBREV = STUB
+STUB_HELP = ""
+STUB_TEST_SCRIPT = ""
+STUB_FEATURE = 	 shr_ipcdp.o $(CDP_FEATURE) $(IP_BASE_FEATURE)
+
+IP_NAT_DESCRIPTION = "Network Address Translator for IP"
+IP_NAT_ABBREV = IP_NAT
+IP_NAT_HELP = ""
+IP_NAT_TEST_SCRIPT = ""
+IP_NAT_FEATURE = 	 shr_ipnat.o $(FAST_IPNAT) $(IP_BASE_FEATURE)
+
+TRFSHP_DESCRIPTION = "Traffic Shaping over Frame Relay"
+TRFSHP_ABBREV = TRFSHP
+TRFSHP_HELP = ""
+TRFSHP_TEST_SCRIPT = ""
+TRFSHP_FEATURE = 	 shr_traffic_shape.o
+
+#CRYPTO_DESCRIPTION = "Crypto"
+#CRYPTO_ABBREV = CRYPTO
+#CRYPTO_HELP = ""
+#CRYPTO_TEST_SCRIPT = ""
+#CRYPTO_FEATURE = 	 shr_crypto.o $(CRYPTO_RSP_OPTION) $(IP_FAST_RSP)
+
+#CRYPTO_EXPORT_DESCRIPTION = "Crypto for export"
+#CRYPTO_EXPORT_ABBREV = CRYPTO_EXPORT
+#CRYPTO_EXPORT_HELP = ""
+#CRYPTO_EXPORT_TEST_SCRIPT = ""
+#CRYPTO_EXPORT_FEATURE = 	 shr_exportable_crypto.o $(CRYPTO_RSP_OPTION) \
+#	$(IP_FAST_RSP)
+
+DVPN_DESCRIPTION = "Dialup Virtual Private Network"
+DVPN_ABBREV = DVPN
+DVPN_HELP = ""
+DVPN_TEST_SCRIPT = ""
+DVPN_FEATURE = 	 shr_vpn.o $(PPP_FEATURE)
+
+MMP_DESCRIPTION = "MultiChassis MMP"
+MMP_ABBREV = MMP
+MMP_HELP = ""
+MMP_TEST_SCRIPT = ""
+MMP_FEATURE = 	 shr_mlpvt.o
+
+IPX_WAN_DESCRIPTION = " IPX wan support"
+IPX_WAN_ABBREV = IPX_WAN
+IPX_WAN_HELP = ""
+IPX_WAN_TEST_SCRIPT = ""
+IPX_WAN_FEATURE = 	 shr_ipxwan.o $(IPX_FEATURE)
+
+IPX_EIGRP_DESCRIPTION = "EIGRP for IPX"
+IPX_EIGRP_ABBREV = IPX_EIGRP
+IPX_EIGRP_HELP = ""
+IPX_EIGRP_TEST_SCRIPT = ""
+IPX_EIGRP_FEATURE = 	 shr_ipxeigrp.o $(IPX_FEATURE)
+
+TRLANE_DESCRIPTION = "Token Ring Lan Emulation"
+TRLANE_ABBREV = TRLANE
+TRLANE_HELP = ""
+TRLANE_TEST_SCRIPT = ""
+TRLANE_FEATURE = 	 shr_trlane.o $(BRIDGE_SR_FEATURE) $(TRING_FEATURE)
+
+CPP_DESCRIPTION = "Combinet Packet Protocol, CPP"
+CPP_ABBREV = CPP
+CPP_HELP = ""
+CPP_TEST_SCRIPT = ""
+CPP_FEATURE = 	 shr_cpp.o $(ISDN_FEATURE)
+
+VIP_DESCRIPTION = "This image has vip ucode, VIP"
+VIP_ABBREV = VIP
+VIP_HELP = ""
+VIP_TEST_SCRIPT = ""
+VIP_FEATURE = 	 shr_placeholder.o
+
+NCIA_DESCRIPTION = "NCIA2 provides a native SNA client interface to IBM hosts via TCP/IP"
+NCIA_ABBREV = NCIA
+NCIA_HELP = ""
+NCIA_TEST_SCRIPT = ""
+NCIA_FEATURE = 	 shr_ncia.o shr_ncia_ui.o $(BRIDGE_SR_FEATURE)
+
+RTTM_DESCRIPTION = "RTTM"
+RTTM_ABBREV = RTTM
+RTTM_HELP = ""
+RTTM_TEST_SCRIPT = ""
+RTTM_FEATURE = 	 shr_rtt_mon.o shr_rtt_dspu.o shr_rtt_snanm.o $(SNANM_FEATURE)
+RTTM_GNMIB = shr_rtt_monmib.o
+
+SYSLOG_HISTORY_DESCRIPTION = "Sys Log history"
+SYSLOG_HISTORY_ABBREV = SYSLOG_HISTORY
+SYSLOG_HISTORY_HELP = ""
+SYSLOG_HISTORY_TEST_SCRIPT = ""
+SYSLOG_HISTORY_FEATURE = 	 shr_syslog_history.o
+SYSLOG_HISTORY_GNMIB = shr_syslogmib.o
+
+# New features for 11.2
+ 
+# Images described using GAIA features
+		  
+#######################################################################
+#
+# The non platform dependent base. (GAIA)
+#
+#
+########################################################################
+
+IPBASIC = shr_arp.o shr_ipcore.o shr_ipaccount.o \
+shr_ipboot.o shr_ipbootp.o shr_ipdiag.o shr_ipudptcp.o 
+
+# ipboot requiires iptcpudp
+
+IPBASIC_GNMIB =	shr_atmib2.o shr_icmpmib2.o shr_udpmib2.o shr_ipmib2.o
+
+CORE_SYSTEM =	$(KERNEL)
+
+# # # # # Image lists for Gaia build
+
+image-feature-APOLLO = $(GAIA) $(APOLLO_FEATURE) $(UTIL)
+image-feature-APPN = $(GAIA) $(APPN_FEATURE) $(UTIL)
+image-feature-AT_ARAP = $(GAIA) $(AT_ARAP_FEATURE) $(UTIL)
+image-feature-AT_CP = $(GAIA) $(AT_CP_FEATURE) $(UTIL)
+image-feature-ATALK = $(GAIA) $(ATALK_FEATURE) $(UTIL)
+image-feature-ATALK_T = $(GAIA) $(ATALK_T_FEATURE) $(UTIL)
+image-feature-AT_IP = $(GAIA) $(AT_IP_FEATURE) $(UTIL)
+image-feature-AT_EIGRP = $(GAIA) $(AT_EIGRP_FEATURE) $(UTIL)
+image-feature-ATM = $(GAIA) $(ATM_FEATURE) $(UTIL)
+image-feature-ATM_DXI = $(GAIA) $(ATM_DXI_FEATURE) $(UTIL)
+image-feature-BGP = $(GAIA) $(BGP_FEATURE) $(UTIL)
+image-feature-BRIDGET_CMF = $(GAIA) $(BRIDGET_CMF_FEATURE) $(UTIL)
+image-feature-BRIDGET = $(GAIA) $(BRIDGET_FEATURE) $(UTIL)
+image-feature-BRIDGET_SLOW = $(GAIA) $(BRIDGET_SLOW_FEATURE) $(UTIL)
+image-feature-CDP = $(GAIA) $(CDP_FEATURE) $(UTIL)
+image-feature-CDP_NCP = $(GAIA) $(CDP_NCP_FEATURE) $(UTIL)
+image-feature-CHAT = $(GAIA) $(CHAT_FEATURE) $(UTIL)
+image-feature-CLNS = $(GAIA) $(CLNS_FEATURE) $(UTIL)
+image-feature-TS = $(GAIA) $(TS_FEATURE) $(UTIL)
+image-feature-TACACS_PLUS = $(GAIA) $(TACACS_PLUS_FEATURE) $(UTIL)
+image-feature-TUNNEL_SLOW = $(GAIA) $(TUNNEL_SLOW_FEATURE) $(UTIL)
+image-feature-TUNNEL = $(GAIA) $(TUNNEL_FEATURE) $(UTIL)
+image-feature-DECNET_IV = $(GAIA) $(DECNET_IV_FEATURE) $(UTIL)
+image-feature-DECNET = $(GAIA) $(DECNET_FEATURE) $(UTIL)
+image-feature-DHCP_CLIENT = $(GAIA) $(DHCP_CLIENT_FEATURE) $(UTIL)
+image-feature-EGP = $(GAIA) $(EGP_FEATURE)  $(UTIL)
+image-feature-FRAME_RELAY = $(GAIA) $(FRAME_RELAY_FEATURE) $(UTIL)
+image-feature-FRAME_RELAY_ARP = $(GAIA) $(FRAME_RELAY_ARP_FEATURE) $(UTIL)
+image-feature-FRAME_RELAY_SVC = $(GAIA) $(FRAME_RELAY_SVC_FEATURE) $(UTIL)
+image-feature-FRAME_RELAY_TUNNEL = $(GAIA) $(FRAME_RELAY_TUNNEL_FEATURE) $(UTIL)
+image-feature-FRAME_RELAY_TRAFFIC = $(GAIA) $(FRAME_RELAY_TRAFFIC_FEATURE) $(UTIL)
+image-feature-FRAME_RELAY_HTTP = $(GAIA) $(FRAME_RELAY_HTTP_FEATURE) $(UTIL)
+image-feature-FTP = $(GAIA) $(FTP_FEATURE) $(UTIL)
+image-feature-BASE = $(GAIA) $(BASE_FEATURE)  $(UTIL)
+image-feature-IP_SERVICES = $(GAIA) $(IP_SERVICES_FEATURE) $(UTIL)
+image-feature-IP_BASE = $(GAIA) $(IP_BASE_FEATURE) $(UTIL)
+image-feature-IP_TTCP = $(GAIA) $(IP_TTCP_FEATURE) $(UTIL)
+image-feature-ISPY = $(GAIA) $(ISPY_FEATURE) $(UTIL)
+image-feature-IDENT = $(GAIA) $(IDENT_FEATURE) $(UTIL)
+image-feature-IGRP = $(GAIA) $(IGRP_FEATURE) $(UTIL)
+image-feature-IP_MULTICAST = $(GAIA) $(IP_MULTICAST_FEATURE) $(UTIL)
+image-feature-IP_NHRP = $(GAIA) $(IP_NHRP_FEATURE) $(UTIL)
+image-feature-IP_POLICY = $(GAIA) $(IP_POLICY_FEATURE) $(UTIL)
+image-feature-IPX_NHRP = $(GAIA) $(IPX_NHRP_FEATURE) $(UTIL)
+image-feature-IPX_COMPRESSION = $(GAIA) $(IPX_COMPRESSION_FEATURE) $(UTIL)
+image-feature-IPX = $(GAIA) $(IPX_FEATURE) $(UTIL)
+image-feature-IPX_WAN = $(GAIA) $(IPX_WAN_FEATURE) $(UTIL)
+image-feature-IPX_EIGRP = $(GAIA) $(IPX_EIGRP_FEATURE) $(UTIL)
+image-feature-DIALER = $(GAIA) $(DIALER_FEATURE) $(UTIL)
+image-feature-IPX_CP = $(GAIA) $(IPX_CP_FEATURE) $(UTIL)
+image-feature-IPX_NASI = $(GAIA) $(IPX_NASI_FEATURE) $(UTIL)
+image-feature-IPX_NLSP = $(GAIA) $(IPX_NLSP_FEATURE) $(UTIL)
+image-feature-ISIS_NLSP = $(GAIA) $(ISIS_NLSP_FEATURE) $(UTIL)
+image-feature-KEYMAN = $(GAIA) $(KEYMAN_FEATURE) $(UTIL)
+image-feature-LANE = $(GAIA) $(LANE_FEATURE) $(UTIL)
+image-feature-LAT = $(GAIA) $(LAT_FEATURE) $(UTIL)
+image-feature-MOP = $(GAIA) $(MOP_FEATURE) $(UTIL)
+image-feature-NETBIOS_ACL = $(GAIA) $(NETBIOS_ACL_FEATURE) $(UTIL)
+image-feature-NETBIOS_AS = $(GAIA) $(NETBIOS_AS_FEATURE) $(UTIL)
+image-feature-NETBIOS_CP = $(GAIA) $(NETBIOS_CP_FEATURE) $(UTIL)
+image-feature-NTP = $(GAIA) $(NTP_FEATURE) $(UTIL)
+image-feature-OSPF = $(GAIA) $(OSPF_FEATURE) $(UTIL)
+image-feature-RADIUS = $(GAIA) $(RADIUS_FEATURE) $(UTIL)
+image-feature-RIP = $(GAIA) $(RIP_FEATURE) $(UTIL)
+image-feature-RMON = $(GAIA) $(RMON_FEATURE) $(UTIL)
+image-feature-SNMP = $(GAIA) $(SNMP_FEATURE) $(UTIL)
+image-feature-RMONLITE = $(GAIA) $(RMONLITE_FEATURE) $(UTIL)
+image-feature-SMDS = $(GAIA) $(SMDS_FEATURE) $(UTIL)
+image-feature-AT_SMRP = $(GAIA) $(AT_SMRP_FEATURE) $(UTIL)
+image-feature-AT_SMRP_T = $(GAIA) $(AT_SMRP_T_FEATURE) $(UTIL)
+image-feature-SNAPSHOT = $(GAIA) $(SNAPSHOT_FEATURE) $(UTIL)
+image-feature-TARP = $(GAIA) $(TARP_FEATURE) $(UTIL)
+image-feature-VINES = $(GAIA) $(VINES_FEATURE) $(UTIL)
+image-feature-VINES_T = $(GAIA) $(VINES_T_FEATURE) $(UTIL)
+image-feature-VLANS = $(GAIA) $(VLANS_FEATURE) $(UTIL)
+image-feature-X25 = $(GAIA) $(X25_FEATURE) $(UTIL)
+image-feature-XNS = $(GAIA) $(XNS_FEATURE) $(UTIL)
+image-feature-XREMOTE = $(GAIA) $(XREMOTE_FEATURE) $(UTIL)
+image-feature-DES = $(GAIA) $(DES_FEATURE) $(UTIL)
+image-feature-COMM = $(GAIA) $(COMM_FEATURE) $(UTIL)
+image-feature-IP_AUTHSVCS = $(GAIA) $(IP_AUTHSVCS_FEATURE) $(UTIL)
+image-feature-PT_PROTO_MIN = $(GAIA) $(PT_PROTO_MIN_FEATURE) $(UTIL)
+image-feature-PT_PROTO = $(GAIA) $(PT_PROTO_FEATURE) $(UTIL)
+image-feature-PT_PROTO_FULL = $(GAIA) $(PT_PROTO_FULL_FEATURE) $(UTIL)
+image-feature-IBM_BASE = $(GAIA) $(IBM_BASE_FEATURE) $(UTIL)
+image-feature-COMPRESS_CP = $(GAIA) $(COMPRESS_CP_FEATURE) $(UTIL)
+image-feature-COMPRESS = $(GAIA) $(COMPRESS_FEATURE) $(UTIL)
+image-feature-PPP = $(GAIA) $(PPP_FEATURE) $(UTIL)
+image-feature-BSTUN = $(GAIA) $(BSTUN_FEATURE) $(UTIL)
+image-feature-QLLC = $(GAIA) $(QLLC_FEATURE) $(UTIL)
+image-feature-DSPU = $(GAIA) $(DSPU_FEATURE) $(UTIL)
+image-feature-DLSW = $(GAIA) $(DLSW_FEATURE) $(UTIL)
+image-feature-DLSW_SLOW = $(GAIA) $(DLSW_FEATURE_SLOW) $(UTIL)
+image-feature-SNA_PRIORITY = $(GAIA) $(SNA_PRIORITY_FEATURE) $(UTIL)
+image-feature-SNANM = $(GAIA) $(SNANM_FEATURE) $(UTIL)
+image-feature-ETHER = $(GAIA) $(ETHER_FEATURE)  $(UTIL)
+image-feature-SERIAL = $(GAIA) $(SERIAL_FEATURE)  $(UTIL)
+image-feature-ISDN = $(GAIA) $(ISDN_FEATURE) $(UTIL)
+image-feature-HTTP = $(GAIA) $(HTTP_FEATURE) $(UTIL)
+image-feature-HTTP_EZ = $(GAIA) $(HTTP_EZ_FEATURE) $(UTIL)
+image-feature-ISDN_HTTP = $(GAIA) $(ISDN_HTTP_FEATURE) $(UTIL)
+image-feature-SERIAL_HTTP = $(GAIA) $(SERIAL_HTTP_FEATURE) $(UTIL)
+image-feature-PCBUS = $(GAIA) $(PCBUS_FEATURE) $(UTIL)
+image-feature-CD2430 = $(GAIA) $(CD2430_FEATURE) $(UTIL)
+image-feature-TRING = $(GAIA) $(TRING_FEATURE) $(UTIL)
+image-feature-V120 = $(GAIA) $(V120_FEATURE) $(UTIL)
+image-feature-DSX1 = $(GAIA) $(DSX1_FEATURE) $(UTIL)
+image-feature-MCN = $(GAIA) $(MCN_FEATURE) $(UTIL)
+image-feature-AM79970 = $(GAIA) $(AM79970_FEATURE) $(UTIL)
+image-feature-PCI = $(GAIA) $(PCI_FEATURE) $(UTIL)
+image-feature-ATMZR = $(GAIA) $(ATMZR_FEATURE) $(UTIL)
+image-feature-LEX = $(GAIA) $(LEX_FEATURE) $(UTIL)
+image-feature-FDDI = $(GAIA) $(FDDI_FEATURE) $(UTIL)
+image-feature-CHANNEL = $(GAIA) $(CHANNEL_FEATURE) $(UTIL)
+image-feature-FLASH = $(GAIA) $(FLASH_FEATURE) $(UTIL)
+image-feature-IPC_CBUS = $(GAIA) $(IPC_CBUS_FEATURE) $(UTIL)
+image-feature-IPC_CBUS_RSP = $(GAIA) $(IPC_CBUS_RSP_FEATURE) $(UTIL)
+image-feature-IPC_CBUS_MRSP = $(GAIA) $(IPC_CBUS_MRSP_FEATURE) $(UTIL)
+image-feature-MODEMCAP = $(GAIA) $(MODEMCAP_FEATURE) $(UTIL)
+image-feature-AMDP2 = $(GAIA) $(AMDP2_FEATURE) $(UTIL)
+image-feature-DEC21140 = $(GAIA) $(DEC21140_FEATURE) $(UTIL)
+image-feature-PARTNER = $(GAIA) $(PARTNER_FEATURE) $(UTIL)
+image-feature-HUB = $(GAIA) $(HUB_FEATURE) $(UTIL)
+image-feature-BRUT = $(GAIA) $(BRUT_FEATURE) $(UTIL)
+image-feature-TEST = $(GAIA) $(TEST_FEATURE) $(UTIL)
+image-feature-TN = $(GAIA) $(TN_FEATURE) $(UTIL)
+image-feature-LPD = $(GAIA) $(LPD_FEATURE) $(UTIL)
+image-feature-RSVP = $(GAIA) $(RSVP_FEATURE) $(UTIL)
+image-feature-HPPROBE = $(GAIA) $(HPPROBE_FEATURE) $(UTIL)
+image-feature-IP_GDP = $(GAIA) $(IP_GDP_FEATURE) $(UTIL)
+image-feature-IP_DNS = $(GAIA) $(IP_DNS_FEATURE) $(UTIL)
+image-feature-IP_ALIAS = $(GAIA) $(IP_ALIAS_FEATURE) $(UTIL)
+image-feature-IP_APPS = $(GAIA) $(IP_APPS_FEATURE) $(UTIL)
+image-feature-IP_RARP = $(GAIA) $(IP_RARP_FEATURE) $(UTIL)
+image-feature-IP_COMPRESS = $(GAIA) $(IP_COMPRESS_FEATURE) $(UTIL)
+image-feature-STUB = $(GAIA) $(STUB_FEATURE) $(UTIL)
+image-feature-IOCARD = $(GAIA) $(IOCARD_FEATURE) $(UTIL)
+image-feature-IP_NAT = $(GAIA) $(IP_NAT_FEATURE) $(UTIL)
+image-feature-TRFSHP = $(GAIA) $(TRFSHP_FEATURE) $(UTIL)
+image-feature-MK5025 = $(GAIA) $(MK5025_FEATURE) $(UTIL)
+image-feature-DVPN = $(GAIA) $(DVPN_FEATURE) $(UTIL)
+image-feature-MMP = $(GAIA) $(MMP_FEATURE) $(UTIL)
+image-feature-VTEMP = $(GAIA) $(VTEMP_FEATURE) $(UTIL)
+image-feature-AT_AURP = $(GAIA) $(AT_AURP_FEATURE) $(UTIL)
+image-feature-CPP = $(GAIA) $(CPP_FEATURE) $(UTIL)
+image-feature-TRLANE = $(GAIA) $(TRLANE_FEATURE) $(UTIL)
+image-feature-BIGA = $(GAIA) $(BIGA_FEATURE) $(UTIL)
+image-feature-IP_CP = $(GAIA) $(IP_CP_FEATURE) $(UTIL)
+image-feature-AT_CP = $(GAIA) $(AT_CP_FEATURE) $(UTIL)
+image-feature-IP_NACL = $(GAIA) $(IP_NACL_FEATURE) $(UTIL)
+image-feature-NCIA = $(GAIA) $(NCIA_FEATURE) $(UTIL)
+image-feature-RTTM = $(GAIA) $(RTTM_FEATURE) $(UTIL)
+image-feature-SYSLOG_HISTORY = $(GAIA) $(SYSLOG_HISTORY_FEATURE) $(UTIL)
+image-feature-VDLC = $(GAIA) $(VDLC_FEATURE) $(UTIL)
+image-feature-ASYNC = $(GAIA) $(ASYNC_FEATURE) $(UTIL)
+image-feature-CSU_DSU = $(GAIA) $(CSU_DSU_FEATURE) $(UTIL)
+image-feature-MENU = $(GAIA) $(MENU_FEATURE) $(UTIL)
+image-feature-TN3270S = $(GAIA) $(TN3270S_FEATURE) $(UTIL)
+image-feature-TN3270S_SHARE = $(GAIA) $(TN3270S_SHARE_FEATURE) $(UTIL)
+image-feature-IBMINTERFACE = $(GAIA) $(IBMINTERFACE_FEATURE) $(UTIL)
+image-feature-BASE_DW = $(GAIA) $(BASE_DW) $(UTIL)
+image-feature-BOOT = $(GAIA) $(BOOT_FEATURE) $(UTIL)
+
+#image-feature-CRYPTO = $(GAIA) $(CRYPTO_FEATURE) $(UTIL)
+#image-feature-CRYPTO_EXPORT = $(GAIA) $(CRYPTO_EXPORT_FEATURE) $(UTIL)
+#image-feature-IP_UDPTCP = $(GAIA) $(IP_UDPTCP_FEATURE) $(UTIL)
+#image-feature- = $(GAIA) $(_FEATURE) $(UTIL)
+
+# List of features. This drives the gaia features.all build
+
+# All abbreviations from makefile for common features
+
+FEATURE_ABBRV = \
+$(TRFSHP_ABBREV) $(RTTM_ABBREV) \
+$(SYSLOG_HISTORY_ABBREV) $(HTTP_EZ_ABBREV) $(MENU_ABBREV) \
+$(APOLLO_ABBREV) $(AT_ARAP_ABBREV) $(AT_CP_ABBREV) $(ATALK_ABBREV) \
+$(ATALK_T_ABBREV) $(VTEMP_ABBREV) \
+$(FRAME_RELAY_ABBREV) $(FRAME_RELAY_ARP_ABBREV) $(FRAME_RELAY_SVC_ABBREV) \
+$(FRAME_RELAY_TUNNEL_ABBREV) $(FRAME_RELAY_TRAFFIC_ABBREV) $(DVPN_ABBREV) \
+$(IPX_EIGRP_ABBREV) \
+$(HTTP_ABBREV) $(VDLC_ABBREV) \
+$(IPX_WAN_ABBREV) $(AT_AURP_ABBREV) \
+$(AT_IP_ABBREV) $(TN_ABBREV) $(LPD_ABBREV) \
+$(AT_EIGRP_ABBREV) $(ATM_DXI_ABBREV) $(BGP_ABBREV) $(BRIDGET_ABBREV) \
+$(BRIDGET_CMF_ABBREV) $(BRIDGET_SLOW_ABBREV) \
+$(DIALER_ABBREV) $(COMPRESS_CP_ABBREV)  $(COMPRESS_ABBREV) $(CDP_ABBREV) \
+$(CDP_NCP_ABBREV) $(CLNS_ABBREV) \
+$(CHAT_ABBREV) $(TS_ABBREV) $(MODEMCAP_ABBREV) $(RADIUS_ABBREV) \
+$(TACACS_PLUS_ABBREV) $(DECNET_IV_ABBREV) $(DECNET_ABBREV) \
+$(DHCP_CLIENT_ABBREV) \
+$(EGP_ABBREV) $(FTP_ABBREV) $(BASE_ABBREV) \
+$(IP_BASE_ABBREV) $(IP_TTCP_ABBREV) $(TUNNEL_ABBREV) \
+$(IDENT_ABBREV) $(IGRP_ABBREV) $(IP_MULTICAST_ABBREV) $(IP_NHRP_ABBREV) \
+$(IP_POLICY_ABBREV) $(IPX_NHRP_ABBREV) $(IPX_COMPRESSION_ABBREV) \
+$(IPX_ABBREV) $(IPX_CP_ABBREV) $(IPX_NASI_ABBREV) $(IPX_NLSP_ABBREV) \
+$(IP_SERVICES_ABBREV) $(IP_CP_ABBREV) $(AT_CP_ABBREV) $(IP_NACL_ABBREV) \
+$(ISIS_NLSP_ABBREV) $(KEYMAN_ABBREV) $(LAT_ABBREV) $(MOP_ABBREV) \
+$(NETBIOS_ACL_ABBREV) $(NETBIOS_AS_ABBREV) $(NETBIOS_CP_ABBREV) \
+$(NTP_ABBREV) \
+$(OSPF_ABBREV) $(RIP_ABBREV) $(PPP_ABBREV) \
+$(RMONLITE_ABBREV) $(SMDS_ABBREV) $(AT_SMRP_ABBREV) $(AT_SMRP_T_ABBREV) \
+$(SNAPSHOT_ABBREV) \
+$(TARP_ABBREV) $(RSVP_ABBREV) $(IP_DNS_ABBREV) \
+$(IP_ALIAS_ABBREV) $(IP_APPS_ABBREV) \
+$(VINES_ABBREV) $(VINES_T_ABBREV) $(X25_ABBREV) $(XNS_ABBREV) \
+$(XREMOTE_ABBREV) \
+$(DES_ABBREV) $(COMM_ABBREV) $(IP_AUTHSVCS_ABBREV) \
+$(PT_PROTO_MIN_ABBREV) $(PT_PROTO_ABBREV) $(PT_PROTO_FULL_ABBREV) \
+$(SNMP_ABBREV) \
+$(STUB_ABBREV) $(IP_NAT_ABBREV) \
+$(IP_RARP_ABBREV) $(IP_COMPRESS_ABBREV) $(HPPROBE_ABBREV) $(IP_GDP_ABBREV)
+#$(IP_UDPTCP_ABBREV) 
+#$(CRYPTO_ABBREV) $(CRYPTO_EXPORT_ABBREV)
+# Rmonlite needs to be moved to the platforms
+#atommib needs to be removed from platform mibs
+
+################################################################
+#
+#  Feature Pack features are defined here
+#
+################################################################
+include $(SYSROOT)/make.featurepacks
+
+FEATURE_PACK_ABBRV = $(SUBSET_P_PACK_ABBREV)
+# $(SUBSET_IP_PACK_FEATURE) \
+#		     $(SUBSET_AINR_PACK_FEATURE) $(SUBSET_DT_PACK_FEATURE) \
+#		     $(SUBSET_ADT_PACK_FEATURE) $(SUBSET_J_PACK_FEATURE) \
+#		     $(SUBSET_AJ_PACK_FEATURE) $(SUBSET_JR_PACK_FEATURE) \
+#		     $(SUBSET_AJR_PACK_FEATURE)
+
+DEMO_ABBRV = \
+$(DEMO_ABBREV)
+
+######################################################################
+#
+#	End of GAIA
+#
+######################################################################
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+# DO NOT DELETE THIS LINE -- Feature Creator Tool depends on it: Feature Contents Sorted

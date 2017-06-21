@@ -1,0 +1,116 @@
+-- $Id: CISCO-RFC1315-CAPABILITY.my,v 3.2 1995/11/17 08:34:39 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-RFC1315-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-RFC1315-CAPABILITY.my:  RFC 1315 (FRAME-RELAY MIB) AGENT-CAPABILITIES
+--
+-- August 1994, Jeffrey T. Johnson
+--
+-- Copyright (c) 1994 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-RFC1315-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:34:39  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:50:22  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:51  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+-- 
+
+CISCO-RFC1315-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoRFC1315Capability MODULE-IDENTITY
+		LAST-UPDATED	"9408180000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for RFC1315-MIB (Frame Relay MIB)"
+		REVISION	"9408180000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	
+	::= { ciscoAgentCapability 107 }
+
+ciscoRFC1315CapabilityV10R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.2"
+STATUS		current
+DESCRIPTION	"frame-relay capabilities"
+
+SUPPORTS	RFC1315-MIB
+INCLUDES	{ frame-relayGroup }
+
+VARIATION	frDlcmiAddressLen
+SYNTAX		INTEGER { two-octets(2) }
+-- no		 { three-octets (3), four-octets (4) }
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	frDlcmiMaxSupportedVCs
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	frCircuitState
+SYNTAX		INTEGER { active(2), inactive(3) }
+-- no		 { invalid(1) }
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify and unable to detect all states"
+
+VARIATION	frCircuitCommittedBurst
+--		variable not supported, value is zero.
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	frCircuitExcessBurst
+--		variable not supported, value is zero.
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	frCircuitThroughput
+--		variable not supported, value is zero.
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	frErrIfIndex
+ACCESS		not-implemented
+DESCRIPTION	"Table for frErrEntry not supported"
+
+VARIATION	frErrType
+ACCESS		not-implemented
+DESCRIPTION	"Table for frErrEntry not supported"
+
+VARIATION	frErrData
+ACCESS		not-implemented
+DESCRIPTION	"Table for frErrEntry not supported"
+
+VARIATION	frErrTime
+ACCESS		not-implemented
+DESCRIPTION	"Table for frErrEntry not supported"
+
+	::= { ciscoRFC1315Capability 1 }
+
+END

@@ -1,0 +1,26 @@
+# $Id: cdp_registry.reg,v 3.1.2.1 1996/04/15 21:13:14 bcole Exp $
+# $Source: /release/112/cvs/Xsys/cdp/cdp_registry.reg,v $
+#------------------------------------------------------------------
+# CDP's private registry
+#
+# January 1996, Bruce Cole
+#
+# Copyright (c) 1996-1997 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: cdp_registry.reg,v $
+# Revision 3.1.2.1  1996/04/15  21:13:14  bcole
+# CSCdi54649:  IP Host Modularity, IP Automatic Stub Routing feature
+# commit
+# Branch: California_branch
+#
+# Revision 3.1  1996/04/15  01:40:07  bcole
+# Placeholders for 11.2 features.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+BEGIN REGISTRY CDP cdp_regcode
+
+END REGISTRY

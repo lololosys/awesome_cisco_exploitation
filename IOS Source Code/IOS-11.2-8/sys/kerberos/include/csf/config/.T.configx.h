@@ -1,0 +1,9 @@
+
+configx.h,233
+#define _CSF_CONFIGX_H_ 23,737
+#define CSF_CFG0_M_WORDSIZE	64,1578
+#define CSF_CFG0_M_LSBF	65,1611
+#define CSF_CFG0_M_MSBF	66,1641
+#define CSF_CFG0_M_RALIGN	67,1671
+#define CSF_CFG_STSBASE	71,1784
+#define csfSRCIDGEN_ 76,1900

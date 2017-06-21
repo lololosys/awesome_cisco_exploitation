@@ -1,0 +1,38 @@
+
+rcops.c,1297
+#define csfSRCID 22,712
+csfC5_rcOpsTab *csfC5getOps 63,1351
+csf_sts csfC5resolve_rc 82,1796
+csf_sts csfC5initialize_rc 149,3272
+csf_sts csfC5initializeNOP_rc 164,3573
+csf_sts csfC5initializeNOT_rc 166,3670
+csf_sts csfC5initializeBAD_rc 168,3778
+csf_sts csfC5recover_rc 172,3887
+csf_sts csfC5recoverNOP_rc 182,4063
+csf_sts csfC5recoverNOT_rc 184,4136
+csf_sts csfC5recoverBAD_rc 186,4220
+csf_sts csfC5destroy_rc 190,4305
+csf_sts csfC5destroyNOP_rc 203,4536
+csf_sts csfC5destroyNOT_rc 205,4609
+csf_sts csfC5destroyBAD_rc 207,4693
+csf_sts csfC5close_rc 211,4778
+csf_sts csfC5closeNOP_rc 224,5005
+csf_sts csfC5closeNOT_rc 226,5076
+csf_sts csfC5closeBAD_rc 228,5158
+csf_sts csfC5storeEntry_rc 232,5241
+csf_sts csfC5storeEntryNOP_rc 243,5449
+csf_sts csfC5storeEntryNOT_rc 245,5545
+csf_sts csfC5storeEntryBAD_rc 247,5652
+csf_sts csfC5putEntry_rc 251,5760
+csf_sts csfC5putEntryDEF_rc 265,6001
+csf_sts csfC5putEntryNOP_rc 284,6327
+csf_sts csfC5putEntryNOT_rc 286,6446
+csf_sts csfC5putEntryBAD_rc 288,6576
+csf_sts csfC5purge_rc 292,6707
+csf_sts csfC5purgeNOP_rc 302,6879
+csf_sts csfC5purgeNOT_rc 304,6950
+csf_sts csfC5purgeBAD_rc 306,7032
+csf_sts csfC5flush_rc 310,7115
+csf_sts csfC5flushNOP_rc 320,7287
+csf_sts csfC5flushNOT_rc 322,7358
+csf_sts csfC5flushBAD_rc 324,7440

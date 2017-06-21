@@ -1,0 +1,12 @@
+
+sr_sitedefs.h,333
+#define STARTUP_BANNER_1 87,3043
+#define STARTUP_BANNER_2 90,3138
+#define PHYS_ADDR_SIZE 96,3278
+#define MIN_IP_TTL	105,3405
+#define BUFLEN 115,3615
+#define PHYS_ADDR_SIZE 117,3635
+#define PKTBUFSIZ 119,3661
+#define MAXCOMMLEN 121,3685
+#define ipRouteEntry_READ_CREATE129,3993
+#define ipNetToMediaEntry_READ_CREATE130,4026

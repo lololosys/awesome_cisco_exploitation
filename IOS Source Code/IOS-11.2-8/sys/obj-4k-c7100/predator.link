@@ -1,0 +1,68 @@
+/* $Id: predator.link,v 3.2.58.1 1996/03/21 22:57:48 gstovall Exp $
+ * $Source: /release/111/cvs/Xsys/obj-4k-c7100/predator.link,v $
+ *------------------------------------------------------------------
+ * predator.link - Loader command script for Predator
+ *
+ * July 1995, Michael Beesley
+ *
+ * Copyright (c) 1995-1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: predator.link,v $
+ * Revision 3.2.58.1  1996/03/21  22:57:48  gstovall
+ * Branch: California_branch
+ * The ELC_branch now knows the joy of California dreaming.
+ *
+ * Revision 3.2.2.1  1995/11/22  20:31:17  mbeesley
+ * Initial commit of c7100 support.
+ * Branch: ELC_branch
+ *
+ * Revision 3.2  1995/11/17  17:51:56  hampton
+ * Remove old entries from the RCS header logs.
+ *
+ * Revision 3.1  1995/11/09  12:41:56  shaker
+ * Bump version numbers from 2.x to 3.x.
+ *
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+/*
+ * Predator Linker Command Script
+ */
+
+SECTIONS {
+
+	.text . : {
+	    	*(.text)
+		*(.rodata)
+		etext = .;
+		_etext = .;
+	}
+
+	.data ALIGN(0x2000) : {
+		_fdata = .;
+	    	*(.data)
+	}
+
+	_gp = (. + 0x8000);
+
+	.sdata . : {
+		*(.sdata)
+		edata = .;
+		_edata = .;
+	}
+
+	.sbss . : {
+		__bss_start = .;
+		_fbss = .;
+		*(.sbss) *(.scommon)
+	}
+
+	.bss . : {
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

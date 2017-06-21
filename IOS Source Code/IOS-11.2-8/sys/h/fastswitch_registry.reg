@@ -1,0 +1,1049 @@
+# $Id: fastswitch_registry.reg,v 3.7.6.11 1996/07/08 22:17:02 mwu Exp $
+#*------------------------------------------------------------------
+#* fastswitch_registry.reg - Service Points for Fastswitching registry
+#*
+#* August 1993, William H. Palmer
+#*
+#* Copyright (c) 1993-1997 by cisco Systems, Inc.
+#* All rights reserved.
+#*
+#*------------------------------------------------------------------
+# $Log: fastswitch_registry.reg,v $
+# Revision 3.7.6.11  1996/07/08  22:17:02  mwu
+# CSCdi60922:  11.2 Core Features Commit
+# Branch: California_branch
+#
+# Revision 3.7.6.10  1996/06/13  18:23:52  fbordona
+# CSCdi60152:  DLSw merge of low-end and RSP fast switch code.
+#              dlsw_srb_madge_input registry needed for hes.
+#              Fix gs7 build problem with permission from token holder.
+# Branch: California_branch
+#
+# Revision 3.7.6.9  1996/06/12  00:15:40  fbordona
+# CSCdi60152:  DLSw merge of low-end and RSP fast switch code for
+#              modularity.
+# Branch: California_branch
+#
+# Revision 3.7.6.8  1996/05/24  20:41:39  sdurham
+# CSCdi55847:  IOS RMON agent only monitors incoming traffic
+# Branch: California_branch
+#          add service point for passing xmit packets to rmon
+#
+# Revision 3.7.6.7  1996/05/17  11:15:26  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.6.2.4  1996/05/05  23:04:59  ppearce
+# Sync to IbuMod_Calif_baseline_960504
+#
+# Revision 3.6.2.3  1996/05/02  22:01:46  hampton
+# Remove support for old Multibus token ring cards.
+# Branch: IbuMod_Calif_branch
+#
+# Revision 3.6.2.2  1996/04/03  14:25:20  ppearce
+# Sync to IbuMod_Calif_baseline_960402
+#
+# Revision 3.6.2.1  1996/03/17  17:47:55  ppearce
+# Sync IbuMod_Calif_branch to V111_1_3
+#
+# Revision 3.7.6.6  1996/05/04  00:42:09  wilber
+# Branch: California_branch
+#
+# Integrated Routing and Bridging
+# - Rip out MTR transparent bridging support.
+# - New interafce type: BVI(Bridge-group Virtual Interface).
+# - New fast-switching flavor: FS_BVI.
+# - Introduce idb->tbridge_bridge_linktypes, idb->user_configured_mtu and
+#   pak->irb_rcvd_input.
+#
+# Constrained Multicast Flooding
+# - Declare tbifd_type.
+# - Define the CMF parser link points.
+# - Declare the return_one stub function.
+# - Declare the Transparent Bridging registry.
+# - Add tbridge_cmf to the fastswitch registry.
+#
+# Name Access List
+#
+# Revision 3.7.6.5  1996/04/19  15:15:12  che
+# CSCdi55138:  IosSec_branch feature commit
+# Branch: California_branch
+# IOS Security feature commmit
+#
+# Revision 2.1.6.7  1996/04/09  20:19:36  che
+# Branch: IosSec_branch
+# Sync to California_branch (960405)
+#
+# Revision 2.1.6.6  1996/03/30  02:37:27  carrel
+# cvs fixes
+#
+# Revision 2.1.6.5  1996/03/19  07:54:34  che
+# Branch: IosSec_branch
+# Sync to V111_1_3
+#
+# Revision 2.1.6.4  1996/02/21  03:16:27  che
+# Branch: IosSec_branch
+# Sync to 11.1 Mainline (02/20/96)
+#
+# Revision 2.1.6.3  1996/01/20  16:54:01  xliu
+# Branch: IosSec_branch
+# Add registryre call to get ip les fs vector.
+#
+# Revision 2.1.6.2  1995/12/19  03:46:59  che
+# Branch: IosSec_branch
+# Re-sync to Arkansas to fix things that broke.
+#
+# Revision 2.1.6.1  1995/11/17  16:42:02  carrel
+# Branch: IosSec_branch
+# Sync to Arkansas
+# Revision 3.7.6.4  1996/04/17  13:37:29  fred
+# CSCdi54910:  commit rsvp, traffic shaping, and RED
+# Branch: California_branch
+#
+# Revision 3.7.6.3  1996/04/16  18:52:37  rchandra
+# CSCdi54830:  IP features commit
+# Branch: California_branch
+#
+# Revision 3.7.6.2  1996/03/29  19:20:01  hou
+# CSCdi45052:  4500 crashed on vLAN 802.10 routing while pinging 30000
+# packets
+# Branch: California_branch
+# - vlan_route_fddi_dot10_packet()
+#   changing of input_packet->data_area caused bsi eventually lose
+#   buffer.
+#
+# also, remove reg_invoke_rsp_fs_free_memd_pak(), using datagram_done()
+# instead to free buffer for both rsp and les(ISL).
+#
+# Revision 3.7.6.1  1996/03/23  22:48:36  ppearce
+# SR/TLB fastswitching feature
+# Branch: California_branch
+#
+# Revision 3.7  1996/03/04  18:58:44  dkerr
+# CSCdi50623:  IP flow cache needs better accounting granularity
+# Broke build in last commit.  Let's get everything this time...
+#
+# Revision 3.6  1996/02/25  03:51:12  mmcneali
+# CSCdi49686:  IPX non-functional in gs7 images on ISL encapsulating
+#              subinterfaces.
+#
+# Revision 3.5  1996/01/23  08:46:47  mmcneali
+# CSCdi47323:  vLAN encapsulated IP SSE switched.
+#
+#              Faster Baby, Faster!
+#
+# Revision 3.4  1995/12/16  05:02:20  smackie
+# Move the fs_last service to correctly frame fastswitching dispatch
+# services and fix breakage in fs_table_fill(). Add warnings to try to
+# prevent future breakage. (CSCdi45743)
+#
+# Revision 3.3  1995/12/13  04:19:11  ahh
+# CSCdi44230:  Remove dead code
+# Bring out your dead... *clang* (RSRB/TCP fast-switching)
+#
+# Revision 3.2  1995/11/17  09:12:13  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  11:35:08  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.2  1995/11/08  20:58:30  shaker
+# Merge Arkansas_branch into 11.1 mainline.
+#
+# Revision 2.1  1995/06/07  20:35:03  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#*------------------------------------------------------------------
+# $Endlog$
+#
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY FS
+
+DEFINE fast_supported
+/* 
+* Does this hardware idb support fast switching the specified linktype?
+* TRUE/FALSE return, default is FALSE.
+ */
+	LOOP
+	boolean
+	int linktype, hwidbtype *hwidb
+END
+
+DEFINE async_check_fs
+/*
+ * Check for Async idb fastswitching specifics 
+ */
+        LIST 
+        void
+        hwidbtype *idb
+END
+
+DEFINE init_async_fs
+/*
+ * Async fastswitch initilization routine to fork the fastswitch helper
+ * process and initialize the tty mask value
+ */
+        LIST 
+        void
+        -
+END
+
+DEFINE auto_sw_cache_preinit_callback
+/*
+ * Protocol-specific callback preceding generic cbus cache initialization
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE auto_sw_cache_init_callback
+/*
+ * Protocol-specific callback following generic cbus cache initialization
+ */
+	LIST
+	void
+	-
+END
+
+DEFINE auto_sw_cache_init
+/* 
+ * cbus_ipcache_init or similar, index by LINK_xxx
+ */
+	CASE
+	void
+	-
+	0
+	int linktype
+END
+
+DEFINE auto_sw_cache_version
+/*
+ * cbus_ipcache_version or similar, index by LINK_xxx
+ */
+	CASE
+	void
+	-
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE auto_sw_ip_cache_update
+/* 
+ * cbus_ipcache_update or similar
+ */
+	STUB
+	void
+	ipcache_rntype *rnentry, paktype *pak, ipaddrtype destination
+END
+
+DEFINE auto_sw_ipx_cache_update
+/* 
+ * cbus_ipxcache_update or similar
+ */
+	STUB
+	void
+	paktype* pak
+END
+
+DEFINE auto_sw_ip_cache_show
+/* 
+ * cbus_ipcache_show or similar
+ */
+	LIST
+	void
+	ipaddrtype prefix, ipaddrtype mask
+END
+
+DEFINE ip_cache_flow_show
+/* 
+ * Show ip flow cache
+ */
+	LIST
+	void
+	ipaddrtype prefix, ipaddrtype mask, idbtype *idb
+END
+
+DEFINE auto_sw_ipx_cache_invalidate
+/* 
+ * cbus_ipxcache_invalidate or similar
+ */
+	STUB
+	void
+	novcachetype* cptr
+END
+
+DEFINE auto_sw_ipx_cache_show
+/* 
+ * cbus_ipxcache_show or similar
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE auto_sw_bridge_cache_init
+/*
+ * Initialize data structures for autonomous bridging.
+ * Cbus complex has been completely reinitialized.
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE auto_sw_bridge_cache_flush
+/*
+ * cbus_bridge_cache_flush
+ *
+ * Either IP/IPX is about to invalidate the cache or cbus_bce_add
+ * has hit cbus_bce_words_max and we need to flush the bces.
+ *
+ * We will walk the bridge tables freeing all bridge cache entries,
+ * and then check that the allocation for cBus bridging is zero.
+ */
+	STUB
+	void
+	boolean dont_touch_the_cache
+END
+
+DEFINE flush_ip_stats
+/*
+ * flush_ip_stats
+ *
+ * Walk the ip primary cache and flush interface and ip accounting
+ *   statistics to appropriate structs.
+ */
+	STUB
+	void
+	-
+END
+
+DEFINE register_drivers
+/*
+ * Callback for drivers to install fast switching routines 
+ */
+	LIST
+	void
+	ulong fastswitch_flag, hwidbtype* hwidb
+END
+
+DEFINE tbridge_forward
+/*
+ * Transparently bridge a packet for either the RSP or LES environments;
+ *  1) From an RSP interface to another RSP interface.
+ *  2) From an LES interface to another LES interface.
+ * Obsoletes les_bridge_receive.
+ *
+ * Returns TRUE if the packet was forwarded, flooded, or filtered,
+ * in which case the received packet will have been freed.
+ * Returns FALSE if the packet should be received by the bridge itself,
+ * in which case the received packet will not have been freed.
+ */
+      FASTSTUB
+      boolean
+      paktype *pak
+END
+
+DEFINE tbridge_mci_forward
+/*
+ * Transparently bridge a packet from an MCI/cBus interface to another
+ * MCI/cBus interface.
+ * Obsoletes hes_bridge_receive and mbus_tr_mci_bridge_input.
+ *
+ * The received packet is in the interface's receive window.
+ * Returns TRUE if the packet was forwarded, flooded, or filtered,
+ * in which case the received packet will have been flushed.
+ * Returns FALSE if the packet should be received by the bridge itself,
+ * in which case the received packet will not have been flushed.
+ */
+      FASTSTUB
+      boolean
+      idbtype *input
+END
+
+DEFINE tbridge_cmf
+/*
+ * Derive a constrained multicast-floodlist for a multicast packet.
+ * The flood list is a list of tbifd's as defined in tbridge_public.h.
+ */
+	FASTSTUB2
+	ulong
+	paktype *pak, tbifd_type **flood_list
+END
+
+DEFINE vbridge_forward
+/*
+ * Transparently bridge a packet from a virtual bridge to an
+ * MCI/cBus or MultiBus Token Ring (MTR) interface.
+ *
+ * The received packet is in a system buffer.
+ * Returns TRUE if the packet was forwarded, flooded, or filtered.
+ * Returns FALSE if the packet should be forwarded to process level.
+ */
+      FASTSTUB
+      boolean
+      paktype *pak
+END
+
+DEFINE tbridge_fddi_transit_receive
+/*
+ * Process a transparently bridged packet from a fddi transit interface
+ * and pass it up to process level.
+ * Obsoletes fddi_receive_bridge_datagram.
+ *
+ * Returns TRUE if the packet was flushed or pass up to process level.
+ * Returns FALSE if the hwidb need to be throttled due to lack of pak 
+ * buffer. 
+ */
+        FASTSTUB
+        boolean
+        hwidbtype *inputhw
+END
+
+DEFINE mci_vring_input
+/*
+ * Input from mci/fci to rsrb code.
+ */
+	FASTSTUB
+	boolean
+	hwidbtype* hwidb
+END
+
+DEFINE nim_vring_input
+/*
+ * Input from LES drivers to RSRB code.  Does not handle TMS380.
+ */
+	FASTSTUB2
+	boolean
+	hwidbtype* hwidb, paktype* pak
+END
+
+DEFINE tms380_vring_input
+/*
+ * Input from TMS380 driver to RSRB code.  
+ */
+	FASTSTUB2
+	boolean
+	hwidbtype* hwidb, void* rx
+END
+
+DEFINE fs_rsrb_direct_input
+/*
+ * receive rsrb direct input from an interface
+ * fast switch to srb output interface
+ */
+      FASTSTUB2
+      boolean
+      hwidbtype* hwidb, paktype* pak
+END
+
+DEFINE fs_rsrb_fst_input
+/*
+ * receive rsrb fst input from an interface
+ * fast switch to srb output interface
+ */
+      FASTSTUB2
+      boolean
+      hwidbtype* hwidb, paktype* pak
+END
+
+DEFINE mci_rsrb_fst_forward
+/*
+ * Input from mci/fci to FST code
+ */
+	FASTSTUB
+	boolean
+	hwidbtype* hwidb
+END
+
+DEFINE nim_rsrb_fst_forward
+/*
+ * Input from les drivers (except TMS380) to FST code
+ */
+	FASTSTUB2
+	boolean
+	hwidbtype* hwidb, paktype* pak
+END
+
+DEFINE udp_fast_flood
+/* 
+ * Input from mci/cbus to UDP fast flooding code
+ * This routine is the combined parts of ip_input(), udp_process(),
+ * udp_forward() and udp_flood().
+ * It is used to flood udp datagrams at the interrupt level.
+ */
+	FASTSTUB
+	boolean
+	idbtype* swidb
+END
+
+DEFINE udp_flood_fs
+/*
+ * paktype input from platform drivers to platform independent
+ * UDP fast flooding code
+ * It is used to flood udp datagrams at the interrupt level.
+ */
+      FASTSTUB2
+      boolean
+      idbtype* swidb, paktype *pak
+END
+
+DEFINE tunnel_ip_hes_fs
+/*
+ * IP tunnel fastswitching
+ */
+	FASTSTUB
+	boolean
+	hwidbtype* hwidb
+END
+
+DEFINE vrfst_input
+/*
+ * Input from ip input code to RSRB code
+ */
+	FASTSTUB
+	void
+	paktype* pak
+END
+
+DEFINE dlsw_srb_madge_input
+/*
+ * Input from madge lan token ring to DLSW code.
+ */
+        FASTSTUB4
+        boolean
+        hwidbtype* hwidb, void* pak, int dgsize, int riflen
+END
+
+DEFINE dlsw_srb_input
+/*
+ * Input from lan token ring to DLSW code.
+ */
+        FASTSTUB2
+        boolean
+        hwidbtype* hwidb, void* pak
+END
+	
+DEFINE dlsw_srb_mci_input
+/*
+ * Input from mci lan token ring to DLSW code.
+ */
+        FASTSTUB4
+        boolean
+        hwidbtype* hwidb, uchar *dgstart, int dgsize, int riflen
+END
+
+DEFINE mci_dlsw_input
+/*
+ * Input from mci/fci to DLSW code.
+ */
+        FASTSTUB
+        boolean
+        hwidbtype* hwidb
+END
+
+DEFINE nim_dlsw_input
+/*
+ * Input from LES drivers to DLSW code.  Does not handle TMS380.
+ */
+        FASTSTUB2
+        boolean
+        hwidbtype* hwidb, paktype* pak
+END
+
+DEFINE mci_dlsw_fst_forward
+/*
+ * Input from mci/fci to FST code
+ */
+        FASTSTUB
+        boolean
+        hwidbtype* hwidb
+END
+
+DEFINE nim_dlsw_fst_forward
+/*
+ * Input from les drivers (except TMS380) to FST code
+ */
+        FASTSTUB2
+        boolean
+        hwidbtype* hwidb, paktype* pak
+END
+
+DEFINE dlswfst_input
+/*
+ * Input from ip input code to DLSW code
+ */
+        FASTSTUB
+        void
+        paktype* pak
+END
+
+DEFINE dlsw_enable_fs
+/*
+ * Enable fast switching for a specific dlsw circuit
+ */
+        STUB
+        void
+        hwidbtype *idb, void *fct
+END
+
+DEFINE dlsw_disable_fs
+/*
+ * Disable fast switching for a specific dlsw circuit
+ */
+        STUB
+        void
+        void *fct
+END
+
+DEFINE dlsw_init_fast_peer
+/*
+ * Initialize a dlsw peer's fast switching fields
+ */
+        STUB
+        void
+        void  *peer
+END
+
+DEFINE llc2_input
+/*
+ * Input to llc2 handler
+ */
+	FASTSTUB
+	void
+	paktype* pak
+END
+
+DEFINE SNA_Handle_SNA_XID
+/*
+ * Input to SNA process SNA XID
+ */
+      STUB
+      void
+      idbtype *swidb, paktype* pak, void *uSapId, boolean isResponse
+END
+
+DEFINE fast_fragmentation
+/*
+ * Fast datagram fragmentation, for those protocols that can support it.
+ */
+	FASTCASE2
+	boolean
+	hwidbtype *inidb, hwidbtype *outidb
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE fr_pvc_switch_or_fs
+/*
+ * Frame-relay fastswitching
+ */
+	FASTSTUB
+	int
+	void* hwidborpakptr
+END
+
+DEFINE atm_dxi_classify_pak_and_fs
+/*
+ * classify atm-dxi packet and fast switch it
+ */
+	FASTSTUB
+	int
+	void* hwidborpakptr
+END
+
+
+DEFINE atm_get_nlpidtype
+/*
+ * ATM routine to return the NLPIDTYPE from the current packet
+ */
+	FASTSTUB2
+	ushort
+	hwidbtype *hwidb, uchar *encaps
+END
+
+DEFINE tunnel_ip_les_fs
+/*
+ * IP tunnel fastswitching input handler. For low-end systems. Assumes that
+ * interrupt level drivers pass a paktype pointer.
+ */
+	FASTSTUB
+	boolean
+	paktype *pak
+END
+
+#
+# This is the start of the fastswitching case block. Until last_fs, only
+# FASTCASE services used for fastswitching dispatch should be placed here. 
+# The function, fs_fill_table() depends on this
+#
+
+DEFINE ether_fs
+/*
+ * Ethernet fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE fddi_fs
+/*
+ * FDDI fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE framerelay_fs
+/*
+ * Frame-relay fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE hdlc_fs
+/*
+ * HDLC fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE ppp_fs
+/*
+ * PPP fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE ppp_from_process_fs
+/*
+ * PPP fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+
+DEFINE slip_fs
+/*
+ * SLIP fastswitching
+ */
+       FASTCASE
+       boolean
+       void* hwidborpakptr
+       RXTYPE_LAST
+       int rxtype
+END
+
+
+DEFINE smds_fs
+/*
+ * SMDS fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE token_fs
+/*
+ * Tokenring fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE aip_fs
+/*
+ * ATM fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE tunnel_fs
+/*
+ * Tunnel fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype 
+END
+
+DEFINE channel_fs
+/*
+ * IBM Channel fastswitching 
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE lex_fs
+/*
+ * Lex fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE atm_dxi_fs
+/*
+ * ATM-DXI over serial fastswitching
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE last_fs
+/*
+ * Placeholder to delimit end of fastswitching table
+ */
+	FASTCASE
+	boolean
+	void* hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+#
+# This is the end of the fastswitching block. Add all new, *non* fastswitching
+# dispatch services after this point.
+#
+
+DEFINE write_dot10_encapsulation
+
+/*
+ * Build an IEEE 802.10 vLAN header for an egressing packet.
+ */
+
+        FASTSTUB2
+        boolean
+        paktype *pak, idbtype *output
+END
+
+DEFINE write_ether_dot10_encapsulation
+
+/*
+ * Build an IEEE 802.10 vLAN header on Ethernet/Fast Ethernet.
+ */
+
+        FASTSTUB2
+        boolean
+        paktype *pak, idbtype *output
+END
+
+DEFINE write_isl_vlan_colour_2_feip
+
+/*
+ * Indicate to the FEIP that the subnet associated with this vLAN colour is
+ * cached in MEMA on the SSP so that it can pass the interior encapsulated
+ * datagram to the SSP for silicon switching.
+ */
+
+        STUB
+        boolean
+        idbtype *subinterface, boolean on_or_off
+END
+
+
+DEFINE rsp_queue_ether_for_process
+
+/*
+ * Enqueue a received packet for Process Switching on the RSP platforms.
+ * Used by vLANs code that is shared between Cisco 75xx and Cisco 4xxx
+ * platforms, hence a NOP on the 4xxx boxes.
+ */
+
+        FASTSTUB3
+        boolean
+        hwidbtype *hwidb, paktype *pak, void *datagramstart
+END
+
+DEFINE rsp_queue_fddi_for_process
+
+/*
+ * Enqueue a received FDDI packet for Process Switching on the RSP platforms.
+ */
+
+        FASTSTUB2
+        boolean
+        hwidbtype *hwidb, paktype *old_pak
+END
+
+DEFINE rsp_queue_trip_for_process
+
+/*
+ * Enqueue a received packet from Token Ring for Process Switching on
+ * the RSP platforms.
+ */
+
+        FASTSTUB3
+        boolean
+        hwidbtype *hwidb, paktype *old_pak, ushort *status
+END
+
+DEFINE rsp_fs_free_memd_pak
+
+/*
+ * Enqueue a received packet for Process Switching on the RSP platforms.
+ */
+
+        FASTSTUB
+        void
+        paktype *pak
+END
+
+DEFINE determine_RED_precedence
+/*
+ * Invoke to determine what precedence to assign to this flow 0..8
+ */
+
+	FASTCASE
+	short
+	paktype *pak
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE determine_fair_queue_flow_id
+/*
+ * Invoke to determine what conversation to put data into
+ */
+
+	FASTCASE
+	short
+	paktype *pak
+	LINK_MAXLINKTYPE
+	int linktype
+END
+
+DEFINE rmon_input
+/*
+ * Perform remote monitoring analysis on a packet.  This service should
+ * only be invoked for interfaces with a non-null rmon data pointer in
+ * their idb.
+ *
+ * Returns TRUE if the packet was consumed by the rmon process (which
+ * only occurs for promiscously received packets which ordinarily
+ * would have not been received on the interface)
+ * Returns FALSE if the packet should be processed normally.
+ */
+	FASTSTUB2
+	boolean
+	hwidbtype *input, paktype *pak
+END
+
+DEFINE fast_translate_before_routing
+/*
+ * Perform translation of packet header before routing has occurred.
+ */
+	FASTCASE
+	boolean
+	void *hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE rmon_output
+/*
+ * Perform remote monitoring analysis on an output packet.  This service should
+ * only be invoked for interfaces with a non-null rmon data pointer in
+ * their idb.
+ *
+ */
+	FASTSTUB2
+	void
+	hwidbtype *input, paktype *pak
+END
+
+DEFINE fast_translate_after_routing
+/*
+ * Perform translation of packet header after routing has occurred.
+ */
+	FASTCASE
+	boolean
+	void *hwidborpakptr
+	RXTYPE_LAST
+	int rxtype
+END
+
+DEFINE ip_les_fs_query
+/*
+ * Called by crypto subsystem to know the ip les fastswitch routine.
+ * At this time, assume all the interfaces use the same les fs: 
+ * ip_fastswitch.
+ */
+	LIST
+	void
+	void**ip_fast_p
+END
+
+END REGISTRY FS

@@ -1,0 +1,57 @@
+/* $Id: rspram.link,v 3.2 1995/11/17 18:40:32 hampton Exp $
+ * $Source: /swtal/cherf.111/ios/sys/rommon/obj-4k-rsp/rspram.link,v $
+ *------------------------------------------------------------------
+ * rspram.link
+ *
+ * 03/95, Steve J. Zhang
+ *
+ * Copyright (c) 1995 by cisco Systems, Inc.
+ * All rights reserved.
+ * Linker Command Script for RSP ROM Monitor Uncompress Utility
+ *------------------------------------------------------------------
+ * $Log: rspram.link,v $
+# Revision 3.2  1995/11/17  18:40:32  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  13:04:17  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  22:36:20  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+
+/*
+ * RSP Linker Command Script for run from RAM
+ */
+
+SECTIONS {
+
+	.text 0x80010000 : {
+	    	*(.text)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata . : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+		edata = .;
+		_edata = .;
+	}
+
+	.bss . : {
+		_fbss = .;
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

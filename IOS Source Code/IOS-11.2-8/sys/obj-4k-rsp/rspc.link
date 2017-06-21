@@ -1,0 +1,63 @@
+/*# $Id: rspc.link,v 3.1.2.1 1996/09/10 03:00:16 cheilek Exp $
+# $Source: /release/112/cvs/Xsys/obj-4k-rsp/rspc.link,v $
+#------------------------------------------------------------------
+# Link file to create crypto rsp images without VIP microcode bundled
+#
+# September 1996, Alan Cheilek
+#
+# Copyright (c) 1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: rspc.link,v $
+# Revision 3.1.2.1  1996/09/10  03:00:16  cheilek
+# CSCdi61961:  need to add crypto target to svip makefile
+# Branch: California_branch
+# Bundle crypto VIP microcode with crypto images.
+#
+# Revision 3.1  1996/09/10  02:43:40  cheilek
+# Add new link files for crypto vip support
+#
+#------------------------------------------------------------------
+# $Endlog$
+# */
+
+
+SECTIONS {
+
+	.text . : {
+	    	*(.text)
+		rsp_ucode_bndl.o(.rodata)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata ALIGN(0x2000) : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+	}
+
+	_gp = (. + 0x8000);
+
+	.sdata . : {
+		*(.sdata)
+		edata = .;
+		_edata = .;
+	}
+
+	.sbss . : {
+		__bss_start = .;
+		_fbss = .;
+		*(.sbss) *(.scommon)
+	}
+
+	.bss . : {
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

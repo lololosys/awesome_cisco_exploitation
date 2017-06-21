@@ -1,0 +1,498 @@
+| $Id: entry.src,v 3.2 1995/11/17 17:40:29 hampton Exp $
+| $Source: /swtal/cherf.111/ios/sys/isdn/entry.src,v $
+|------------------------------------------------------------------
+| entry.src
+|
+| March 1992, Ronnie Kon
+|
+| Copyright (c) 1992-1994 by cisco Systems, Inc.
+| All rights reserved.
+| 
+|------------------------------------------------------------------
+| $Log: entry.src,v $
+# Revision 3.2  1995/11/17  17:40:29  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  12:13:24  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  21:15:06  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+|------------------------------------------------------------------
+| $Endlog$
+|
+*************************************************************************
+*                                                                       *
+*  ENTRY  : Main entry point routine, it does the following             *
+*                                                                       *
+*           0. Initializes MC68302 and 145474 registers                 *
+*              for a specific environment.                              *
+*           1. Initializes SP as ????STACKTOP which was                 *
+*              defined at link time                                     *
+*           2. Initializes ????HEAP as starting address                 *
+*              of SECTION heap which will be after SECTION code         *
+*           3. Initializes the frame pointer                            *
+*           4. Clears the 'zerovars' section.                           *
+*           5. Calls C initialization routine _START                    *
+*                                                                       *
+*       This module also contains "_exit ()" and "_get_sect_addr ()".   *
+*       "_exit ()" is the system call which terminates the program.     *
+*       "_get_sect_addr ()" returns the address of the section to be    *
+*               initialized by "initcopy ()" when re-entrancy is        *
+*               required.  It is called only when the "__reentrant"     *
+*               switch is set.                                          *
+*                                                                       *
+*************************************************************************
+*                                                                       *
+*       Relative addressing modes may be removed when using             *
+*       absolute addressing.  When using relative addressing with the   *
+*       68020 or 68030, modify the ".W" qualifiers to ".L" to allow     *
+*       use of 32 bit displacements.                                    *
+*                                                                       *
+*************************************************************************
+*                                                                       *
+*       note:   The special characters % and # which appear after       *
+*               some of the comment indicators must be removed also if  *
+*               the comment indicator is removed.  They are used by     *
+*               Microtec to aid in the automatic building and testing   *
+*               of libraries.  They may also be used to aid the user    *
+*               modifying this routine for special applications.        *
+*                                                                       *
+*               *% - Indicates code which is used when using an A5      *
+*                    library for reentrancy.  Simply remove comment     *
+*                    indicators of this form if reentrancy is desired.  *
+*                    Also:                                              *
+*                       1.  Execute initialization of ????HEAP only     *
+*                           once, preferably in the kernel.             *
+*                       2.  Disable interrupts while code which         *
+*                           allocates data and stack space is executing.*
+*                       3.  Disable interrupts whenever the routine     *
+*                           _sbrk is running.                           *
+*                       4.  The size of the stack to be allocated must  *
+*                           be specified via the variable ????STACKSIZE *
+*                           in the linker command file.                 *
+*                       5.  The linker command file must be modified    *
+*                           according to instructions in that file      *
+*                    How interrupts are disabled for 2. and 3. above is *
+*                    left to the user.                                  *
+*                                                                       *
+*               *# - Indicates codes which is used for initializing     *
+*                    the A5 register for use in A5 relative addressing. *
+*                    (Not to be used if reentrancy is being used!)      *
+*                                                                       *
+*************************************************************************
+           
+*       @(#)entry.s     1.34 10/31/90   *
+
+              OPT       CASE
+ENTRY         IDNT
+              SECTION   code,,C             * CODE SECTION
+              XDEF      ENTRY
+              XDEF      __exit
+              XDEF      __main
+              XDEF      __get_sect_addr
+
+* values for Motorola ADS 68302 board
+
+RAM             equ     $00000000         * start of RAM  (32K words)
+RAM2            equ     $00010000         * start of RAM  (32K words)
+PROM            equ     $00800000         * start of PROM (64K words)
+IO              equ     $00200000         * start of I/O  (32K words)
+InternalRam     equ     $00700000         * start of internal RAM
+
+stack           equ     RAM+$FF           * stack location
+
+IMR             equ     InternalRam+$816  * Interrupt mask register
+PACNT           equ     InternalRam+$81e  * Port A cntrl
+PADDR           equ     InternalRam+$820  * Port A data dir
+PADAT           equ     InternalRam+$822  * Port A data
+BR0             equ     InternalRam+$830  * CS0 base register 
+OR0             equ     InternalRam+$832  * CS0 option register
+BR1             equ     InternalRam+$834  * CS1 base register
+OR1             equ     InternalRam+$836  * CS1 option register                 
+BR2             equ     InternalRam+$838  * CS2 base register   
+OR2             equ     InternalRam+$83A  * CS2 option register
+BR3             equ     InternalRam+$83C  * CS3 base register   
+OR3             equ     InternalRam+$83E  * CS3 option register
+WRR             equ     InternalRam+$84A  * Watchdog reference register/enable
+
+*
+ENTRY:
+              MOVE.W    #$2700,SR           * set IPL
+              MOVE.W    #$0000,WRR          * force watchdog off
+              MOVE.W    #$0000,IMR          * disable 302 interrupts
+* reset the 474 chip (Port A, bit 10)
+              move.w    PACNT,d0            * get PA ctrl
+              andi.w    #$fbff,d0           * clear bit 10
+              move.w    d0,PACNT            * write PA ctrl
+              move.w    PADDR,d0            * get PA data dir
+              ori.w     #$0400,d0           * set bit 10
+              move.w    d0,PADDR            * write PA data dir
+              move.w    PADAT,d0            * get PA data
+              andi.w    #$fbff,d0           * clear bit 10
+              move.w    d0,PADAT            * reset to 474
+
+              MOVE.L    #????STACKTOP,SP    * STACK POINTER
+              LEA       ????HEAP,A0
+              ADDQ.L    #4,A0
+              MOVE.L    A0,????HEAP         * HEAP POINTER
+              MOVE.L    #0,A6               * FRAME POINTER INITIALIZATION
+*
+*%            MOVE.L    ????HEAP,A5         * ALLOCATE MEMORY FOR DATA AND
+*%            MOVE.L    A5,D0               * STACK SPACE OUT OF HEAP AREA;
+*%            ADD.L     #484+????STACKSIZE+3,D0 * REPLACE ORIGINAL SP
+*%            LSR.L     #2,D0               * SHIFT TO LONG WORD ALIGN
+*%            LSL.L     #2,D0               * AND SHIFT BACK
+*%            MOVE.L    D0,SP               * PLACE IN STACK POINTER
+*%            MOVE.L    SP,????HEAP         * ADJUST HEAP ADDRESS
+*
+*             THE FOLLOWING CODE CLEARS THE ZEROVARS SECTION
+*
+              LEA       .STARTOF.(zerovars),A0  * START OF THE SECTION
+*
+*%            MOVE.L    A5,A0               * START OF THE SECTION
+*%            ADD.L     #?A5,A5             * ADD OFFSET TO A5
+*
+              MOVE.L    #.SIZEOF.(zerovars),D1  * LENGTH OF THE SECTION
+              MOVE.L    D1,D0               * SAVE IN D0 ALSO
+              LSR.L     #2,D1               * NUMBER OF LONG WORDS TO MOVE
+              BRA.S     CLR0VARS1           * SKIP FIRST CLEAR
+CLR0VARS:     CLR.L     (A0)+               * CLEAR THE ADDRESS
+CLR0VARS1:    DBF       D1,CLR0VARS         * DECREMENT LONG WORD COUNT & TEST
+              SUBI.L    #$10000,D1          * SIMULATE BORROW FROM LOW 16 BITS
+              CMPI.L    #-1,D1              * IS LONG WORD COUNT == -1
+              BNE.S     CLR0VARS            * NO -- KEEP CLEARING
+*
+              ANDI.L    #3,D0               * SHOULD INDIVIDUAL BYTES BE CLEARED
+              BRA.S     CLR0VARS2           * SKIP FIRST CLEAR
+CLR0VARS3:    CLR.B     (A0)+               * CLEAR ONE MORE BYTE
+CLR0VARS2:    DBF       D0,CLR0VARS3        * DECREMENT BYTE COUNT & TEST
+*
+*%            MOVE.L    #1,(__reentrant).W(A5)  * SET FLAG
+*#            MOVE.L    #?A5,A5             * A5 LIBRARY INITIALIZATION
+*
+*             THE ROUTINE __START INITIALIZES ALL NON-ZERO MEMORY,
+*             OPENS stdin, stdout, AND stderr.  IT THEN CALLS main.
+*
+              MOVE.L    #NULL,-(SP)         * SET ARGV[ARGC] = NULL
+              CLR.L     -(SP)               * SET ARGC = 0 IN _START
+              JSR       (__START).W(PC)     * C INITIALIZATION
+
+__exit:
+              STOP      #$2700
+              BRA.S     __exit
+              RTS
+*
+*             THE FOLLOWING CODE CALLS THE STATIC DESTRUCTORS FOR C++ IN THE
+*             initfini SECTION:  NAMELY, THE EVEN-NUMBERED ENTRIES IN SECTION
+*             initfini (ASSUMING START INDEX IS 1).
+*
+              LEA       .STARTOF.(initfini),A2  * START OF THE SECTION
+              MOVE.L    #.SIZEOF.(initfini),D2  * LENGTH OF THE SECTION IN BYTES
+              ASR.L     #3,D2               * NUMBER OF STATIC DESTRS TO CALL
+                                            * NOTE: STATIC DESTRUCTORS ARE
+                                            * EVEN-NUMBERED ENTRIES.
+              ADDQ.L    #4,A2               * SKIP TO THE 1ST STATIC DESTR ENTRY
+              BRA.S     CXXFINICOND         * TEST LOOP CONDITION
+CXXFINICALL:
+              MOVEA.L   (A2),A0             * GET DESTRUCTOR ADDRESS
+              JSR       (A0)                * CALL STATIC DESTR
+              ADDQ.L    #8,A2               * POINT TO NEXT STATIC CONSTRUCTOR
+CXXFINICOND:  
+              DBF       D2,CXXFINICALL
+              SUBI.L    #$10000,D2
+              CMPI.L    #-1,D2
+              BNE.S     CXXFINICALL
+*
+STOP_IT:
+              STOP      #$2700
+              BRA.S     STOP_IT
+              RTS
+
+__main:
+*
+*             THE FOLLOWING CODE CALLS THE STATIC CONSTRUCTORS FOR C++ IN THE
+*             initfini SECTION:  NAMELY, THE ODD-NUMBERED ENTRIES IN SECTION
+*             initfini (ASSUMING START INDEX IS 1).
+*
+              LEA       .STARTOF.(initfini),A2  * START OF THE SECTION
+              MOVE.L    #.SIZEOF.(initfini),D2  * LENGTH OF THE SECTION IN BYTES
+              ASR.L     #3,D2               * NUMBER OF STATIC CONSTRS TO CALL
+                                            * NOTE: STATIC CONSTRUCTORS ARE
+                                            * ODD-NUMBERED ENTRIES.
+              BRA.S     CXXINITCOND         * TEST LOOP CONDITION
+CXXCALL:
+              MOVEA.L   (A2),A0             * GET ADDRESS OF CONSTRUCTOR
+              JSR       (A0)                * CALL STATIC CONSTR
+              ADDQ.L    #8,A2               * POINT TO NEXT STATIC CONSTRUCTOR
+
+CXXINITCOND:
+              DBF       D2,CXXCALL
+              SUBI.L    #$10000,D2
+              CMPI.L    #-1,D2
+              BNE.S     CXXCALL
+              RTS
+*
+__get_sect_addr:
+*%            MOVE.L    A5,D0               * GET A5 FOR PROCESSING
+*%            SUB.L     #?A5,D0             * SUBTRACT A5 OFFSET
+              RTS                           * AND RETURN
+NULL          DC.L      0                   * NULL POINTER
+* 
+              SECTION   zerovars,,D         * DATA SECTION
+              XREF      ????STACKTOP
+              XREF      __START
+*%            XREF      ????STACKSIZE       * SIZE OF STACK
+              XDEF      __reentrant
+__reentrant   DS.L      1
+*
+*             FORCE SECTION vars TO FOLLOW SECTIONS code AND zerovars IN
+*             MEMORY. THIS IS DONE EVEN THOUGH THERE IS NO CODE IN 
+*             SECTION vars.
+*
+              SECTION   vars,,D             * INITIALIZED DATA
+              SECTION   heap,,D             * HEAP SECTION (AFTER CODE)
+*#            XREF      ?A5
+*%            XREF      ?A5
+              XDEF      ????HEAP            
+????HEAP      DS.L      1
+              END       ENTRY
+.Vt,08000 ENTRY.SRC 16-Oct-91,15:42:06,`ELO' initial
+.I 236
+*************************************************************************
+*                                                                       *
+*  ENTRY  : Main entry point routine, it does the following             *
+*                                                                       *
+*           0. Initializes MC68302 and 145474 registers                 *
+*              for a specific environment.                              *
+*           1. Initializes SP as ????STACKTOP which was                 *
+*              defined at link time                                     *
+*           2. Initializes ????HEAP as starting address                 *
+*              of SECTION heap which will be after SECTION code         *
+*           3. Initializes the frame pointer                            *
+*           4. Clears the 'zerovars' section.                           *
+*           5. Calls C initialization routine _START                    *
+*                                                                       *
+*       This module also contains "_exit ()" and "_get_sect_addr ()".   *
+*       "_exit ()" is the system call which terminates the program.     *
+*       "_get_sect_addr ()" returns the address of the section to be    *
+*               initialized by "initcopy ()" when re-entrancy is        *
+*               required.  It is called only when the "__reentrant"     *
+*               switch is set.                                          *
+*                                                                       *
+*************************************************************************
+*                                                                       *
+*       Relative addressing modes may be removed when using             *
+*       absolute addressing.  When using relative addressing with the   *
+*       68020 or 68030, modify the ".W" qualifiers to ".L" to allow     *
+*       use of 32 bit displacements.                                    *
+*                                                                       *
+*************************************************************************
+*                                                                       *
+*       note:   The special characters % and # which appear after       *
+*               some of the comment indicators must be removed also if  *
+*               the comment indicator is removed.  They are used by     *
+*               Microtec to aid in the automatic building and testing   *
+*               of libraries.  They may also be used to aid the user    *
+*               modifying this routine for special applications.        *
+*                                                                       *
+*               *% - Indicates code which is used when using an A5      *
+*                    library for reentrancy.  Simply remove comment     *
+*                    indicators of this form if reentrancy is desired.  *
+*                    Also:                                              *
+*                       1.  Execute initialization of ????HEAP only     *
+*                           once, preferably in the kernel.             *
+*                       2.  Disable interrupts while code which         *
+*                           allocates data and stack space is executing.*
+*                       3.  Disable interrupts whenever the routine     *
+*                           _sbrk is running.                           *
+*                       4.  The size of the stack to be allocated must  *
+*                           be specified via the variable ????STACKSIZE *
+*                           in the linker command file.                 *
+*                       5.  The linker command file must be modified    *
+*                           according to instructions in that file      *
+*                    How interrupts are disabled for 2. and 3. above is *
+*                    left to the user.                                  *
+*                                                                       *
+*               *# - Indicates codes which is used for initializing     *
+*                    the A5 register for use in A5 relative addressing. *
+*                    (Not to be used if reentrancy is being used!)      *
+*                                                                       *
+*************************************************************************
+           
+*       @(#)entry.s     1.34 10/31/90   *
+
+              OPT       CASE
+ENTRY         IDNT
+              SECTION   code,,C             * CODE SECTION
+              XDEF      ENTRY
+              XDEF      __exit
+              XDEF      __main
+              XDEF      __get_sect_addr
+
+* values for Motorola ADS 68302 board
+
+RAM             equ     $00000000         * start of RAM  (32K words)
+RAM2            equ     $00010000         * start of RAM  (32K words)
+PROM            equ     $00800000         * start of PROM (64K words)
+IO              equ     $00200000         * start of I/O  (32K words)
+InternalRam     equ     $00700000         * start of internal RAM
+
+stack           equ     RAM+$FF           * stack location
+
+IMR             equ     InternalRam+$816  * Interrupt mask register
+PACNT           equ     InternalRam+$81e  * Port A cntrl
+PADDR           equ     InternalRam+$820  * Port A data dir
+PADAT           equ     InternalRam+$822  * Port A data
+BR0             equ     InternalRam+$830  * CS0 base register 
+OR0             equ     InternalRam+$832  * CS0 option register
+BR1             equ     InternalRam+$834  * CS1 base register
+OR1             equ     InternalRam+$836  * CS1 option register                 
+BR2             equ     InternalRam+$838  * CS2 base register   
+OR2             equ     InternalRam+$83A  * CS2 option register
+BR3             equ     InternalRam+$83C  * CS3 base register   
+OR3             equ     InternalRam+$83E  * CS3 option register
+WRR             equ     InternalRam+$84A  * Watchdog reference register/enable
+
+*
+ENTRY:
+              MOVE.W    #$2700,SR           * set IPL
+              MOVE.W    #$0000,WRR          * force watchdog off
+              MOVE.W    #$0000,IMR          * disable 302 interrupts
+* reset the 474 chip (Port A, bit 10)
+              move.w    PACNT,d0            * get PA ctrl
+              andi.w    #$fbff,d0           * clear bit 10
+              move.w    d0,PACNT            * write PA ctrl
+              move.w    PADDR,d0            * get PA data dir
+              ori.w     #$0400,d0           * set bit 10
+              move.w    d0,PADDR            * write PA data dir
+              move.w    PADAT,d0            * get PA data
+              andi.w    #$fbff,d0           * clear bit 10
+              move.w    d0,PADAT            * reset to 474
+
+              MOVE.L    #????STACKTOP,SP    * STACK POINTER
+              LEA       ????HEAP,A0
+              ADDQ.L    #4,A0
+              MOVE.L    A0,????HEAP         * HEAP POINTER
+              MOVE.L    #0,A6               * FRAME POINTER INITIALIZATION
+*
+*%            MOVE.L    ????HEAP,A5         * ALLOCATE MEMORY FOR DATA AND
+*%            MOVE.L    A5,D0               * STACK SPACE OUT OF HEAP AREA;
+*%            ADD.L     #484+????STACKSIZE+3,D0 * REPLACE ORIGINAL SP
+*%            LSR.L     #2,D0               * SHIFT TO LONG WORD ALIGN
+*%            LSL.L     #2,D0               * AND SHIFT BACK
+*%            MOVE.L    D0,SP               * PLACE IN STACK POINTER
+*%            MOVE.L    SP,????HEAP         * ADJUST HEAP ADDRESS
+*
+*             THE FOLLOWING CODE CLEARS THE ZEROVARS SECTION
+*
+              LEA       .STARTOF.(zerovars),A0  * START OF THE SECTION
+*
+*%            MOVE.L    A5,A0               * START OF THE SECTION
+*%            ADD.L     #?A5,A5             * ADD OFFSET TO A5
+*
+              MOVE.L    #.SIZEOF.(zerovars),D1  * LENGTH OF THE SECTION
+              MOVE.L    D1,D0               * SAVE IN D0 ALSO
+              LSR.L     #2,D1               * NUMBER OF LONG WORDS TO MOVE
+              BRA.S     CLR0VARS1           * SKIP FIRST CLEAR
+CLR0VARS:     CLR.L     (A0)+               * CLEAR THE ADDRESS
+CLR0VARS1:    DBF       D1,CLR0VARS         * DECREMENT LONG WORD COUNT & TEST
+              SUBI.L    #$10000,D1          * SIMULATE BORROW FROM LOW 16 BITS
+              CMPI.L    #-1,D1              * IS LONG WORD COUNT == -1
+              BNE.S     CLR0VARS            * NO -- KEEP CLEARING
+*
+              ANDI.L    #3,D0               * SHOULD INDIVIDUAL BYTES BE CLEARED
+              BRA.S     CLR0VARS2           * SKIP FIRST CLEAR
+CLR0VARS3:    CLR.B     (A0)+               * CLEAR ONE MORE BYTE
+CLR0VARS2:    DBF       D0,CLR0VARS3        * DECREMENT BYTE COUNT & TEST
+*
+*%            MOVE.L    #1,(__reentrant).W(A5)  * SET FLAG
+*#            MOVE.L    #?A5,A5             * A5 LIBRARY INITIALIZATION
+*
+*             THE ROUTINE __START INITIALIZES ALL NON-ZERO MEMORY,
+*             OPENS stdin, stdout, AND stderr.  IT THEN CALLS main.
+*
+              MOVE.L    #NULL,-(SP)         * SET ARGV[ARGC] = NULL
+              CLR.L     -(SP)               * SET ARGC = 0 IN _START
+              JSR       (__START).W(PC)     * C INITIALIZATION
+
+__exit:
+              STOP      #$2700
+              BRA.S     __exit
+              RTS
+*
+*             THE FOLLOWING CODE CALLS THE STATIC DESTRUCTORS FOR C++ IN THE
+*             initfini SECTION:  NAMELY, THE EVEN-NUMBERED ENTRIES IN SECTION
+*             initfini (ASSUMING START INDEX IS 1).
+*
+              LEA       .STARTOF.(initfini),A2  * START OF THE SECTION
+              MOVE.L    #.SIZEOF.(initfini),D2  * LENGTH OF THE SECTION IN BYTES
+              ASR.L     #3,D2               * NUMBER OF STATIC DESTRS TO CALL
+                                            * NOTE: STATIC DESTRUCTORS ARE
+                                            * EVEN-NUMBERED ENTRIES.
+              ADDQ.L    #4,A2               * SKIP TO THE 1ST STATIC DESTR ENTRY
+              BRA.S     CXXFINICOND         * TEST LOOP CONDITION
+CXXFINICALL:
+              MOVEA.L   (A2),A0             * GET DESTRUCTOR ADDRESS
+              JSR       (A0)                * CALL STATIC DESTR
+              ADDQ.L    #8,A2               * POINT TO NEXT STATIC CONSTRUCTOR
+CXXFINICOND:  
+              DBF       D2,CXXFINICALL
+              SUBI.L    #$10000,D2
+              CMPI.L    #-1,D2
+              BNE.S     CXXFINICALL
+*
+STOP_IT:
+              STOP      #$2700
+              BRA.S     STOP_IT
+              RTS
+
+__main:
+*
+*             THE FOLLOWING CODE CALLS THE STATIC CONSTRUCTORS FOR C++ IN THE
+*             initfini SECTION:  NAMELY, THE ODD-NUMBERED ENTRIES IN SECTION
+*             initfini (ASSUMING START INDEX IS 1).
+*
+              LEA       .STARTOF.(initfini),A2  * START OF THE SECTION
+              MOVE.L    #.SIZEOF.(initfini),D2  * LENGTH OF THE SECTION IN BYTES
+              ASR.L     #3,D2               * NUMBER OF STATIC CONSTRS TO CALL
+                                            * NOTE: STATIC CONSTRUCTORS ARE
+                                            * ODD-NUMBERED ENTRIES.
+              BRA.S     CXXINITCOND         * TEST LOOP CONDITION
+CXXCALL:
+              MOVEA.L   (A2),A0             * GET ADDRESS OF CONSTRUCTOR
+              JSR       (A0)                * CALL STATIC CONSTR
+              ADDQ.L    #8,A2               * POINT TO NEXT STATIC CONSTRUCTOR
+
+CXXINITCOND:
+              DBF       D2,CXXCALL
+              SUBI.L    #$10000,D2
+              CMPI.L    #-1,D2
+              BNE.S     CXXCALL
+              RTS
+*
+__get_sect_addr:
+*%            MOVE.L    A5,D0               * GET A5 FOR PROCESSING
+*%            SUB.L     #?A5,D0             * SUBTRACT A5 OFFSET
+              RTS                           * AND RETURN
+NULL          DC.L      0                   * NULL POINTER
+* 
+              SECTION   zerovars,,D         * DATA SECTION
+              XREF      ????STACKTOP
+              XREF      __START
+*%            XREF      ????STACKSIZE       * SIZE OF STACK
+              XDEF      __reentrant
+__reentrant   DS.L      1
+*
+*             FORCE SECTION vars TO FOLLOW SECTIONS code AND zerovars IN
+*             MEMORY. THIS IS DONE EVEN THOUGH THERE IS NO CODE IN 
+*             SECTION vars.
+*
+              SECTION   vars,,D             * INITIALIZED DATA
+              SECTION   heap,,D             * HEAP SECTION (AFTER CODE)
+*#            XREF      ?A5
+*%            XREF      ?A5
+              XDEF      ????HEAP            
+????HEAP      DS.L      1
+              END       ENTRY

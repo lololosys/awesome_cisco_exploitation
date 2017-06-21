@@ -1,0 +1,220 @@
+# $Id: makefile.68,v 3.5.4.6 1996/07/14 07:10:56 hampton Exp $
+# $Source: /release/112/cvs/Xsys/makefile.68,v $
+#------------------------------------------------------------------
+# makefile.68 - Cisco 680X0 common definitions
+#
+# May 27, 1992, Kevin Paul Herbert
+#
+# Copyright (c) 1992-1996, 97 by cisco Systems, Inc.
+# All rights reserved.
+# 
+# This file contains the common definitions for doing "makes" of 68k-based
+# system images.
+#------------------------------------------------------------------
+# $Log: makefile.68,v $
+# Revision 3.5.4.6  1996/07/14  07:10:56  hampton
+# Eliminate all redundant dependencies for any given file.  Split out
+# platform specific dependencies and put them in the appropriate obj-xxx
+# directory.  [CSCdi62810]
+# Branch: California_branch
+#
+# Revision 3.5.4.5  1996/05/23  03:00:27  mdb
+# Move to the cygnus progressive-96q1 compiler toolchain [CSCdi58500].
+# Branch: California_branch
+#
+# Revision 3.5.4.4  1996/05/08  12:01:33  mdb
+# Implement a method of naming locally built tools based on the type of
+# the Machine, the name and the revision of the Operating System.
+# Also make provide for all locally built tools be to removed when a
+# 'make superclean' is performed in the sys directory. [CSCdi57043]
+# Branch: California_branch
+#
+# Revision 3.5.4.3  1996/05/06  20:45:52  mdb
+# Instead of vendor supplied native 'strings' program, use $(STRINGS) set
+# as strings.$(TOOLS_VER).68k or strings.$(TOOLS_VER).mips64 [CSCdi56817].
+# Branch: California_branch
+#
+# Revision 3.5.4.2  1996/04/19  14:29:57  che
+# CSCdi55138:  IosSec_branch feature commit
+# Branch: California_branch
+# IosSecurity feature commits
+#
+# Revision 3.1.2.4  1996/04/09  19:15:04  che
+# Branch: IosSec_branch
+# Sync to California_branch (960405)
+#
+# Revision 3.1.2.3  1996/03/19  07:24:43  che
+# Branch: IosSec_branch
+# Sync to V111_1_3
+#
+# Revision 3.1.2.2  1996/01/23  04:24:34  che
+# Branch: IosSec_branch
+# Sync with 11.1 mainline. (960122)
+#
+# Revision 3.1.2.1  1995/11/17  16:21:15  carrel
+# Branch: IosSec_branch
+# Sync to Arkansas
+#
+# Revision 3.5.4.1  1996/03/18  18:45:17  gstovall
+# Branch: California_branch
+# Elvis has left the building.  He headed out to California, and took the
+# port ready changes with him.
+#
+# Revision 3.2.12.3  1996/03/16  06:19:41  gstovall
+# Branch: DeadKingOnAThrone_branch
+# Make the king aware of V111_1_3.
+#
+# Revision 3.2.12.2  1996/03/09  05:03:09  hampton
+# Slim down the kernel of the router.
+# Branch: DeadKingOnAThrone_branch
+#
+# Revision 3.2.12.1  1996/03/07  08:27:03  mdb
+# Branch: DeadKingOnAThrone_branch
+# cisco and ANSI/POSIX libraries.
+#
+# Revision 3.5  1996/03/07  21:49:56  rchiao
+# CSCdi50987:  take out the RCS magic word
+# Replace the magic word with "last comment".
+#
+# Revision 3.4  1996/03/07  20:49:20  rchiao
+# CSCdi50983:  need an empty line after last comment in makfiles
+# add an empty line in makefiles right after the last comment.
+#
+# Revision 3.3  1996/02/17  09:07:06  rchiao
+# CSCdi49271:  makefile changes for ClearCase
+# adding sysroot definition for atria. For obj-* changes, please see
+# obj-4k/makefile or obj-68/makefile for example.
+#
+# Revision 3.2  1996/01/04  00:35:57  gwynne
+# CSCdi46366:  Media-specific images required for igs-in-l image
+#              feature set
+# Also:   - Change copyright end date to 1996
+#         - Add save of uncompressed binary size of disk file for
+#           self-decompressing images (-mz).
+#
+# Revision 3.1  1995/11/09  10:48:21  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/07/17  23:26:49  smackie
+# Tidy up various makefile semantics (CSCdi37193)
+#
+#   o Split out native tool support from cross-compilation tools
+#   o Rename errant makefiles
+#   o Make native object directories more explicitly named
+#   o Clean up bogus tool includes
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+ifeq ($(origin SYSROOT), undefined)
+SYSROOT :=       $(shell scripts/sysroot)
+endif
+#
+# Processor Flags
+#
+
+LIBRARY_PREFIX  = 68
+FAMILY_PREFIX   = 68
+OBJECT_PREFIX   = 68
+OBJECT_FLAGS	= -DOBJECT_$(OBJECT_PREFIX) -DTARGET_CISCO
+OFLAG		= -O
+MAKEFILE_NAME	= makefile.68
+
+#
+# Where the shared processor objects are and how to make them
+#
+
+OBJECTS = obj-$(OBJECT_PREFIX)
+
+# Prior version: 95q1
+# Current version: 96q1
+TOOLS_VER= 96q1
+
+# Tool Options
+#
+
+COPTIONS= -pipe
+AOPTIONS=
+LOPTIONS= -nostdlib
+
+# Tool Chain
+#
+CC=	gcc.$(TOOLS_VER).68k
+LD=	$(CC)
+AS=	$(CC)
+STRINGS=strings.$(TOOLS_VER).68k
+M4=	/router/bin/m4 -B8192
+AR=	ar.$(TOOLS_VER).68k
+SIZE=	size.$(TOOLS_VER).68k
+FLEX=	flex.$(TOOLS_VER)
+NM=	nm.$(TOOLS_VER).68k
+STRIP=	strip.$(TOOLS_VER).68k
+CPSTRIP=cpstrip.aout
+
+# Lister flags :
+#
+# LIS_FLAG="asm=0" "targ=m68k" for listing without object code
+LIS_FLAG="asm=1" "targ=m68k"
+
+%.bin: %.sun $(MKSUM_PROG)
+	$(MKSUM_PROG) $*.sun
+	@# cp $*.sun $@
+	@# $(STRIP) $@
+	$(CPSTRIP) $*.sun $@
+	ls -l $@ | tee $*.binsize
+
+%.czbin: %.czsun $(MKSUM_PROG) $(GLUE_AOUT_PROG)
+	@echo 'char cisco_czip_strings[] = "' > cisco-czip.c
+	@$(STRINGS) $*.czsun | \
+	perl -ane 'if (/CW_BEGIN/../CW_END/) { \
+	s/-m([\$$\)])/-mz$$1/;s/-M([\$$\)])/-MZ$$1/; \
+	s/UNCOMPRESSED/ZIPPED/; print;}' >> cisco-czip.c
+	@echo '";' >> cisco-czip.c
+	@$(REMAKE) czip_aout
+	$(MKSUM_PROG) $*.czsun
+	$(CPSTRIP) $*.czsun $*.bin
+	ls -l $*.bin | tee $*.binsize
+	$(STRIP) czip_aout
+	$(GLUE_AOUT_PROG) -r $*.bin -z czip_aout -o $@
+	rm $*.bin.gz $*.bin
+
+#
+# Processor specific file resolution
+#
+GDBCPU=		gdb_$(OBJECT_PREFIX).o
+CPUASM=
+PLATFORM_ASM=	asm.o		# must be compiled in platform directory
+VINESASM=	vinesasm.o
+XNSASM=		xnsasm.o
+CPUISDN=	e_sun68k.o
+CPUSTAC=	lzsc.o lzsd.o lzsmem.o
+DES_CODE=	cylink_68_des.o
+SYS_START_FILE=
+UKERNEL_CPU=	
+UKERNEL_UI_CPU=	
+
+#
+# Position independent image relocater that gets packaged into
+# a relocatable image.
+#
+relocate: ../asm-m68k/relocate.S
+	$(CC) -nostdinc -nostdlib -N -O -e __relocate -Ttext 0 -o $@ $<
+	$(STRIP) $@
+
+#
+# unzip self extracting tool
+#
+cisco-czip.o : cisco-czip.c
+
+OBJ_CZIP_AOUT= 	czip_$(LIBRARY_PREFIX).o czip_aout_main.o monitor1.o czip.o \
+		unzip.o inflate.o cisco-czip.o
+
+czip_aout: $(OBJ_CZIP_AOUT) $(NUTIL)
+	$(QUIET_COM)echo Linking $@...
+	$(QUIET_CC)$(LD) $(RAM_LDFLAGS) -o czip_aout $(OBJ_CZIP_AOUT) $(NUTIL)
+	$(QUIET_CC)rm -f cisco-czip.*
+
+
+

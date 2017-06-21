@@ -1,0 +1,4 @@
+
+msg_smf.c,73
+#define DEFINE_MESSAGES	59,2287
+#define SMF_ERR_INVALID_ACTION 69,2530

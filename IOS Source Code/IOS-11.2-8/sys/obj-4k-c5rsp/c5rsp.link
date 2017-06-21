@@ -1,0 +1,19 @@
+/* $Id: c5rsp.link,v 1.1 1996/07/25 16:25:20 pitargue Exp $
+ * $Source: /release/112/cvs/Xsys/obj-4k-c5rsp/c5rsp.link,v $
+ *------------------------------------------------------------------
+ * Loader command script for Yosemite RSP image
+ *
+ * July 1996, Marciano Pitargue (copied from rsp which was copied from
+ * Sierra script)
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: c5rsp.link,v $
+# Revision 1.1  1996/07/25  16:25:20  pitargue
+# placeholder for Yosemite
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+

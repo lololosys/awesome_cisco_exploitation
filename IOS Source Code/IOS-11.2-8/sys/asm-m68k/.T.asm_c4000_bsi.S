@@ -1,0 +1,10 @@
+
+asm_c4000_bsi.S,229
+#define SLOT1_BSI_MAR 32,867
+#define SLOT1_BSI_MNR 33,911
+#define SLOT2_BSI_MAR 34,955
+#define SLOT2_BSI_MNR 35,999
+#define SLOT3_BSI_MAR 36,1043
+#define SLOT3_BSI_MNR 37,1087
+| Refresh 205,5288
+#define NMI_REGS 210,5421

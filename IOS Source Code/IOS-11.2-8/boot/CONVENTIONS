@@ -1,0 +1,86 @@
+; $Id: CONVENTIONS,v 3.2 1995/11/17 07:40:44 hampton Exp $
+; $Source: /swtal/cherf.111/ios/boot/CONVENTIONS,v $
+;------------------------------------------------------------------
+; Notes to help assembly level hackers and debuggers
+;
+; June, 1989, Chris Shaker
+;
+; Copyright (c) 1989-1993 by cisco Systems, Inc.
+; All rights reserved.
+;
+;------------------------------------------------------------------
+; $Log: CONVENTIONS,v $
+# Revision 3.2  1995/11/17  07:40:44  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  09:03:51  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/06/07  19:11:18  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+;------------------------------------------------------------------
+; $Endlog$
+;
+
+Register useage conventions for gcc:				Chris Shaker
+-----------------------------------
+(from GNU Emacs info on gcc and from gcc source file, tm-m68k.h)
+
+Temporary registers useable by each routine without restoration:
+	d0, d1,	a0, a1,	fp0, fp1, fp2, fp3
+Saved registers (save before using, restore afterwards):
+	d2 - d7, a2 - a5, fp4 - fp7, fpa8 - fpa31
+
+Frame Pointer = a6
+Stack Pointer = a7
+Functions return values in d0.
+
+Stack picture at first instruction of a subroutine (assuming long args):
+	...
+	Third argument		sp@(12)			Higher address
+	Second argument		sp@(8)
+	First argument		sp@(4)
+SP --->	Return Address		sp@			Lower address
+
+Stack picture after "link a6,#0" at beginning of a subroutine (long args):
+	...
+	Third Argument		a6@(16)			Higher address
+	Second argument		a6@(12)
+	First argument		a6@(8)
+	Return address		a6@(4)
+SP,FP->	Old Frame Pointer	a6@			Lower address
+
+
+
+System Image Program Sections for the CSC/[123]:
+-----------------------------------------------
+
+0x00001000	+-------------------------------+	RAM
+		| text          		|
+		+-------------------------------+ _etext
+		| data (initialized variables)	|
+		+-------------------------------+ _edata
+		| bss (initialized to zero)	|
+		+-------------------------------+ _end
+
+
+
+System Image Sections for Pancake:
+---------------------------------
+
+0x00001000	+-------------------------------+	RAM
+		| bss (initialized to zero)	|
+		+-------------------------------+ _end
+
+0x01000000	+-------------------------------+	ROM
+		| text				|
+		+-------------------------------+ _etext
+		| data (initialized variables)	|
+		+-------------------------------+ _edata
+
+Note that initializers are NOT to be used for variables since they will be
+allocated in ROM on Pancake.
+
+Also, please note that 'static' should also not be used for variables, since
+they will be allocated PC relative and be in ROM on Pancake.

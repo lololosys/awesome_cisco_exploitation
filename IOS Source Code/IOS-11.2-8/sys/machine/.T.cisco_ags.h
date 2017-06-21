@@ -1,0 +1,49 @@
+
+cisco_ags.h,1615
+#define LEVEL_CONSOLE 249,8635
+#define ETHER_DISABLE 250,8679
+#define ETHER_INTLEVEL 251,8746
+#define LEVEL_3MB 252,8790
+#define LEVEL_LPT 253,8830
+#define LEVEL_ACC 254,8892
+#define LEVEL_SBE 255,8928
+#define	LEVEL_HUB 256,8976
+#define	TIMER_VECTOR	258,9026
+#define WASTETIME(WASTETIME260,9058
+#define DELAY(DELAY261,9100
+#define RAMBASE	267,9166
+#define TRAP_PAGE_ZERO	268,9211
+#define CRASH_INFO 277,9637
+#define REFRESHTIME 279,9694
+#define NMI_FREQ_NUMERATOR 280,9770
+#define NMI_FREQ_DENOMINATOR 281,9843
+#define	UARTIRQ1 283,9918
+#define	UARTIRQ2 284,9977
+#define	UARTIRQ3 285,10039
+#define	UARTIRQ4 286,10097
+#define	UARTIRQ5 287,10161
+#define	UARTIRQ6 288,10220
+#define	UARTIRQ7 289,10282
+#define UARTIRQ8 290,10340
+#define MULTIMEMBASE 292,10406
+#define MULTIIOBASE 293,10475
+#define ROMFREEBASE 294,10541
+#define	UARTDEVBASEADDR	296,10607
+#define NVBASE	298,10643
+#define NVMAXBYTES 300,10687
+#define MAX_SLOTS 307,10918
+#define MAX_CTRLR_INTERFACES 309,10940
+#define MAX_CBUS_INTERFACES 310,10997
+#define PLATFORM_MAXLINES 316,11097
+#define PLATFORM_ALL_DISABLE 322,11163
+#define PLATFORM_TTY_DISABLE 323,11228
+#define PLATFORM_NETS_DISABLE 324,11308
+#define PLATFORM_ALL_ENABLE 325,11387
+#define	PLATFORM_FAMTYPE 327,11452
+#define BUFFERTHRESHOLD	332,11560
+typedef uchar dbus_protect_t;dbus_protect_t340,11740
+#define pak_set_dirty(pak_set_dirty345,11825
+#define pak_ignore_inputq(pak_ignore_inputq350,11905
+#define pak_has_particles(pak_has_particles355,11992
+#define dbus_protect(dbus_protect359,12038
+#define dbus_restore(dbus_restore360,12083

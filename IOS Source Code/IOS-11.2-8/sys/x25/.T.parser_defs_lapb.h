@@ -1,0 +1,13 @@
+
+parser_defs_lapb.h,329
+#define LAPB_CMD_MODULO	30,927
+#define LAPB_CMD_T1	31,955
+#define LAPB_CMD_T3	32,979
+#define LAPB_CMD_T4	33,1003
+#define LAPB_CMD_N1	34,1027
+#define LAPB_CMD_N2	35,1051
+#define LAPB_CMD_K	36,1075
+#define LAPB_CMD_PROTOCOL	37,1098
+#define LAPB_CMD_HOLDQ	38,1127
+#define VIP_HACK40,1155
+#define LAPB_IPC_ALLOWED	42,1188

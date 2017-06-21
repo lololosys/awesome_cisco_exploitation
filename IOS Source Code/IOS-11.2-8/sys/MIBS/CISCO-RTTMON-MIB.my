@@ -1,0 +1,3942 @@
+-- $Id: CISCO-RTTMON-MIB.my,v 3.1.4.4 1996/09/04 17:34:50 lmetzger Exp $
+-- $Source: /release/112/cvs/Xsys/MIBS/CISCO-RTTMON-MIB.my,v $
+-- *****************************************************************
+-- Response Time Monitor Mib.
+--
+-- March 1996, Larry Metzger
+--
+-- Copyright (c) 1995-1996 by cisco Systems, Inc.
+-- All rights reserved.
+-- *****************************************************************
+-- $Log: CISCO-RTTMON-MIB.my,v $
+-- Revision 3.1.4.4  1996/09/04  17:34:50  lmetzger
+-- CSCdi68018:  Second Update to Description in RTTMON mib
+-- Branch: California_branch
+--
+-- Revision 3.1.4.3  1996/08/16  18:38:07  lmetzger
+-- CSCdi66311:  Update Descriptions in RTTMON mib
+-- Branch: California_branch
+--
+-- Revision 3.1.4.2  1996/06/11  19:38:37  snyder
+-- CSCdi60118:  MIB doc spellink errors
+-- Branch: California_branch
+--
+-- Revision 3.1.4.1  1996/05/17  10:38:45  ppearce
+-- Merge IbuMod into Calif
+--
+-- Revision 3.1.2.1  1996/03/22  19:10:10  lmetzger
+-- Initial Version of Response Time Reporter
+--
+-- Revision 3.1  1996/03/20  01:05:49  lmetzger
+-- Placeholder for IbuMod_Calif_branch
+--
+-- *****************************************************************
+-- $Endlog$
+--
+ 
+--%DNP%  FYI:  Lines containing a comment starting with the "Do Not
+--%DNP%  Publish" prefix "%DNP%" (such as these) are automagicially
+--%DNP%  stripped from MIBS prior to publishing on ftp and cio, and
+--%DNP%  should be used for comments intended for cisco engineering
+--%DNP%  eyes only, or for new product identifiers that are not yet
+--%DNP%  announced.
+
+CISCO-RTTMON-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+  MODULE-IDENTITY,
+  OBJECT-TYPE,
+  NOTIFICATION-TYPE,
+  Integer32,
+  Gauge32,
+  TimeTicks
+    FROM SNMPv2-SMI
+
+  MODULE-COMPLIANCE, 
+  OBJECT-GROUP
+    FROM SNMPv2-CONF
+
+  DisplayString,
+  TruthValue,
+  RowStatus,
+  TimeInterval,
+  TimeStamp,
+  TEXTUAL-CONVENTION
+    FROM SNMPv2-TC
+
+  ciscoMgmt
+    FROM CISCO-SMI
+
+  OwnerString
+    FROM IF-MIB
+;
+            
+ciscoRttMonMIB MODULE-IDENTITY
+  LAST-UPDATED "9608290000Z"
+  ORGANIZATION "Cisco IBU Engineering Working Group"
+  CONTACT-INFO
+       "Cisco Systems, Inc.
+       7025 Kit Creek Road
+       PO Box 14987
+       Research Triangle Park, NC 27709
+ 
+       Larry Metzger (editor)
+       lmetzger@cisco.com"
+  DESCRIPTION
+       "This module defines a MIB for Round Trip Time 
+       (RTT) monitoring of a list of targets, using a 
+       variety of protocols.
+
+       The table structure overview is a follows (t: 
+        indicates a table, at:  indicates an augmented 
+        table, and it:  indicates table with the same 
+        indices/control as parent table):
+
+       RTTMON MIB
+       |--- Application Group
+       |    |--- Application Identity
+       |    |--- Application Capabilities
+       |    |--- Application Reset
+       |    |t-- Supported RTT Types
+       |         |--- Truth Value
+       |    |t-- Supported Protocols
+       |         |--- Truth Value
+       |    |t-- Application Preconfigured
+       |         |--- Script Names
+       |         |--- File Paths
+       |
+       |--- Overall Control Group
+       |    |t-- Master Definitions Table
+       |    |    |--- Global Configuration Definitions
+       |    |         |--- Config for a single RTT Life
+       |    |    |it- Echo Specific Configuration
+       |    |    |it- File I/O Specific Configuration
+       |    |    |it- Script Specific Configuration
+       |    |    |at- Schedule Configuration
+       |    |    |at- Reaction Specific Config
+       |    |    |at- Statistics Capture Configuration
+       |    |    |at- History Collection Configuration
+       |    |    |at- Monitoring Operational State
+       |    |    |at- Last RTT operation
+       |    |
+       |    |t-- Reaction Trigger Table
+       |         |at- Reaction Trigger Operational State
+       |
+       |--- Statistics Collection Group
+       |    |t-- Statistics Capture Table
+       |         |--- Captured Statistics
+       |              |--- Path Information
+       |              |--- Distribution Capture 
+       |              |--- Mean and Deviation Capture
+       |         |it- Statistics Collection Table
+       |    |it- Statistics Totals Table
+       |
+       |--- History Collection Group
+       |    |t-- History Collection Table
+       |         |-- Path Information
+       |         |-- Completion Information per operation
+
+       DEFINITIONS:
+         conceptual RTT control row - 
+                 This is a row in the 'Overall Control 
+                 Group'.  This row is indexed via the 
+                 rttMonCtrlAdminIndex object.  This row 
+                 is spread across multiple real tables 
+                 in the 'Overall Control Group'.
+         conceptual statistics row -
+                 This is a row in the 'Statistics 
+                 Collection Group'.  This row is based 
+                 off of the conceptual Rtt control row's
+                 index.  This statistics row is spread 
+                 across multiple real tables in the
+                 'Statistics Collection Group'.
+         conceptual history row -
+                 This is a row in the 'History Collection
+                 Group'.  This row is also based off of
+                 the conceptual Rtt control row's index.
+         probe -
+                 This is the entity that executes via a 
+                 conceptual RTT control row and populates
+                 a conceptual statistics row and a 
+                 conceptual history row.
+         Rtt operation -
+                 This is a single operation performed by
+                 a probe.  This operation can be a single
+                 Rtt attempt/completion or a group of Rtt
+                 attempts/completions that produce one
+                 operation table entry.
+                 
+       ARR Protocol Definition:
+
+       The format of the RTT Asymmetric Request/Responses 
+        (ARR) protocol is as follows:
+    
+         The ARR Header (total of 12 octets): 
+     
+         4 octet -> eyecatcher: 'WxYz'
+         1 octet -> version   : 0x01 - protocol version
+         1 octet -> command   : 0x01 - logoff request
+                                0x02 - echo request
+                                0x03 - echo response
+                                0x04 - software version request
+                                0x05 - software version response
+         2 octet -> sequence number (Network Byte Order)
+         4 octet -> response data size (Network Byte Order)
+
+         The ARR Data:
+
+         n octets -> request/response data
+                               : 'AB..ZAB..ZAB..' 
+
+         For software version request/response the 
+          protocol version octet will contain the version
+          number of the responder.  Thus the sequence 
+          number, etc will not be included.
+
+         For snaLU0EchoAppl and snaLU2EchoAppl all character 
+          fields will be in EBCDIC.
+
+         The response data should be appended to the 
+          origin request data.  This allows data  
+          verification to check the data that flows in 
+          both directions.  If the response data size is
+          smaller than the request data size the original
+          request data will be truncated.  
+  
+         An example would be:
+           Request:        /       Response:
+           'WxYz'          /       'WxYz'
+           0x01            /       0x01
+           0x02            /       0x03
+           0x0001          /       0x0001
+           0x00000008      /       0x00000008
+           'ABCDEF'        /       'ABCDEFGH'
+
+         NOTE: We requested 8 bytes in the response and 
+               the response had 8 bytes.  The size of the
+               request data has no correlation to the
+               size of the response data.
+
+       NOTE:  For native RTT request/response (i.e. 
+              ipIcmpecho) operations both the 'Header' 
+              and 'Data' will be included.  Only the 
+              'sequence number' in the Header will be 
+              valid.
+
+       NOTE:  For non-connection oriented protocol the 
+              initial RTT request/response operation will
+              be preceded with an RTT request/response 
+              operation to the target address to force 
+              path exploration and to prove 
+              connectivity.  The History collection table
+              will contain these responses, but the 
+              Statistics capture table will omit them to
+              prevent skewed results.
+
+       ROLLOVER NOTE:  For objects that start at zero and 
+                       potentially can rollover (Integer32 
+                       'counters'), those object cannot attain
+                       their maximum value.  They can only attain
+                       their maximum value minus one.  When one
+                       of these object has its maximum value, it
+                       means that a rollover should have occurred
+                       and that object is no longer valid.  
+                       Configuration in the conceptual RTT 
+                       control row should be modified to 
+                       prevent this from occurring another time.
+                       This does not apply to indices.
+       "
+  REVISION  "9608290000Z"
+  DESCRIPTION "Initial version of this MIB module."
+  ::= { ciscoMgmt 42 } 
+
+--
+-- Textual Conventions
+--
+
+--
+--  Reset textual convention
+--
+
+RttReset ::= TEXTUAL-CONVENTION
+  STATUS      current
+  DESCRIPTION
+       "Represents the reset control object.
+
+       When this object is set to reset, the defined
+       reset operation will take place.
+
+       When this object is read (with a get), during the
+       the reset operation the value 'reset' will be
+       returned.  At all other times the value 'ready'
+       will be returned."
+  SYNTAX      INTEGER
+  {
+    ready(1),
+    reset(2)
+  }
+
+--
+-- Round Trip Time (RTT) operation completion sense code
+--  textual convention
+--
+
+RttResponseSense ::= TEXTUAL-CONVENTION
+  STATUS      current
+  DESCRIPTION
+       "These are the defined values for a completion status
+       of a RTT operation.  
+
+       ok(1)            - a valid completion occurred and
+                           timed successfully
+       disconnected(2)  - the operation did not occur because
+                           the connection to the target
+                           was lost
+       overThreshold(3) - a valid completion was received but
+                           the completion time exceeded a
+                           threshold value
+       timeout(4)       - an operation timed out; no completion
+                           time recorded
+       busy(5)          - the operation did not occur because a
+                           previous operation is still
+                           outstanding
+       notConnected(6)  - the operation did not occur because no
+                           connection (session) exists with the
+                           target
+       dropped(7)       - the operation did not occur due to lack
+                           of internal resource
+       sequenceError(8) - a completed operation did not contain 
+                           the correct sequence id; no completion
+                           time recorded
+       verifyError(9)   - a completed operation was received, but
+                           the data it contained did not match
+                           the expected data; no completion time 
+                           recorded
+       applicationSpecific(10) 
+                        - the application generating the operation
+                           had a specific error"
+  SYNTAX      INTEGER
+  {
+   ok(1),
+   disconnected(2),
+   overThreshold(3),
+   timeout(4),
+   busy(5),
+   notConnected(6),
+   dropped(7),
+   sequenceError(8),
+   verifyError(9),
+   applicationSpecific(10)
+  }
+
+--
+-- Round Trip Time (RTT) operation type textual convention
+--
+
+RttMonRttType ::= TEXTUAL-CONVENTION
+  STATUS       current
+  DESCRIPTION
+       "Specifies the type of RTT operation to be performed.
+
+       The value 'echo' will cause the RTT application to
+       perform a timed echo request/response operation directed
+       at the 'RttMonTargetAddress'.
+
+       The value 'pathEcho' will cause the RTT application
+       to perform path discovery to the 'RttMonTargetAddress', 
+       then it will perform a timed echo request/response 
+       operation directed at the each hop along the path.  
+       This operation will provide two types of information, 
+       first the path and second the time delay along the path.
+
+       NOTE:  The 'pathEcho' time delay operation is a heuristic
+              measurement because an intermediate hop may forward
+              the different echo request/response at different
+              rates.  Thus the time delay difference between two
+              hops along a path may contain very little 'true'
+              statistical meaning. 
+      
+       The value 'fileIO' will cause the RTT application to 
+       write, read, or write/read a file to a preconfigured 
+       file server.
+
+       The value 'script' will cause the RTT application to
+       execute a preconfigured script."
+  SYNTAX        INTEGER
+  {
+    echo(1),
+    pathEcho(2),
+    fileIO(3),
+    script(4)
+  }
+
+
+--
+-- Round Trip Time (RTT) protocol textual convention
+--
+
+RttMonProtocol ::= TEXTUAL-CONVENTION
+  STATUS       current
+  DESCRIPTION
+       "Specifies the protocol to be used to perform the timed
+       echo request/response.  The following protocols are
+       defined:
+
+       NOTE: All protocols that end in 'Appl' will support
+             the asymetric request/response (ARR) protocol.  
+             See the DESCRIPTION for ciscoRttMonMIB for a
+             complete description of the asymetric 
+             request/response protocol.
+
+       notApplicable     - no protocol is defined
+       ipIcmpEcho        - uses Echo Request/Reply as defined
+                            in RFC792 for Internet Protocol
+                            networks
+       ipUdpEchoAppl     - uses the UDP based echo server
+       snaRUEcho         - uses the REQECHO and ECHOTEST RU's
+                            to an SSCP over an SNA LU-SSCP
+                            session
+       snaLU0EchoAppl    - uses test RU's sent to the Echo 
+                            Server over an SNA LU0-LU0 session
+       snaLU2EchoAppl    - uses test RU's sent to the Echo 
+                            Server over an SNA LU2-LU2 session
+       snaLU62Echo       - uses the native appn ping ie. aping 
+       snaLU62EchoAppl   - uses test RU's sent to the ARR
+                            Echo Server over an SNA LU6.2-LU6.2
+                            session
+       appleTalkEcho     - uses Echo Request/Reply as defined
+                            for appleTalk networks
+       appleTalkEchoAppl - uses the appleTalk based echo
+                            server
+       decNetEcho        - uses Echo Request/Reply as defined
+                            for DECNet networks
+       decNetEchoAppl    - uses the DECnet based echo server
+       ipxEcho           - uses Echo Request/Reply as defined
+                            for Novell IPX networks
+       ipxEchoAppl       - uses the Novel IPX based echo
+                            server
+       isoClnsEcho       - uses Echo Request/Reply as defined
+                            for ISO CLNS networks
+       isoClnsEchoAppl   - uses the ISO CLNS based echo
+                            server
+       vinesEcho         - uses Echo Request/Reply as defined
+                            for VINES networks
+       vinesEchoAppl     - uses the VINES based echo server
+       xnsEcho           - uses Echo Request/Reply as defined
+                            for XNS networks
+       xnsEchoAppl       - uses the XNS based echo server
+       apolloEcho        - uses Echo Request/Reply as defined
+                            for APOLLO networks
+       apolloEchoAppl    - uses the APOLLO based echo
+                            server
+       netbiosEchoAppl   - uses the netbios based echo
+                            server"
+  SYNTAX       INTEGER
+  {
+    notApplicable(1),
+    ipIcmpEcho(2),
+    ipUdpEchoAppl(3),
+    snaRUEcho(4),
+    snaLU0EchoAppl(5),
+    snaLU2EchoAppl(6),
+    snaLU62Echo(7),
+    snaLU62EchoAppl(8),
+    appleTalkEcho(9),
+    appleTalkEchoAppl(10),
+    decNetEcho(11),
+    decNetEchoAppl(12),
+    ipxEcho(13),
+    ipxEchoAppl(14),
+    isoClnsEcho(15),
+    isoClnsEchoAppl(16),
+    vinesEcho(17),
+    vinesEchoAppl(18),
+    xnsEcho(19),
+    xnsEchoAppl(20),
+    apolloEcho(21),
+    apolloEchoAppl(22),
+    netbiosEchoAppl(23)
+  }
+
+
+--
+-- Round Trip Time (RTT) target address textual convention
+--
+
+RttMonTargetAddress ::= TEXTUAL-CONVENTION
+  STATUS       current
+  DESCRIPTION
+       "A string which specifies the address of the target for 
+       the RTT operation; a value of RttMonTargetAddress
+       which corresponds to a 'broadcast' address is disallowed.
+
+       The interpretation of this string depends on the type of
+       RTT operation selected, as specified by RttMonProtocol; 
+       consequently, this object cannot be created until 
+       RttMonProtocol has been created (or must be in the same 
+       PDU).
+
+       Some of the addresses may not be unique and thus this
+       cannot be used as an index.
+
+       SNA addresses will be provided in ASCII, but will be
+       converted to EBCDIC
+
+       It is interpreted as follows, for the specified values of
+       RttMonProtocol:
+
+       ipIcmpEcho and ipUdpEchoAppl
+            - 4 octets
+       snaRUEcho
+            - N octets, containing the value of the sna
+               HOSTNAME of which the SSCP LU will be used
+               for the operation.  For many systems this value
+               can be empty, and the system will use the
+               implied SSCP LU.  For example 'NSPECHO'.
+       snaLU0EchoAppl and snaLU2EchoAppl 
+            - N octets, the first x octets are the HOSTNAME
+               (Alternatively, this could be a PU name defined
+               to transport to the desired HOST), the second
+               y octets are the APPLID, and the last z octets 
+               are the MODENAME of the Echo Server (blank 
+               for a MODENAME default). The address will be 
+               encoded with a size byte preceding each of 
+               the x y and z called s. For example sxsysz 
+               as in '0x06CWBC060x07NSPECHO0x00' where 
+               HOSTNAME = CWBC06, APPLID = NSPECHO, and 
+               MODENAME is defaulted to 8 blanks.  
+               NOTE: MODENAME is either size 0 or 8.
+       snaLU62Echo and snaLU62EchoAppl
+            - N octets, the first x octets are the LU-NAME,
+               the second y octets are the TP-NAME, and the 
+               last z octets are the MODENAME of the Echo 
+               Server.  The address will be encoded with a size
+               byte preceding each of the x y and z called s.
+               For example sxsysz (zero size before z for a
+               MODENAME default).  The LU-NAME is composed of
+               8 bytes '.' 8 bytes.  The Transaction Program
+               name (TP-NAME) is 1-64 bytes.  The MODENAME
+               is 8 bytes.
+       appleTalkEcho and appleTalkEchoAppl
+            - 3 octets, first 2 octets are the net number and the
+               last octet is the host number
+       decNetEcho and decNetEchoAppl
+            - 2 octets
+       ipxEcho and ipxEchoAppl
+            - 10 octets, first 4 octets are the net number and
+               the last 6 octets are the host number
+       isoClnsEcho and isoClnsEchoAppl
+            - NSAP address in octets, see 'Configuring ISO CLNS'
+               in the Router Products Configuration Guide
+       vinesEcho and vinesEchoAppl
+            - 6 octets, first 4 octets are the net number and
+               the last 2 octets are the host number
+       xnsEcho and xnsEchoAppl
+            - 10 octets, first 4 octets are the net number and
+               the last 6 octets are the host number
+       apolloEcho and apolloEchoAppl
+            - 10 octets, first 4 octets are the net number and
+               the last 6 octets are the host number
+       netbiosEchoAppl
+            - N octets, first octet is an ASCII alphabet
+               character the last 15 are ASCII alphanumeric
+               characters.  Where the maximum of N is 16."
+  SYNTAX       OCTET STRING
+
+
+--
+-- Round Trip Time (RTT) Monitor MIB Objects
+--
+
+ciscoRttMonObjects OBJECT IDENTIFIER ::= { ciscoRttMonMIB 1 }
+
+--
+-- Round Trip Time Monitoring Object Groups
+--
+
+rttMonAppl    OBJECT IDENTIFIER ::= { ciscoRttMonObjects 1 }
+rttMonCtrl    OBJECT IDENTIFIER ::= { ciscoRttMonObjects 2 }
+rttMonStats   OBJECT IDENTIFIER ::= { ciscoRttMonObjects 3 }
+rttMonHistory OBJECT IDENTIFIER ::= { ciscoRttMonObjects 4 }
+
+--                                    
+--    GLOBAL RTT MONITORING VARIABLES
+--                                    
+
+rttMonApplVersion OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "Round Trip Time monitoring application version 
+       string.
+
+       The format will be:
+
+       'Version.Release.Patch-Level: Textual-Description'
+        
+       For example:  '1.0.0: Initial RTT Application'"
+  ::= { rttMonAppl 1 }
+
+
+rttMonApplMaxPacketDataSize OBJECT-TYPE
+  SYNTAX      INTEGER (0..16384)
+  UNITS       "octets"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The maximum size of the data portion an echo
+       packet supported by this RTT application.  This is
+       the maximum value that can be specified by
+       (rttMonEchoAdminPktDataRequestSize + ARR Header)
+       or 
+       (rttMonEchoAdminPktDataResponseSize + ARR Header)
+       in the rttMonCtrlAdminTable.
+
+       This object is undefined for conceptual RTT 
+       control rows when the RttMonRttType object is set
+       to 'fileIO' or 'script'."
+  ::= { rttMonAppl 2 }
+
+
+rttMonApplTimeOfLastSet OBJECT-TYPE
+  SYNTAX      TimeStamp
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The last time at which a set operation occurred 
+       on any of the objects in this MIB.  The managing 
+       application can inspect this value in order to 
+       determine whether changes have been made without 
+       retrieving the entire Administration portion of
+       this MIB.
+
+       This object applies to all settable objects in this
+       MIB, including the 'Reset' objects that could clear
+       saved history/statistics."
+  ::= { rttMonAppl 3 }
+
+
+rttMonApplNumCtrlAdminEntry OBJECT-TYPE
+  SYNTAX      Integer32 (1..256)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object defines the maximum number of entries
+        that can be added to the rttMonCtrlAdminTable."
+  ::= { rttMonAppl 4 }
+
+
+rttMonApplReset OBJECT-TYPE
+  SYNTAX      RttReset
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+       "When set to 'reset' the entire RTT application 
+       goes through a reset sequence, making a best 
+       effort to revert to its startup condition.  Any 
+       and all rows in the Overall Control Group will be
+       immediately deleted, together with any associated
+       rows in the Statistics Collection Group, and 
+       History Collection Group.  All open connections 
+       will also be closed.  Finally the 
+       rttMonApplPreConfigedTable will reset (see 
+       rttMonApplPreConfigedReset)."
+  ::= { rttMonAppl 5 }
+
+
+rttMonApplPreConfigedReset OBJECT-TYPE
+  SYNTAX      RttReset
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+       "When set to 'reset' the RTT application will 
+       reset the Application Preconfigured MIB section.
+
+       This will force the RTT application to delete all
+       entries in the rttMonApplPreConfigedTable and then
+       to repopulate the table with the current configuration.
+
+       This provides a mechanism to load and unload user
+       scripts and file paths."
+  ::= { rttMonAppl 6 }
+
+
+--                                    
+--   Supported RTT Types.
+--                                    
+
+rttMonApplSupportedRttTypesTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonApplSupportedRttTypesEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the supported Rtt
+       Monitor Types.
+  
+       See the RttMonRttType textual convention for
+       the definition of each type."
+  ::= { rttMonAppl 7 }
+
+
+rttMonApplSupportedRttTypesEntry OBJECT-TYPE
+  SYNTAX      RttMonApplSupportedRttTypesEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list that presents the valid Rtt Monitor
+       Types."
+  INDEX { rttMonApplSupportedRttTypes }
+  ::= { rttMonApplSupportedRttTypesTable 1 }
+
+
+RttMonApplSupportedRttTypesEntry ::= SEQUENCE
+{
+  rttMonApplSupportedRttTypes      RttMonRttType,
+  rttMonApplSupportedRttTypesValid TruthValue
+}
+
+
+rttMonApplSupportedRttTypes OBJECT-TYPE
+  SYNTAX      RttMonRttType
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This object indexes the supported
+       'RttMonRttType' types."
+  ::= { rttMonApplSupportedRttTypesEntry 1 }
+
+
+rttMonApplSupportedRttTypesValid OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object defines the supported 
+       'RttMonRttType' types."
+  ::= { rttMonApplSupportedRttTypesEntry 2 }
+
+
+--                                    
+--   Supported Protocols.
+--                                    
+
+rttMonApplSupportedProtocolsTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonApplSupportedProtocolsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the supported Rtt
+       Monitor Protocols.
+  
+       See the RttMonProtocol textual convention 
+       for the definition of each protocol."
+  ::= { rttMonAppl 8 }
+
+
+rttMonApplSupportedProtocolsEntry OBJECT-TYPE
+  SYNTAX      RttMonApplSupportedProtocolsEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list that presents the valid Rtt Monitor
+       Protocols."
+  INDEX { rttMonApplSupportedProtocols }
+  ::= { rttMonApplSupportedProtocolsTable 1 }
+
+
+RttMonApplSupportedProtocolsEntry ::= SEQUENCE
+{
+  rttMonApplSupportedProtocols      RttMonProtocol,
+  rttMonApplSupportedProtocolsValid TruthValue
+}
+
+
+rttMonApplSupportedProtocols OBJECT-TYPE
+  SYNTAX      RttMonProtocol
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This object indexes the supported 
+       'RttMonProtocol' protocols."
+  ::= { rttMonApplSupportedProtocolsEntry 1 }
+
+
+rttMonApplSupportedProtocolsValid OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object defines the supported 
+       'RttMonProtocol' protocols."
+  ::= { rttMonApplSupportedProtocolsEntry 2 }
+
+
+--                                    
+--   Preconfigured Script Names and File IO targets.
+--                                    
+
+rttMonApplPreConfigedTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonApplPreConfigedEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the previously
+       configured Script Names and File IO targets.
+  
+       These Script Names and File IO targets are installed
+       via a different mechanism than this application, and
+       are specific to each platform."
+  ::= { rttMonAppl 9 }
+
+
+rttMonApplPreConfigedEntry OBJECT-TYPE
+  SYNTAX      RttMonApplPreConfigedEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that describe the previously
+       configured Script Names and File IO targets."
+  INDEX { rttMonApplPreConfigedType,
+          rttMonApplPreConfigedName
+         }
+  ::= { rttMonApplPreConfigedTable 1 }
+
+
+RttMonApplPreConfigedEntry ::= SEQUENCE
+{
+  rttMonApplPreConfigedType  INTEGER,
+  rttMonApplPreConfigedName  DisplayString,
+  rttMonApplPreConfigedValid TruthValue
+}
+
+
+rttMonApplPreConfigedType OBJECT-TYPE
+  SYNTAX      INTEGER
+  {
+    filePath(1),
+    scriptName(2)
+  }
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This is the type of value being stored in the
+       rttMonApplPreConfigedName object."
+  ::= { rttMonApplPreConfigedEntry 2 }
+
+
+rttMonApplPreConfigedName OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..255))
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This is either one of the following depending on the
+       value of the rttMonApplPreConfigedType object:
+
+        - The file path to a server.  One of these file paths 
+          must be used when defining an entry in the 
+          rttMonFileIOAdminTable table with 'fileIO' as the 
+          value of the rttMonCtrlAdminRttType object.
+
+        - The script name to be used when generating RTT 
+          operations.  One of these script names must be used 
+          when defining an entry in the rttMonScriptAdminTable 
+          table with 'script' as the value of the 
+          rttMonCtrlAdminRttType object.
+
+       NOTE:  For script names, command line parameters 
+              can follow these names in the 
+              rttMonScriptAdminTable table."
+  ::= { rttMonApplPreConfigedEntry 3 }
+
+rttMonApplPreConfigedValid OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "When this row exists, this value will be 'true'.  
+       This object exists only to create a valid row in this 
+       table."
+  ::= { rttMonApplPreConfigedEntry 4 }
+
+
+--    
+--    RTT Configuration Definitions
+--    
+
+rttMonCtrlAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonCtrlAdminEntry
+  MAX-ACCESS   not-accessible
+  STATUS       current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring definitions.
+
+       The RTT administration control is in multiple tables.  
+       This first table, is used to create a conceptual RTT 
+       control row.  The following tables contain objects which 
+       configure scheduling, information gathering, and 
+       notification/trigger generation.  All of these tables 
+       will create the same conceptual RTT control row as this 
+       table using this tables' index as their own index. 
+  
+       This table is limited in size by the agent 
+       implementation.  The object rttMonApplNumCtrlAdminEntry
+       will reflect this tables maximum number of entries."
+  ::= { rttMonCtrl 1 }
+
+
+rttMonCtrlAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonCtrlAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A base list of objects that define a conceptual RTT 
+       control row."
+  INDEX { rttMonCtrlAdminIndex }
+  ::= { rttMonCtrlAdminTable 1 }
+
+
+RttMonCtrlAdminEntry ::= SEQUENCE
+{
+  rttMonCtrlAdminIndex               Integer32,
+  rttMonCtrlAdminOwner               OwnerString,
+  rttMonCtrlAdminTag                 DisplayString,
+  rttMonCtrlAdminRttType             RttMonRttType,
+  rttMonCtrlAdminThreshold           Integer32,
+  rttMonCtrlAdminFrequency           Integer32,
+  rttMonCtrlAdminTimeout             Integer32,
+  rttMonCtrlAdminVerifyData          TruthValue,
+  rttMonCtrlAdminStatus              RowStatus
+}
+
+
+rttMonCtrlAdminIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..2147483647)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "Uniquely identifies a row in the rttMonCtrlAdminTable.
+
+       This is a pseudo-random number selected by the management 
+       station when creating a row via the rttMonCtrlAdminStatus
+       object.  If the pseudo-random number is already in use an 
+       'inconsistentValue' return code will be returned when
+       the 'createAndGo' or 'createAndWait' set operation is 
+       attempted to the rttMonCtrlAdminStatus object."
+  ::= { rttMonCtrlAdminEntry 1 }
+
+
+rttMonCtrlAdminOwner OBJECT-TYPE
+  SYNTAX      OwnerString
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "Identifies the entity that created this table row.
+       
+       See the OwnerString Textual Convention for further
+       details."
+  DEFVAL     { "" }
+  ::= { rttMonCtrlAdminEntry 2 }
+
+
+rttMonCtrlAdminTag OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE (0..16))
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "A string which is used by a managing application to 
+       identify the RTT target.  This string is inserted into 
+       notifications, but has no other significance to the 
+       agent."
+  DEFVAL      { "" }
+  ::= { rttMonCtrlAdminEntry 3 }
+
+
+rttMonCtrlAdminRttType OBJECT-TYPE
+  SYNTAX      RttMonRttType
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The type of RTT operation to be performed.  This value
+       must be set in the same PDU or before setting any type
+       specific configuration."
+  DEFVAL      { echo }
+  ::= { rttMonCtrlAdminEntry 4 }
+
+
+rttMonCtrlAdminThreshold OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "See rttMonReactAdminThresholdType and 
+       rttMonHistoryAdminFilter for this objects definition
+       and usage."
+  DEFVAL      { 5000 }
+  ::= { rttMonCtrlAdminEntry 5 }
+
+
+rttMonCtrlAdminFrequency OBJECT-TYPE
+  SYNTAX      Integer32 (0..604800)
+  UNITS       "seconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "Specifies the duration between initiating each RTT 
+       operation. 
+
+       This object cannot be set to a value which would be a 
+       shorter duration than rttMonCtrlAdminTimeout.
+
+       When the RttMonRttType specifies an operation that is
+       synchronous in nature, it may happen that the next RTT 
+       operation is blocked by a RTT operation which has not
+       yet completed.  In this case, the value of a counter
+       (rttMonStatsCollectBusies) in rttMonStatsCaptureTable is
+       incremented in lieu of initiating a RTT operation, and 
+       the next attempt will occur at the next
+       rttMonCtrlAdminFrequency expiration. An Example of this
+       is when the RttMonRttType is 'echo' and the 
+       RttMonProtocol is 'snaLU0EchoAppl'.
+
+
+       NOTE:  When the rttMonCtrlAdminRttType object is defined 
+              to be 'pathEcho', setting this value to a small
+              value for your network size may cause an operation
+              attempt (or multiple attempts) to be started 
+              before the previous operation has finished.  In 
+              this situation the rttMonStatsCollectBusies object
+              will be incremented in lieu of initiating a new 
+              RTT operation, and the next attempt will occur at
+              the next rttMonCtrlAdminFrequency expiration.
+
+       When the rttMonCtrlAdminRttType object is defined
+       to be 'pathEcho', the suggested value for this object 
+       is greater than rttMonCtrlAdminTimeout times the 
+       maximum number of expected hops to the target."
+  DEFVAL      { 60 }
+  ::= { rttMonCtrlAdminEntry 6 }
+
+
+rttMonCtrlAdminTimeout OBJECT-TYPE
+  SYNTAX      Integer32 (0..604800000)
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "Specifies the duration to wait for a RTT operation 
+       completion.  The value of this object cannot be set to 
+       a value which would specify a duration exceeding 
+       rttMonCtrlAdminFrequency.
+
+       For connection oriented protocols, this may cause the
+       connection to be closed by the probe.  Once closed, it
+       will be assumed that the connection reestablishment
+       will be performed.  To prevent unwanted closure of
+       connections, be sure to set this value to a realistic
+       connection timeout."
+  DEFVAL      { 5000 }
+  ::= { rttMonCtrlAdminEntry 7 }
+
+
+rttMonCtrlAdminVerifyData OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "When set to true, the resulting data in each RTT 
+       operation is compared with the expected data.  This
+       includes checking header information (if possible) and
+       exact packet size.  Any mismatch will be recorded in the
+       rttMonStatsCollectVerifyErrors object.
+  
+       Some RttMonRttTypes may not support this option.  When
+       a type does not support this option, the agent will 
+       transition this object to false.  It is the management
+       applications responsibility to check for this 
+       transition."
+  DEFVAL     { false }
+  ::= { rttMonCtrlAdminEntry 8 }
+
+
+rttMonCtrlAdminStatus OBJECT-TYPE
+  SYNTAX      RowStatus
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The status of the conceptual RTT control row. 
+  
+       In order for this object to become active, the following 
+       row objects must be defined:  
+        - rttMonCtrlAdminRttType; 
+        - when rttMonCtrlAdminRttType is 'echo' or 'pathEcho',
+           rttMonEchoAdminProtocol and 
+           rttMonEchoAdminTargetAddress;
+        - when rttMonCtrlAdminRttType is 'fileIO',
+           rttMonFileIOAdminFilePath;  
+        - when rttMonCtrlAdminRttType is 'script', 
+          rttMonScriptAdminName. 
+       All other objects can assume default values.  A default
+       conceptual Rtt control row will be placed into a 
+       'pending' state (via the rttMonCtrlOperState object).
+
+       Most conceptual Rtt control row objects cannot be 
+       modified once this conceptual Rtt control row has been 
+       created.  The objects that can change are the following:
+
+        - Objects in the rttMonReactAdminTable can be modified
+          as needed without setting this object to 
+          'notInService'.
+        - Objects in the rttMonScheduleAdminTable can be 
+          modified only when this object has the value of
+          'notInService'.
+        - The rttMonCtrlOperState can be modified to control
+          the state of the probe.
+       
+       Once this object is in 'active' status, it cannot be 
+       set to 'notInService' while the rttMonCtrlOperState
+       is in 'active' state.  Thus the rttMonCtrlOperState 
+       object must be transitioned first. 
+
+       This object can be set to 'destroy' from any value
+       at any time.
+
+       NOTE:  In order for all objects in a PDU to be set
+              at the same time, this object can only be 
+              part of a multi-bound PDU, when its value is
+              either createAndGo or createAndWait.  All 
+              other values need to be placed inside 
+              singular bound PDU's."
+  DEFVAL      { createAndGo }
+  ::= { rttMonCtrlAdminEntry 9 }
+
+
+--    
+--    Echo Administration Table 
+--    
+
+rttMonEchoAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonEchoAdminEntry
+  MAX-ACCESS   not-accessible
+  STATUS       current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring 'echo'
+       and 'pathEcho' specific definitions.
+
+       When the RttMonRttType is not 'echo' or 'pathEcho'
+       this table is not valid.
+
+       This table is controlled via the 
+       rttMonCtrlAdminTable.  Entries in this table are
+       created via the rttMonCtrlAdminStatus object."
+  ::= { rttMonCtrl 2 }
+
+
+rttMonEchoAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonEchoAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define specific configuration for
+       'echo' and 'pathEcho' RttMonRttType conceptual Rtt
+       control rows."
+  INDEX { rttMonCtrlAdminIndex }
+  ::= { rttMonEchoAdminTable 1 }
+
+
+RttMonEchoAdminEntry ::= SEQUENCE
+{
+  rttMonEchoAdminProtocol            RttMonProtocol,
+  rttMonEchoAdminTargetAddress       RttMonTargetAddress,
+  rttMonEchoAdminPktDataRequestSize  Integer32,
+  rttMonEchoAdminPktDataResponseSize Integer32
+}
+
+rttMonEchoAdminProtocol OBJECT-TYPE
+  SYNTAX      RttMonProtocol
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "Specifies the protocol to be used to perform the timed 
+       'echo' or 'pathEcho' request/response.
+
+       If the RttMonRttType is set to 'echo' or 'pathEcho' when
+       this protocol does not support the type, a 'badValue'
+       error will be returned."
+  DEFVAL      { notApplicable }
+  ::= { rttMonEchoAdminEntry 1 }
+
+
+rttMonEchoAdminTargetAddress OBJECT-TYPE
+  SYNTAX      RttMonTargetAddress
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "A string which specifies the address of the target for 
+       a RTT 'echo' or 'pathEcho' operation."
+  DEFVAL      { "" }
+  ::= { rttMonEchoAdminEntry 2 }
+
+
+rttMonEchoAdminPktDataRequestSize OBJECT-TYPE
+  SYNTAX      Integer32 (0..16384)
+  UNITS       "octets"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object represents the number of octets to be
+       placed into the ARR Data portion of the request 
+       message, when using an 'Appl' suffixed 
+       'rttMonEchoAdminProtocol' (ARR supported protocols).  
+
+       For non-ARR protocols' RTT request/responses, 
+       this value represents the native payload size, if 
+       supported.
+       
+       REMEMBER:  The ARR Header overhead is not included 
+                  in this value."
+  DEFVAL      { 1 }
+  ::= { rttMonEchoAdminEntry 3 }
+ 
+
+rttMonEchoAdminPktDataResponseSize OBJECT-TYPE
+  SYNTAX      Integer32 (0..16384)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object represents the number of octets to be
+       placed into the ARR Data portion of the response message.
+       This value is passed to the RTT Echo Server via a
+       field in the ARR Header.
+
+       For non-ARR RTT request/response (i.e. ipIcmpecho)
+       this value will be set by the agent to match the
+       size of rttMonEchoAdminPktDataRequestSize, when
+       native payloads are supported.
+       
+       REMEMBER:  The ARR Header overhead is not included 
+                  in this value."
+  DEFVAL      { 0 }
+  ::= { rttMonEchoAdminEntry 4 }
+
+
+--    
+--    FileIO Administration Table 
+--    
+
+rttMonFileIOAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonFileIOAdminEntry
+  MAX-ACCESS   not-accessible
+  STATUS       current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring 'fileIO'
+       specific definitions.
+
+       When the RttMonRttType is not 'fileIO' this table is
+       not valid.
+
+       This table is controlled via the 
+       rttMonCtrlAdminTable.  Entries in this table are
+       created via the rttMonCtrlAdminStatus object."
+  ::= { rttMonCtrl 3 }
+
+
+rttMonFileIOAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonFileIOAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define specific configuration for
+       'fileIO' RttMonRttType conceptual Rtt control rows."
+  INDEX { rttMonCtrlAdminIndex }
+  ::= { rttMonFileIOAdminTable 1 }
+
+
+RttMonFileIOAdminEntry ::= SEQUENCE
+{
+  rttMonFileIOAdminFilePath              DisplayString,
+  rttMonFileIOAdminSize                  INTEGER,
+  rttMonFileIOAdminAction                INTEGER
+}
+ 
+
+rttMonFileIOAdminFilePath OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..255))
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The fully qualified file path that will be the target 
+       of the RTT operation.
+
+       This value must match one of the rttMonApplPreConfigedName
+       entries."
+  DEFVAL     { "" }
+  ::= { rttMonFileIOAdminEntry 1 }
+
+
+rttMonFileIOAdminSize OBJECT-TYPE
+  SYNTAX      INTEGER 
+  {
+    n256(1),
+    n1k(2),
+    n64k(3),
+    n128k(4),
+    n256k(5)
+  }
+  UNITS       "bytes"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The size of the file to write/read from the File
+       Server."
+  DEFVAL     { n256 }
+  ::= { rttMonFileIOAdminEntry 2 }
+
+
+rttMonFileIOAdminAction OBJECT-TYPE
+  SYNTAX      INTEGER 
+  {
+    write(1),
+    read(2), 
+    writeRead(3)
+  }
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The File I/O action to be performed."
+  DEFVAL     { read }
+  ::= { rttMonFileIOAdminEntry 3 }
+
+
+--    
+--    Script Administration Table 
+--    
+
+rttMonScriptAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonScriptAdminEntry
+  MAX-ACCESS   not-accessible
+  STATUS       current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring 'script'
+       specific definitions.
+
+       When the RttMonRttType is not 'script' this table is
+       not valid.
+
+       This table is controlled via the
+       rttMonCtrlAdminTable.  Entries in this table are
+       created via the rttMonCtrlAdminStatus object."
+  ::= { rttMonCtrl 4 }
+
+
+rttMonScriptAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonScriptAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define specific configuration for
+       'script' RttMonRttType conceptual Rtt control rows."
+  INDEX { rttMonCtrlAdminIndex }
+  ::= { rttMonScriptAdminTable 1 }
+
+
+RttMonScriptAdminEntry ::= SEQUENCE
+{
+  rttMonScriptAdminName                  DisplayString,
+  rttMonScriptAdminCmdLineParams         DisplayString
+}
+ 
+
+rttMonScriptAdminName OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..255))
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This will be the Name of the Script that will be used to 
+       generate RTT operations.  
+
+       This object must match one of the 
+       rttMonApplPreConfigedName entries."
+  DEFVAL     { "" }
+  ::= { rttMonScriptAdminEntry 1 }
+
+
+rttMonScriptAdminCmdLineParams OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..255))
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This will be the actual command line parameters
+       passed to the rttMonScriptAdminName when being
+       executed."
+  DEFVAL     { "" }
+  ::= { rttMonScriptAdminEntry 2 }
+
+
+--    
+--    Schedule Administration Table 
+--    
+
+rttMonScheduleAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonScheduleAdminEntry
+  MAX-ACCESS   not-accessible
+  STATUS       current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring scheduling
+       specific definitions.
+
+       This table is controlled via the
+       rttMonCtrlAdminTable.  Entries in this table are
+       created via the rttMonCtrlAdminStatus object."
+  ::= { rttMonCtrl 5 }
+
+
+rttMonScheduleAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonScheduleAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define specific configuration for
+       the scheduling of RTT operations."
+  AUGMENTS { rttMonCtrlAdminEntry }
+  ::= { rttMonScheduleAdminTable 1 }
+
+
+RttMonScheduleAdminEntry ::= SEQUENCE
+{
+  rttMonScheduleAdminRttLife             Integer32,
+  rttMonScheduleAdminRttStartTime        TimeTicks,
+  rttMonScheduleAdminConceptRowAgeout    Integer32
+}
+ 
+rttMonScheduleAdminRttLife OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  UNITS       "seconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object value will be placed into the 
+       rttMonCtrlOperRttLife object when the rttMonCtrlOperState
+       object transitions to 'active' or 'pending'.
+
+       The value 2147483647 has a special meaning.  When
+       this object is set to 2147483647, the 
+       rttMonCtrlOperRttLife object will not decrement.  
+       And thus the life time will never end."
+  DEFVAL      { 3600 }
+  ::= { rttMonScheduleAdminEntry 1 }
+
+
+rttMonScheduleAdminRttStartTime OBJECT-TYPE
+  SYNTAX      TimeTicks
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This is the time when this conceptional row will 
+       activate.  
+
+       This is the value of MIB-II's sysUpTime in the future.
+       When sysUpTime equals this value this object will 
+       cause the activation of a conceptual Rtt row.
+
+       When an agent has the capability to determine date and 
+       time, the agent should store this object as DateAndTime.
+       This allows the agent to completely reset (restart) and
+       still be able to start conceptual Rtt rows at the 
+       intended time.  If the agent cannot keep date and time
+       and the agent resets, all entries should take on one of
+       the special value defined below.
+
+       The first special value allows this conceptual Rtt 
+       control row to immediately transition the 
+       rttMonCtrlOperState object into 'active' state when the
+       rttMonCtrlAdminStatus  object transitions to active.
+       This special value is defined to be a value of this
+       object that, when initially set, is one.
+
+       The second special value allows this conceptual Rtt 
+       control row to immediately transition the 
+       rttMonCtrlOperState object into 'pending' state when 
+       the rttMonCtrlAdminStatus object transitions to active.  
+       Also, when the rttMonCtrlOperRttLife counts down to zero 
+       (and not when set to zero), this special value causes 
+       this conceptual Rtt control row to  retransition the 
+       rttMonCtrlOperState object into 'pending' state.  This 
+       special value is defined to be a value of this object 
+       that, when initially set, is smaller than the current
+       sysUpTime. (With the exception of one, as defined in
+       the previous paragraph)"
+  DEFVAL      { 0 }
+  ::= { rttMonScheduleAdminEntry 2 }
+
+
+rttMonScheduleAdminConceptRowAgeout OBJECT-TYPE
+  SYNTAX      Integer32 (0..2073600)
+  UNITS       "seconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The amount of time this conceptual Rtt control row will 
+        exist when not in an 'active' rttMonCtrlOperState.
+
+        When this conceptual Rtt control row enters an 'active' 
+        state, this timer will be reset and suspended.  When 
+        this conceptual RTT control row enters a state other 
+        than 'active', the timer will be restarted.
+
+        NOTE:  This conceptual Rtt control row will ageout even 
+               when the rttMonCtrlOperState is 'pending'.  If a 
+               conceptual Rtt control row has been created with 
+               the intention to be used via a trigger, this
+               object should be set to prevent ageout.
+
+        NOTE:  When a conceptual Rtt control row ages out, the 
+               agent needs to remove the associated entries in 
+               the rttMonReactTriggerAdminTable and 
+               rttMonReactTriggerOperTable.
+
+        When this value is set to zero, this entry will
+        never be aged out."
+  DEFVAL     { 3600 }
+  ::= { rttMonScheduleAdminEntry 3 }
+
+
+--
+--  Reaction Administration Table
+--
+
+rttMonReactAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonReactAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring Notification
+       and Trigger definitions.
+
+       All Notification/Reactions are applied to all RTT 
+       End-to-End operations.  Thus, they do not apply to hops
+       along a path to the target, when RttMonRttType is 
+       'pathEcho'.
+       
+       The format and content of SNA NMVT's are not defined 
+       within this module.  
+ 
+       It can be noted, however, that there are Alert NMVT's,
+       and traps which are sent when an abnormal
+       condition occurs, i.e. when one of 
+       rttMonCtrlOperConnectionLostOccurred,
+       rttMonCtrlOperTimeoutOccurred or
+       rttMonCtrlOperOverThresholdOccurred are changed to true,
+       and Resolution NMVT's, and Resolution traps which are 
+       sent when that condition clears, i.e. when one of
+       rttMonCtrlOperConnectionLostOccurred,
+       rttMonCtrlOperTimeoutOccurred or
+       rttMonCtrlOperOverThresholdOccurred is changed back to 
+       false.
+
+       When rttMonReactAdminActionType is set to one of the 
+       following:
+         -  triggerOnly
+         -  trapAndTrigger
+         -  nmvtAndTrigger
+         -  trapNmvtAndTrigger
+       The corresponding rows in the 
+       rttMonReactTriggerAdminTable defined via the 
+       rttMonCtrlAdminIndex will become active.
+
+       This table augments the rttMonCtrlAdminTable."
+  ::= { rttMonCtrl 6 }
+
+
+rttMonReactAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonReactAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define RTT reaction operations."
+  AUGMENTS { rttMonCtrlAdminEntry }
+  ::= { rttMonReactAdminTable 1 }
+
+
+RttMonReactAdminEntry ::= SEQUENCE
+{
+  rttMonReactAdminConnectionEnable    TruthValue,
+  rttMonReactAdminTimeoutEnable       TruthValue,
+  rttMonReactAdminThresholdType       INTEGER,
+  rttMonReactAdminThresholdFalling    Integer32,
+  rttMonReactAdminThresholdCount      Integer32,
+  rttMonReactAdminThresholdCount2     Integer32,
+  rttMonReactAdminActionType          INTEGER
+}
+
+
+rttMonReactAdminConnectionEnable OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object is only valid when the RttMonRttType is
+       either 'echo' or 'pathEcho'.
+
+       If true, a reaction is generated when a RTT 
+       operation to a rttMonEchoAdminTargetAddress
+       (echo type) causes 
+       rttMonCtrlOperConnectionLostOccurred to change its 
+       value.  Thus connections to intermediate hops will 
+       not cause this value to change."
+  DEFVAL     { false }
+  ::= { rttMonReactAdminEntry 1 }
+
+
+rttMonReactAdminTimeoutEnable OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object applies to all RttMonRttTypes.
+
+       If true, a reaction is generated when a RTT
+       operation causes rttMonCtrlOperTimeoutOccurred 
+       to change its value.  
+
+       When the RttMonRttType is 'pathEcho' timeouts to 
+       intermediate hops will not cause 
+       rttMonCtrlOperTimeoutOccurred to change its value."
+  DEFVAL      { false }
+  ::= { rttMonReactAdminEntry 2 }
+
+
+rttMonReactAdminThresholdType OBJECT-TYPE
+  SYNTAX      INTEGER
+  {
+    never(1),
+    immediate(2),
+    consecutive(3),
+    xOfy(4),
+    average(5)
+  }
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object applies to all RttMonRttTypes.
+
+       This object specifies the conditions under which 
+       rttMonCtrlOperOverThresholdOccurred is changed:
+   
+       NOTE:  When the RttMonRttType is 'pathEcho' this 
+              objects' value and all associated 
+              object values are only valid when RTT 
+              'echo' operations are to the
+              rttMonEchoAdminTargetAddress object address.  Thus
+              'pathEcho' operations to intermediate
+              hops will not cause this object to change.
+
+       never       - rttMonCtrlOperOverThresholdOccurred is 
+                      never set
+       immediate   - rttMonCtrlOperOverThresholdOccurred is set 
+                      to true when an operation completion time 
+                      exceeds rttMonCtrlAdminThreshold; 
+                      conversely 
+                      rttMonCtrlOperOverThresholdOccurred is set 
+                      to false when an operation completion time 
+                      falls below 
+                      rttMonReactAdminThresholdFalling 
+       consecutive - rttMonCtrlOperOverThresholdOccurred is set 
+                      to true when an operation completion time 
+                      exceeds rttMonCtrlAdminThreshold on 
+                      rttMonReactAdminThresholdCount consecutive 
+                      RTT operations; conversely, 
+                      rttMonCtrlOperOverThresholdOccurred is set 
+                      to false when an operation completion time
+                      falls under the 
+                      rttMonReactAdminThresholdFalling 
+                      for the same number of consecutive 
+                      operations 
+       xOfy        - rttMonCtrlOperOverThresholdOccurred is set 
+                      to true when x (as specified by 
+                      rttMonReactAdminThresholdCount) out of the 
+                      last y (as specified by 
+                      rttMonReactAdminThresholdCount2) 
+                      operation completion time exceeds 
+                      rttMonCtrlAdminThreshold; 
+                      conversely, it is set to false when x, 
+                      out of the last y operation completion
+                      time fall below
+                      rttMonReactAdminThresholdFalling
+                      NOTE: When x > y, the probe will never
+                            generate a reaction.
+       average     - rttMonCtrlOperOverThresholdOccurred is set 
+                      to true when the running average of the 
+                      previous rttMonReactAdminThresholdCount 
+                      operation completion times exceed 
+                      rttMonCtrlAdminThreshold; conversely, it 
+                      is set to false when the running average 
+                      falls below the 
+                      rttMonReactAdminThresholdFalling
+
+       If this value is changed by a management station, 
+       rttMonCtrlOperOverThresholdOccurred is set to false, but 
+       no reaction is generated if the prior value of 
+       rttMonCtrlOperOverThresholdOccurred was true."
+  DEFVAL      { never }
+  ::= { rttMonReactAdminEntry 3 }
+
+
+rttMonReactAdminThresholdFalling OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "See rttMonReactAdminThresholdType."
+  DEFVAL     { 3000 }
+  ::= { rttMonReactAdminEntry 4 }
+
+
+rttMonReactAdminThresholdCount OBJECT-TYPE
+  SYNTAX      Integer32 (1..16)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "See rttMonReactAdminThresholdType."
+  DEFVAL      { 5 }
+  ::= { rttMonReactAdminEntry 5 }
+
+
+rttMonReactAdminThresholdCount2 OBJECT-TYPE
+  SYNTAX      Integer32 (1..16) 
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "See rttMonReactAdminThresholdType."
+  DEFVAL      { 5 }
+  ::= { rttMonReactAdminEntry 6 }
+
+
+rttMonReactAdminActionType OBJECT-TYPE
+  SYNTAX      INTEGER
+  {
+    none(1),
+    trapOnly(2),
+    nmvtOnly(3),
+    triggerOnly(4),
+    trapAndNmvt(5),
+    trapAndTrigger(6),
+    nmvtAndTrigger(7),
+    trapNmvtAndTrigger(8)
+  }
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "Specifies what type(s), if any, of reaction(s) to 
+       generate if an operation violates one of the watched 
+       conditions:
+
+       none               - no reaction is generated
+       trapOnly           - a trap is generated
+       nmvtOnly           - an SNA NMVT is generated
+       triggerOnly        - all trigger actions defined for this 
+                             entry are initiated
+       trapAndNmvt        - both a trap and an SNA NMVT are 
+                             generated
+       trapAndTrigger     - both a trap and all trigger actions 
+                             are initiated 
+       nmvtAndTrigger     - both a NMVT and all trigger actions 
+                             are initiated
+       trapNmvtAndTrigger - a NMVT, trap, and all trigger actions
+                             are initiated
+    
+       A trigger action is defined via the 
+       rttMonReactTriggerAdminTable."
+  DEFVAL      { none }
+  ::= { rttMonReactAdminEntry 7 }
+
+
+--
+--  Statistics Administration Table
+--
+
+rttMonStatisticsAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonStatisticsAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring statistics 
+       definitions. 
+
+       The definitions in this table control what and how many
+       entries will be placed into the rttMonStatsCaptureTable.
+
+       The statistics capture table is a rollover table.  When 
+       the rttMonStatisticsAdminNumHourGroups index value 
+       exceeds its value defined in this table, the oldest 
+       corresponding group will be deleted and will be replaced 
+       with the new group.  All other indices will only fill to 
+       there maximum size.
+
+       NOTE:  The maximum size of this table is defined to be
+              the product of the rttMonCtrlAdminIndex times
+              rttMonStatisticsAdminNumHourGroups times
+              rttMonStatisticsAdminNumPaths times
+              rttMonStatisticsAdminNumHops times
+              rttMonStatisticsAdminNumDistBuckets. 
+
+       NOTE WELL:  Each of the 'Num' objects values in this 
+                   have a special behavior.  When one of the
+                   objects is set to a value larger than the
+                   Rtt application can support the set will
+                   succeed, but the resultant value will
+                   be set to the applications maximum value. 
+                   The setting management station must reread
+                   this object to verify the actual value.
+
+       This table augments the rttMonCtrlAdminTable."
+  ::= { rttMonCtrl 7 }
+
+
+rttMonStatisticsAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonStatisticsAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define RTT statistics 
+       capture operations."
+  AUGMENTS { rttMonCtrlAdminEntry }
+  ::= { rttMonStatisticsAdminTable 1 }
+
+
+RttMonStatisticsAdminEntry ::= SEQUENCE
+{
+  rttMonStatisticsAdminNumHourGroups     Integer32,
+  rttMonStatisticsAdminNumPaths          Integer32,
+  rttMonStatisticsAdminNumHops           Integer32,
+  rttMonStatisticsAdminNumDistBuckets    Integer32,
+  rttMonStatisticsAdminDistInterval      Integer32
+}
+
+
+rttMonStatisticsAdminNumHourGroups OBJECT-TYPE
+  SYNTAX      Integer32 (0..512)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The maximum number of groups of paths to record.
+       Specifically this is the number of hourly groups 
+       to keep before rolling over.  
+
+       The value of one is not advisable because the 
+       group will close and immediately be deleted before
+       the network management station will have the 
+       opportunity to retrieve the statistics. 
+
+       The value used in the rttMonStatsCaptureTable to 
+       uniquely identify this group is the 
+       rttMonStatsCaptureStartTimeIndex.
+
+       When this object is set to the value of zero all 
+       rttMonStatsCaptureTable data capturing will be shut off.
+
+       If the value of rttMonStatisticsAdminNumHourGroups is 
+       larger than the RTT application can support, this value 
+       will be set to the applications maximum value."
+  DEFVAL      { 2 }
+  ::= { rttMonStatisticsAdminEntry 1 }
+
+
+rttMonStatisticsAdminNumPaths OBJECT-TYPE
+  SYNTAX      Integer32 (1..128)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "When RttMonRttType is 'pathEcho' this is the maximum 
+       number of statistics paths to record per hourly group.  
+       This value directly represents the path to a target.  
+       For all other RttMonRttTypes this value will be 
+       forced to one by the agent.
+
+       NOTE: For 'pathEcho' a source to target path will be 
+             created to to hold all errors that occur when a 
+             specific path or connection has not be found/setup. 
+             Thus, it is advised to set this value greater
+             than one.
+
+       Since this index does not rollover, only the first
+       rttMonStatisticsAdminNumPaths will be kept.
+
+       If the value of rttMonStatisticsAdminNumPaths is larger 
+       than the RTT application can support, this value will be 
+       set to the applications maximum value."
+  DEFVAL      { 5 }
+  ::= { rttMonStatisticsAdminEntry 2 }
+
+
+rttMonStatisticsAdminNumHops OBJECT-TYPE
+  SYNTAX      Integer32 (1..512)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "When RttMonRttType is 'pathEcho' this is the maximum 
+       number of statistics hops to record per path group.  
+       This value directly represents the number of hops along 
+       a path to a target, thus we can only support 512 hops.  
+       For all other RttMonRttTypes this value will be 
+       forced to one by the agent.
+
+       Since this index does not rollover, only the first
+       rttMonStatisticsAdminNumHops will be kept.
+
+       If the value of rttMonStatisticsAdminNumHops is larger 
+       than the RTT application can support, this value will be 
+       set to the applications maximum value."
+  DEFVAL      { 16 }
+  ::= { rttMonStatisticsAdminEntry 3 }
+
+
+rttMonStatisticsAdminNumDistBuckets OBJECT-TYPE
+  SYNTAX      Integer32 (1..512)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The maximum number of statistical distribution
+       Buckets to accumulate.
+
+       Since this index does not rollover, only the first
+       rttMonStatisticsAdminNumDistBuckets will be kept.
+
+       The last rttMonStatisticsAdminNumDistBucket will
+       contain all entries from its distribution interval
+       start point to infinity.
+
+       If the value of rttMonStatisticsAdminNumDistBuckets
+       is larger than the RTT application can support, this 
+       value will be set to the applications maximum value."
+  DEFVAL      { 1 }
+  ::= { rttMonStatisticsAdminEntry 4 }
+
+
+rttMonStatisticsAdminDistInterval OBJECT-TYPE
+  SYNTAX      Integer32 (1..100)
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The statistical distribution buckets interval.
+
+       Distribution Bucket Example:
+
+       rttMonStatisticsAdminNumDistBuckets = 5 buckets
+       rttMonStatisticsAdminDistInterval = 10 milliseconds
+
+       | Bucket 1 | Bucket 2 | Bucket 3 | Bucket 4 | Bucket 5  |
+       |  0-9 ms  | 10-19 ms | 20-29 ms | 30-39 ms | 40-Inf ms |
+
+       Odd Example:
+
+       rttMonStatisticsAdminNumDistBuckets = 1 buckets
+       rttMonStatisticsAdminDistInterval = 10 milliseconds
+
+       | Bucket 1  |
+       |  0-Inf ms |
+
+       Thus, this odd example shows that the value of 
+       rttMonStatisticsAdminDistInterval does not apply when
+       rttMonStatisticsAdminNumDistBuckets is one.
+       "
+  DEFVAL      { 20 }
+  ::= { rttMonStatisticsAdminEntry 5 }
+
+
+--
+--  History Administration Table
+--
+
+rttMonHistoryAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonHistoryAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of Round Trip Time (RTT) monitoring history 
+       definitions.
+
+       The definitions in this table control what and how many
+       entries will be placed into the 
+       rttMonHistoryCollectionTable.
+
+       The history collection table is a rollover table.  When 
+       the rttMonHistoryAdminNumLives index value exceeds its 
+       value defined in this table, the oldest corresponding 
+       'lives' group will be deleted and will be replaced with 
+       the new 'lives' group.  All other indices will only fill
+       to there maximum size.
+
+       NOTE:  The maximum size of this table is defined to be
+              the product of the rttMonCtrlAdminIndex times
+              rttMonHistoryAdminNumLives times
+              rttMonHistoryAdminNumBuckets times
+              rttMonHistoryAdminNumSamples.
+
+       NOTE WELL:  Each of the 'Num' objects values in this 
+                   have a special behavior.  When one of the
+                   objects is set to a value larger than the
+                   Rtt application can support the set will
+                   succeed, but the resultant value will
+                   be set to the applications maximum value. 
+                   The setting management station must reread
+                   this object to verify the actual value.
+
+       This table augments the rttMonCtrlAdminTable."
+  ::= { rttMonCtrl 8 }
+
+
+rttMonHistoryAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonHistoryAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that define RTT history collection 
+       operations."
+  AUGMENTS { rttMonCtrlAdminEntry }
+  ::= { rttMonHistoryAdminTable 1 }
+
+
+RttMonHistoryAdminEntry ::= SEQUENCE
+{
+  rttMonHistoryAdminNumLives       Integer32,
+  rttMonHistoryAdminNumBuckets     Integer32,
+  rttMonHistoryAdminNumSamples     Integer32,
+  rttMonHistoryAdminFilter         INTEGER
+}
+
+
+rttMonHistoryAdminNumLives OBJECT-TYPE
+  SYNTAX      Integer32 (0..255)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The maximum number of history lives to record.  A life
+       is defined by the countdown (or transition) to zero 
+       by the rttMonCtrlOperRttLife object.  A new life is
+       created when the same conceptual RTT control row is
+       restarted via the transition of the 
+       rttMonCtrlOperRttLife object and its subsequent 
+       countdown.
+
+       The value of zero will shut off all 
+       rttMonHistoryAdminTable data collection.
+
+       If the value of rttMonHistoryAdminNumLives is larger than
+       the RTT application can support, this value will be set
+       to the applications maximum value."
+  DEFVAL      { 0 }  
+  ::= { rttMonHistoryAdminEntry 1 }
+
+
+rttMonHistoryAdminNumBuckets OBJECT-TYPE
+  SYNTAX      Integer32 (1..2147483647)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The maximum number of history buckets to record.  When
+       the RttMonRttType is 'pathEcho'  this value directly 
+       represents a path to a target.  For all other 
+       RttMonRttTypes this value should be set to the number 
+       of operations to keep per lifetime.
+
+       Since this index does not rollover, only the first
+       rttMonHistoryAdminNumBuckets will be kept per life.
+
+       If the value of rttMonHistoryAdminNumBuckets is larger 
+       than the RTT application can support, this value will be 
+       set to the applications maximum value."
+  DEFVAL      { 50 }  
+  ::= { rttMonHistoryAdminEntry 2 }
+
+
+rttMonHistoryAdminNumSamples OBJECT-TYPE
+  SYNTAX      Integer32 (1..512)
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "The maximum number of history samples to record per 
+       bucket.  When the RttMonRttType is 'pathEcho' this 
+       value directly represents the number of hops along a 
+       path to a target, thus we can only support 512 hops.
+       For all other RttMonRttTypes this value will be 
+       forced to one by the agent.
+
+       If the value of rttMonHistoryAdminNumSamples is larger 
+       than the RTT application can support, this value will 
+       be set to the applications maximum value."
+  DEFVAL      { 16 }  
+  ::= { rttMonHistoryAdminEntry 3 }
+
+
+rttMonHistoryAdminFilter OBJECT-TYPE
+  SYNTAX      INTEGER
+  {
+    none(1),
+    all(2),
+    overThreshold(3),
+    failures(4)
+  }
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "Defines a filter for adding RTT results to the history 
+       buffer:
+
+       none          - no history is recorded
+       all           - the results of all completion times 
+                        and failed completions are recorded
+       overThreshold - the results of completion times
+                        over rttMonCtrlAdminThreshold are 
+                        recorded.
+       failures      - the results of failed operations (only) 
+                        are recorded."
+  DEFVAL      { none }
+  ::= { rttMonHistoryAdminEntry 4 }
+
+
+--                                    
+--   Overall Operational values 
+--                                    
+
+rttMonCtrlOperTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonCtrlOperEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the Operational values for the
+       probe, and the conceptual RTT control row. 
+
+       This table augments the rttMonCtrlAdminTable."
+  ::= { rttMonCtrl 9 }
+
+
+rttMonCtrlOperEntry OBJECT-TYPE
+  SYNTAX      RttMonCtrlOperEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that describe the current state
+       of probe, and the conceptual RTT control row. "
+  AUGMENTS { rttMonCtrlAdminEntry }
+  ::= { rttMonCtrlOperTable 1 }
+
+
+RttMonCtrlOperEntry ::= SEQUENCE
+{
+  rttMonCtrlOperModificationTime          TimeStamp,
+  rttMonCtrlOperDiagText                  DisplayString,
+  rttMonCtrlOperResetTime                 TimeStamp,
+  rttMonCtrlOperOctetsInUse               Gauge32,
+  rttMonCtrlOperConnectionLostOccurred    TruthValue,
+  rttMonCtrlOperTimeoutOccurred           TruthValue,
+  rttMonCtrlOperOverThresholdOccurred     TruthValue,
+  rttMonCtrlOperNumRtts                   Integer32,
+  rttMonCtrlOperRttLife                   Integer32,
+  rttMonCtrlOperState                     INTEGER
+}
+
+
+rttMonCtrlOperModificationTime OBJECT-TYPE
+  SYNTAX      TimeStamp
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object is updated whenever an object in 
+       the conceptual RTT control row is changed or
+       updated."
+  ::= { rttMonCtrlOperEntry 1 }
+
+
+rttMonCtrlOperDiagText OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..51))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "A string which can be used as an aid in tracing problems. 
+       The content of this field will depend on the type of 
+       target (rttMonEchoAdminProtocol). 
+
+       When rttMonEchoAdminProtocol is one of snaLU0EchoAppl, or 
+       snaLU2EchoAppl this object contains the name of the 
+       Logical Unit (LU) being used for this RTT session (from
+       the HOST's point of view), once the session has been 
+       established; this can then be used to correlate this 
+       name to the connection information stored in the 
+       Mainframe Host.
+
+       When rttMonEchoAdminProtocol is snaLU62EchoAppl, this 
+       object contains the Logical Unit (LU) name being used for
+       this RTT session, once the session has been established.  
+       This name can be used by the management application to 
+       correlate this objects value to the connection 
+       information stored at this SNMP Agent via the APPC or 
+       APPN mib.
+
+       When rttMonEchoAdminProtocol is not one of the 
+       previously mentioned values, this value will be null.
+
+       It is primarily intended that this object contains 
+       information which has significance to a human operator."
+  DEFVAL      { "" }
+  ::= { rttMonCtrlOperEntry 2 }
+
+
+rttMonCtrlOperResetTime OBJECT-TYPE
+  SYNTAX      TimeStamp
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object is set when the rttMonCtrlOperState is set
+       to reset."
+  ::= { rttMonCtrlOperEntry 3 }
+
+rttMonCtrlOperOctetsInUse OBJECT-TYPE
+  SYNTAX      Gauge32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object is the number of octets currently in use
+       by this composite conceptual RTT row.  A composite
+       conceptual row include the control, statistics, and 
+       history conceptual rows combined.  (All octets that
+       are addressed via the rttMonCtrlAdminIndex in this
+       mib.)"
+  ::= { rttMonCtrlOperEntry 4 }
+
+rttMonCtrlOperConnectionLostOccurred OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object will only change its value when the
+       RttMonRttType is 'echo' or 'pathEcho'.
+
+       This object is set to true when the RTT connection fails 
+       to be established or is lost, and set to false when a 
+       connection is reestablished.  When the RttMonRttType
+       is 'pathEcho', connection loss applies only to the
+       rttMonEchoAdminTargetAddress and not to intermediate
+       hops to the Target.
+
+       When this value changes and 
+       rttMonReactAdminConnectionEnable is true, a reaction 
+       will occur. 
+
+       If a trap is sent it is a 
+       rttMonConnectionChangeNotification."
+  DEFVAL      { false }
+  ::= { rttMonCtrlOperEntry 5 }
+
+
+rttMonCtrlOperTimeoutOccurred OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object will change its value for all
+       RttMonRttTypes.
+       
+       This object is set to true when an operation times out, 
+       and set to false when an operation completes under 
+       rttMonCtrlAdminTimeout.  When this value changes, a 
+       reaction may occur, as defined by 
+       rttMonReactAdminTimeoutEnable. 
+
+       When the RttMonRttType is 'pathEcho', this timeout
+       applies only to the rttMonEchoAdminTargetAddress and
+       not to intermediate hops to the Target.
+
+       If a trap is sent it is a rttMonTimeoutNotification."
+  DEFVAL      { false }
+  ::= { rttMonCtrlOperEntry 6 }
+
+
+rttMonCtrlOperOverThresholdOccurred OBJECT-TYPE
+  SYNTAX      TruthValue
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object will change its value for all 
+       RttMonRttTypes.
+
+       This object is changed by operation completion times over
+       threshold, as defined by rttMonReactAdminThresholdType.  
+       When this value changes, a reaction may occur, as defined 
+       by rttMonReactAdminThresholdType. 
+
+       If a trap is sent it is a rttMonThresholdNotification."
+  DEFVAL      { false }
+  ::= { rttMonCtrlOperEntry 7 }
+
+
+rttMonCtrlOperNumRtts OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This is the total number of RTT operations that have 
+       been attempted.   
+
+       This value is incremented for each start of an RTT 
+       operation.  Thus when rttMonCtrlAdminRttType is set to 
+       'pathEcho' this value will be incremented by one and 
+       not for very every hop along the path.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object.
+       
+       This value is not effected by the rollover of a statistics
+       hourly group."
+  ::= { rttMonCtrlOperEntry 8 }
+
+
+rttMonCtrlOperRttLife OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  UNITS       "seconds"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object is decremented every second, until it 
+       reaches zero.  When the value of this object is zero
+       RTT operations for this row are suspended.  This 
+       object will either reach zero by a countdown or 
+       it will transition to zero via setting the
+       rttMonCtrlOperState.
+
+       When this object reaches zero the agent needs to 
+       transition the rttMonCtrlOperState to 'inactive'.
+
+       REMEMBER:  The value 2147483647 has a special 
+                  meaning.  When this object has the
+                  value 2147483647, this object will
+                  not decrement.  And thus the life 
+                  time will never.
+
+       When the rttMonCtrlOperState object is 'active' and 
+       the rttMonReactTriggerOperState object transitions to 
+       'active' this object will not be updated with the 
+       current value of rttMonCrtlAdminRttLife object."
+  ::= { rttMonCtrlOperEntry 9 }
+
+
+rttMonCtrlOperState OBJECT-TYPE
+  SYNTAX      INTEGER
+  {
+    reset(1),
+    orderlyStop(2),
+    immediateStop(3),
+    pending(4),
+    inactive(5),
+    active(6)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+       "The RttMonOperStatus object is used to
+       manage the 'state' of the probe that is implementing 
+       conceptual RTT control row.
+
+       This status object has six defined values:
+
+       reset(1)          - reset this entry, transition
+                           to 'pending'
+       orderlyStop(2)    - shutdown this entry at the end
+                            of the next RTT operation attempt, 
+                            transition to 'inactive'
+       immediateStop(3)  - shutdown this entry immediately
+                            (if possible), transition to 
+                            'inactive'
+       pending(4)        - this value is not settable and
+                            this conceptual RTT control row is 
+                            waiting for further control either 
+                            via the rttMonScheduleAdminTable 
+                            or the rttMonReactAdminTable/
+                            rttMonReactTriggerAdminTable;
+                            This object can transition to this
+                            value via two mechanisms, first by
+                            reseting this object, and second
+                            by creating a conceptual Rtt control
+                            row with the 
+                            rttMonScheduleAdminRttStartTime
+                            object with the its special value
+       inactive(5)       - this value is not settable and
+                            this conceptual RTT control row is 
+                            waiting for further control via
+                            the rttMonScheduleAdminTable;
+                            This object can transition to this
+                            value via two mechanisms, first by
+                            setting this object to 'orderlyStop'
+                            or 'immediateStop', second by 
+                            the rttMonCtrlOperRttLife object
+                            reaching zero
+       active(6)         - this value is not settable and
+                            this conceptual RTT control row is
+                            currently active
+
+       The probes action when this object is set to 'reset':
+         -  all rows in rttMonStatsCaptureTable that relate to 
+             this conceptual RTT control row are destroyed and 
+             the indices are set to 1
+         -  if rttMonStatisticsAdminNumHourGroups is not zero, a 
+             single new rttMonStatsCaptureTable row is created
+         -  all rows in rttMonHistoryCaptureTable that relate 
+             to this RTT definition are destroyed and the indices
+             are set to 1
+         -  implied history used for timeout or threshold
+             notification (see rttMonReactAdminThresholdType)
+             is purged
+         -  rttMonCtrlOperRttLife is set to 
+             rttMonScheduleAdminRttLife
+         -  rttMonCtrlOperNumRtts is set to zero
+         -  rttMonCtrlOperTimeoutOccurred, 
+             rttMonCtrlOperOverThresholdOccurred, and 
+             rttMonCtrlOperConnectionLostOccurred are set to 
+             false; if this causes a change in the value of 
+             either of these objects, resolution notifications 
+             will not occur
+         -  the next RTT operation is controlled by the objects
+             in the rttMonScheduleAdminTable or the 
+             rttMonReactAdminTable/rttMonReactTriggerAdminTable
+         -  if the rttMonReactTriggerOperState is 'active', it 
+             will transition to 'pending'
+         -  all rttMonReactTriggerAdminEntries pointing to
+             this conceptual entry with their 
+             rttMonReactTriggerOperState object 'active', 
+             will transition their OperState to 'pending'
+         -  all open connections must be maintained
+
+       This can be used to synchronize various RTT 
+       definitions, so that the RTT requests occur 
+       simultaneously, or as simultaneously as possible.
+
+       The probes action when this object transitions to 
+         'inactive' (via setting this object to 'orderlyStop' 
+         or 'immediateStop' or by rttMonCtrlOperRttLife 
+         reaching zero):
+         -  all statistics and history collection information
+             table entries will be closed and kept
+         -  implied history used for timeout or threshold
+             notification (see rttMonReactAdminThresholdType)
+             is purged
+         -  rttMonCtrlOperTimeoutOccurred, 
+             rttMonCtrlOperOverThresholdOccurred, and 
+             rttMonCtrlOperConnectionLostOccurred are set to 
+             false; if this causes a change in the value of 
+             either of these objects, resolution notifications 
+             will not occur.
+         -  the next RTT request is controlled by the objects
+             in the rttMonScheduleAdminTable
+         -  if the rttMonReactTriggerOperState is 'active', it 
+             will transition to 'pending' (this denotes that
+             the Trigger will be ready the next time this
+             object goes active)
+         -  all rttMonReactTriggerAdminEntries pointing to
+             this conceptual entry with their 
+             rttMonReactTriggerOperState object 'active', 
+             will transition their OperState to 'pending'
+         -  all open connections are to be closed and cleanup.
+
+                    rttMonCtrlOperState
+                           STATE
+                 +-------------------------------------------+
+                 |      A       |       B      |      C      |
+    ACTION       |  'pending'   |  'inactive'  |   'active'  |
++----------------+--------------+--------------+-------------+
+| OperState set  |    noError   |inconsistent- |   noError   |
+|  to 'reset'    |              | Value        |             |
+|                |    -> A      |              |   -> A      |
++----------------+--------------+--------------+-------------+
+| OperState set  |    noError   |    noError   |   noError   |
+|to 'orderlyStop'|    -> B      |    -> B      |   -> B      |
+|     or to      |              |              |             |
+|'immediateStop' |              |              |             |
++----------------+--------------+--------------+-------------+
+|  Event causes  |    -> C      |    -> B      |   -> C      |
+| Trigger State  |              |              |   see (3)   |
+| to transition  |              |              |             |
+| to 'active'    |              |              |             |
++----------------+--------------+--------------+-------------+
+| AdminStatus    |    -> C      |    -> C      |   see (1)   |
+| transitions to |              |              |             |
+| 'active' &     |              |              |             |
+| RttStartTime is|              |              |             |
+| special value  |              |              |             |
+| of one.        |              |              |             |
++----------------+--------------+--------------+-------------+
+| AdminStatus    |    -> A      |    -> A      |   see (1)   |
+| transitions to |              |              |             |
+| 'active' &     |              |              |             |
+| RttStartTime is|              |              |             |
+| special value  |              |              |             |
+| of less than   |              |              |             |
+| current time,  |              |              |             |
+| excluding one. |              |              |             |
++----------------+--------------+--------------+-------------+
+| AdminStatus    |    -> A      |    -> B      |   see (2)   |
+| transitions to |              |              |             |
+| 'notInService' |              |              |             |
++----------------+--------------+--------------+-------------+
+| AdminStatus    |    -> B      |    -> B      |   -> B      |
+| transitions to |              |              |             |
+| 'delete'       |              |              |             |
++----------------+--------------+--------------+-------------+
+| AdminStatus is |    -> C      |    -> C      |   -> C      |
+| 'active' & the |              |              |   see (3)   |
+| RttStartTime   |              |              |             |
+| arrives        |              |              |             |
++----------------+--------------+--------------+-------------+
+|   RowAgeout    |    -> B      |    -> B      |   -> B      |
+|    expires     |              |              |             |
++----------------+--------------+--------------+-------------+
+|  OperRttLife   |    N/A       |    N/A       |   -> B      |
+| counts down to |              |              |             |
+| zero           |              |              |             |
++----------------+--------------+--------------+-------------+
+
+(1) - rttMonCtrlOperState must have transitioned to 'inactive'
+       or 'pending' before the rttMonCtrlAdminStatus can
+       transition to 'active'.  See (2).
+(2) - rttMonCtrlAdminStatus cannot transition to 'notInService'
+       unless rttMonCtrlOperState has been previously forced
+       to 'inactive' or 'pending'.
+(3) - when this happens the rttMonCtrlOperRttLife will not
+       be updated with the rttMonCtrlAdminRttLife.
+
+       NOTE:  In order for all objects in a PDU to be set
+              at the same time, this object can not be
+              part of a multi-bound PDU."
+  ::= { rttMonCtrlOperEntry 10 }
+
+
+--                                    
+--   Latest RTT operation values 
+--                                    
+
+rttMonLatestRttOperTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonLatestRttOperEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the status of latest RTT 
+       operation. 
+
+       When the RttMonRttType is 'pathEcho', operations 
+       performed to the hops along the path will be recorded
+       in this table.
+
+       This table augments the RTT definition table, 
+       rttMonCtrlAdminTable."
+  ::= { rttMonCtrl 10 }
+
+
+rttMonLatestRttOperEntry OBJECT-TYPE
+  SYNTAX      RttMonLatestRttOperEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that record the latest RTT operation. "
+  AUGMENTS { rttMonCtrlAdminEntry }
+  ::= { rttMonLatestRttOperTable 1 }
+
+
+RttMonLatestRttOperEntry ::= SEQUENCE
+{
+  rttMonLatestRttOperCompletionTime     Gauge32,
+  rttMonLatestRttOperSense              RttResponseSense,
+  rttMonLatestRttOperApplSpecificSense  Integer32,
+  rttMonLatestRttOperSenseDescription   DisplayString,
+  rttMonLatestRttOperTime               TimeStamp,
+  rttMonLatestRttOperAddress            RttMonTargetAddress
+}
+
+rttMonLatestRttOperCompletionTime OBJECT-TYPE
+  SYNTAX      Gauge32
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The completion time of the latest RTT operation
+       successfully completed."
+  ::= { rttMonLatestRttOperEntry 1 }
+
+
+rttMonLatestRttOperSense OBJECT-TYPE
+  SYNTAX      RttResponseSense
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "A sense code for the completion status of the latest 
+       RTT operation."
+  ::= { rttMonLatestRttOperEntry 2 }
+
+
+rttMonLatestRttOperApplSpecificSense OBJECT-TYPE
+  SYNTAX      Integer32 (1001..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "An application specific sense code for the 
+       completion status of the latest RTT operation.  This 
+       object will only be valid when the 
+       rttMonLatestRttOperSense object is set to 
+       'applicationSpecific'.  Otherwise, this object's 
+       value is not valid."
+  ::= { rttMonLatestRttOperEntry 3 }
+
+
+rttMonLatestRttOperSenseDescription OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..255))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "A sense description for the completion status of
+       the latest RTT operation when the 
+       rttMonLatestRttOperSense object is set to 
+       'applicationSpecific'."
+  ::= { rttMonLatestRttOperEntry 4 }
+
+
+rttMonLatestRttOperTime OBJECT-TYPE
+  SYNTAX      TimeStamp
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The value of the agent system time at the time of the 
+       latest RTT operation."
+  ::= { rttMonLatestRttOperEntry 5 }
+
+rttMonLatestRttOperAddress OBJECT-TYPE
+  SYNTAX      RttMonTargetAddress
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'echo' or 'pathEcho' this is 
+       a string which specifies the address of the target for
+       this RTT operation.  When the RttMonRttType is not 'echo'
+       or 'pathEcho' this object will be null.
+
+       This address will be the address of the hop along the
+       path to the rttMonEchoAdminTargetAddress address,
+       including rttMonEchoAdminTargetAddress address, or just
+       the rttMonEchoAdminTargetAddress address, when the
+       path information is not collected.  This behavior is
+       defined by the rttMonCtrlAdminRttType object.
+
+       The interpretation of this string depends on the type
+       of RTT operation selected, as specified by the
+       rttMonEchoAdminProtocol object.
+
+       See rttMonEchoAdminTargetAddress for a complete
+       description."
+  ::= { rttMonLatestRttOperEntry 6 }
+
+
+--                                    
+--   Reaction Trigger Administration Table
+--                                    
+
+
+rttMonReactTriggerAdminTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonReactTriggerAdminEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the list of conceptual RTT
+       control rows that will start to collect data when a 
+       reaction condition is violated and when 
+       rttMonReactAdminActionType is set to one of the 
+       following:
+         -  triggerOnly
+         -  trapAndTrigger
+         -  nmvtAndTrigger
+         -  trapNmvtAndTrigger
+
+       The goal of this table is to define one or more 
+       additional conceptual RTT control rows that will become
+       active and start to collect additional history and
+       statistics (depending on the rows configuration values),
+       when a problem has been detected.
+
+       If the conceptual RTT control row is undefined, and a 
+       trigger occurs, no action will take place.  
+
+       If the conceptual RTT control row is scheduled to start 
+       at a later time, triggering that row will have no effect.
+
+       If the conceptual RTT control row is currently active, 
+       triggering that row will have no effect on that row, but 
+       the rttMonReactTriggerOperState object will transition to 
+       'active'.
+
+       An entry in this table can only be triggered when
+       it is not currently in a triggered state.  The
+       object rttMonReactTriggerOperState will 
+       reflect the state of each entry in this table."
+  ::= { rttMonCtrl 11 }
+
+
+rttMonReactTriggerAdminEntry OBJECT-TYPE
+  SYNTAX      RttMonReactTriggerAdminEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects that will be triggered when
+       a reaction condition is violated."
+  INDEX { rttMonCtrlAdminIndex,
+          rttMonReactTriggerAdminRttMonCtrlAdminIndex }
+  ::= { rttMonReactTriggerAdminTable 1 }
+
+
+RttMonReactTriggerAdminEntry ::= SEQUENCE
+{
+  rttMonReactTriggerAdminRttMonCtrlAdminIndex   Integer32,
+  rttMonReactTriggerAdminStatus                 RowStatus
+}
+
+rttMonReactTriggerAdminRttMonCtrlAdminIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..2147483647)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This object points to a single conceptual Rtt control 
+       row.  If this row does not exist and this value is 
+       triggered no action will result.
+
+       The conceptual Rtt control row will be triggered for the 
+       rttMonCtrlOperRttLife length.  If this conceptual Rtt
+       control row is already active, rttMonCtrlOperRttLife will
+       not be updated, and its life will continue as previously 
+       defined."
+  ::= { rttMonReactTriggerAdminEntry 1 }
+
+rttMonReactTriggerAdminStatus OBJECT-TYPE
+  SYNTAX      RowStatus
+  MAX-ACCESS  read-create
+  STATUS      current
+  DESCRIPTION
+       "This object is used to create Trigger entries."
+  DEFVAL      { createAndGo }
+  ::= { rttMonReactTriggerAdminEntry 2 }
+
+
+--                                    
+--   Reaction Violation Trigger Operational State Table
+--                                    
+
+
+rttMonReactTriggerOperTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonReactTriggerOperEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A table of which contains the operational state
+       of each entry in the 
+       rttMonReactTriggerAdminTable.
+
+       This table augments the RTT trigger 
+       definition table, rttMonReactTriggerAdminTable."
+  ::= { rttMonCtrl 12 }
+
+
+rttMonReactTriggerOperEntry OBJECT-TYPE
+  SYNTAX      RttMonReactTriggerOperEntry 
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of state objects for the 
+       rttMonReactTriggerAdminTable."
+  AUGMENTS { rttMonReactTriggerAdminEntry }
+  ::= { rttMonReactTriggerOperTable 1 }
+
+
+RttMonReactTriggerOperEntry ::= SEQUENCE
+{
+  rttMonReactTriggerOperState   INTEGER
+}
+
+rttMonReactTriggerOperState OBJECT-TYPE
+  SYNTAX      INTEGER
+  {
+    active(1),
+    pending(2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object takes on the value active
+       when its associated entry in the 
+       rttMonReactTriggerAdminTable has been
+       triggered.
+
+       When the associated entry in the
+       rttMonReactTriggerAdminTable is not under
+       a trigger state, this object will be
+       pending.
+
+       When this object is in the active state
+       this entry can not be retriggered."
+  ::= { rttMonReactTriggerOperEntry 1 }
+
+
+--    
+--    Statistics Capture Table
+--    
+
+
+rttMonStatsCaptureTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonStatsCaptureEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "The statistics capture database.
+
+       The statistics capture table contains summarized 
+       information of the results for a conceptual RTT control 
+       row.  A rolling accumulated history of this information 
+       is maintained in a series of hourly 'group(s)'.  Each 
+       'group' contains a series of 'path(s)', each 'path' 
+       contains a series of 'hop(s)', each 'hop' contains a 
+       series of 'statistics distribution bucket(s)'.
+      
+       Each conceptual statistics row has a current hourly 
+       group, into which RTT results are accumulated.  At the 
+       end of each hour a new hourly group is created which 
+       then becomes current.  The counters and accumulators in 
+       the new group are initialized to zero.  The previous 
+       group(s) is kept in the table until the table contains 
+       rttMonStatisticsAdminNumHourGroups groups for the 
+       conceptual statistics row;  at this point, the oldest 
+       group is discarded and is replaced by the newly created 
+       one.  The hourly group is uniquely identified by the 
+       rttMonStatsCaptureStartTimeIndex object.
+
+       If the activity for a conceptual RTT control row ceases 
+       because the rttMonCtrlOperState object transitions to 
+       'inactive', the corresponding current hourly group in 
+       this table is 'frozen', and a new hourly group is 
+       created when activity is resumed.
+
+       If the activity for a conceptual RTT control row ceases 
+       because the rttMonCtrlOperState object transitions to 
+       'pending' this whole table will be cleared and reset to 
+       its initial state.
+
+       When the RttMonRttType is 'pathEcho', the path 
+       exploration RTT requests' statistics will not be 
+       accumulated in this table.
+    
+       NOTE: When the RttMonRttType is 'pathEcho', a source to 
+             target rttMonStatsCapturePathIndex path will be 
+             created for each rttMonStatsCaptureStartTimeIndex 
+             to hold all errors that occur when a specific path
+             had not been found or connection has not be setup.
+
+       Using this rttMonStatsCaptureTable, a managing 
+       application can retrieve summarized data from accurately 
+       measured periods, which is synchronized across multiple 
+       conceptual RTT control rows.  With the new hourly group
+       creation being performed on a 60 minute period, the 
+       managing station has plenty of time to collect the data, 
+       and need not be concerned with the vagaries of network 
+       delays and lost PDU's when trying to get matching data.  
+       Also, the managing station can spread the data gathering 
+       over a longer period, which removes the need for a flood 
+       of get requests in a short period which otherwise would 
+       occur."
+  ::= { rttMonStats 1 }
+
+
+rttMonStatsCaptureEntry OBJECT-TYPE
+  SYNTAX      RttMonStatsCaptureEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects which accumulate the results of a 
+       series of RTT operations over a 60 minute time period.
+
+       The statistics capture table is a rollover table.  When
+       rttMonStatsCaptureStartTimeIndex groups exceeds the 
+       rttMonStatisticsAdminNumHourGroups value, the oldest 
+       corresponding hourly group will be deleted and will be 
+       replaced with the new rttMonStatsCaptureStartTimeIndex
+       hourly group.  
+
+       All other indices will fill to there maximum size. 
+
+       The statistics capture table has five indices.  Each
+       described as follows:
+
+         -  The first index correlates its entries to a
+             conceptual RTT control row via the 
+             rttMonCtrlAdminIndex object.
+         -  The second index is a rollover group and it 
+             uniquely identifies a 60 minute group. (The 
+             rttMonStatsCaptureStartTimeIndex object
+             is used to make this value unique.)
+         -  When the RttMonRttType is 'pathEcho', the third 
+             index uniquely identifies the paths in a 
+             statistics period.  (The period is 60
+             minutes.)  A path will be created for each
+             unique path through the network.  Note:  A
+             path that does not contain the target is
+             considered a different path than one which
+             uses the exact same path, but does contain the
+             target.  For all other values of RttMonRttType
+             this index will be one.
+         -  When the RttMonRttType is 'pathEcho', the fourth 
+             index uniquely identifies the hops in each path, 
+             as grouped by the third index.  This index does 
+             imply the order of the hops along the path to a 
+             target.  For all other values of RttMonRttType
+             this index will be one.
+         -  The fifth index uniquely creates a statistical
+             distribution bucket." 
+  INDEX { rttMonCtrlAdminIndex, 
+          rttMonStatsCaptureStartTimeIndex, 
+          rttMonStatsCapturePathIndex,
+          rttMonStatsCaptureHopIndex,
+          rttMonStatsCaptureDistIndex
+        }
+  ::= { rttMonStatsCaptureTable 1 }
+
+
+RttMonStatsCaptureEntry  ::= SEQUENCE
+{
+  rttMonStatsCaptureStartTimeIndex           TimeStamp,
+  rttMonStatsCapturePathIndex                Integer32,
+  rttMonStatsCaptureHopIndex                 Integer32,
+  rttMonStatsCaptureDistIndex                Integer32,
+  rttMonStatsCaptureCompletions              Integer32,
+  rttMonStatsCaptureOverThresholds           Integer32,
+  rttMonStatsCaptureSumCompletionTime        Gauge32,
+  rttMonStatsCaptureSumCompletionTime2Low    Gauge32,
+  rttMonStatsCaptureSumCompletionTime2High   Gauge32,
+  rttMonStatsCaptureCompletionTimeMax        Gauge32,
+  rttMonStatsCaptureCompletionTimeMin        Gauge32
+}
+
+
+rttMonStatsCaptureStartTimeIndex OBJECT-TYPE
+  SYNTAX      TimeStamp
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "The time when this row was created. 
+
+       This object is the second index of the 
+       rttMonStatsCaptureTable Table.
+
+       The the number of rttMonStatsCaptureStartTimeIndex  
+       groups exceeds the rttMonStatisticsAdminNumHourGroups
+       value, the oldest rttMonStatsCaptureStartTimeIndex 
+       group will be removed and replaced with the new entry.
+
+       When the RttMonRttType is 'pathEcho', this object also 
+       uniquely defines a group of paths.  See the 
+       rttMonStatsCaptureEntry object."
+  ::= { rttMonStatsCaptureEntry 1 }
+
+
+rttMonStatsCapturePathIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..128)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'pathEcho', this object 
+       uniquely defines a path for a given value of 
+       rttMonStatsCaptureStartTimeIndex.  For all other values
+       of RttMonRttType, this object will be one.
+
+       For a particular value of 
+       rttMonStatsCaptureStartTimeIndex, the agent assigns the
+       first instance of a path a value of 1, then second 
+       instance a value of 2, and so on.  The sequence keeps 
+       incrementing until the number of paths equals 
+       rttMonStatisticsAdminNumPaths value, then no new paths 
+       are kept for the current rttMonStatsCaptureStartTimeIndex 
+       group.
+
+       NOTE: A source to target rttMonStatsCapturePathIndex
+             path will be created for each 
+             rttMonStatsCaptureStartTimeIndex to hold all 
+             errors that occur when a specific path or 
+             connection has not be setup.
+
+       This value directly represents the path to
+       a target. We can only support 128 paths."
+  ::= { rttMonStatsCaptureEntry 2 }
+
+
+rttMonStatsCaptureHopIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..512)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'pathEcho', this object 
+       uniquely defines a hop for a given value of 
+       rttMonStatsCapturePathIndex.  For all other values of
+       RttMonRttType, this object will be one.
+
+       For a particular value of rttMonStatsCapturePathIndex,
+       the agent assigns the first instance of a hop
+       a value of 1, then second instance a value of 2, and so
+       on.  The sequence keeps incrementing until the number of 
+       hops equals rttMonStatisticsAdminNumHops value, then
+       no new hops are kept for the current
+       rttMonStatsCapturePathIndex.
+
+       This value directly represents a hop along the path to
+       a target, thus we can only support 512 hops.
+
+       This value shows the order along the path to a target."
+  ::= { rttMonStatsCaptureEntry 3 }
+
+
+rttMonStatsCaptureDistIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..512)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This object uniquely defines a statistical distribution
+       bucket for a given value of rttMonStatsCaptureHopIndex.
+
+       For a particular value of rttMonStatsCaptureHopIndex,
+       the agent assigns the first instance of a distribution
+       a value of 1, then second instance a value of 2, and so
+       on.  The sequence keeps incrementing until the number of 
+       statistics distribution intervals equals 
+       rttMonStatisticsAdminNumDistBuckets value, then
+       all values that fall above the last interval will
+       be placed into the last interval.
+
+       Each of these Statistics Distribution Buckets contain 
+       the results of each completion as defined by 
+       rttMonStatisticsAdminDistInterval object."
+  ::= { rttMonStatsCaptureEntry 4 }
+
+
+rttMonStatsCaptureCompletions OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of RTT operations that have completed without
+       an error and without timing out.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCaptureEntry 5 }
+
+
+rttMonStatsCaptureOverThresholds OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of RTT operations successfully completed, but 
+       in excess of rttMonCtrlAdminThreshold.  This number is a
+       subset of the accumulation of all 
+       rttMonStatsCaptureCompletions.  The operation time 
+       of these completed operations will be accumulated.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCaptureEntry 6 }
+
+
+rttMonStatsCaptureSumCompletionTime OBJECT-TYPE
+  SYNTAX      Gauge32
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The accumulated completion time of RTT operations which 
+       complete successfully."
+  ::= { rttMonStatsCaptureEntry 7 }
+
+
+rttMonStatsCaptureSumCompletionTime2Low OBJECT-TYPE
+  SYNTAX      Gauge32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The low order 32 bits of the accumulated squares 
+       of completion times (in milliseconds) of RTT 
+       operations which complete successfully.
+
+       Low/High order is defined where the binary number
+       will look as follows:
+       -------------------------------------------------
+       | High order 32 bits    | Low order 32 bits     |
+       -------------------------------------------------
+       For example the number 4294967296 would have all
+       Low order bits as '0' and the rightmost High
+       order bit will be 1 (zeros,1)." 
+  ::= { rttMonStatsCaptureEntry 8 }
+
+
+rttMonStatsCaptureSumCompletionTime2High OBJECT-TYPE
+  SYNTAX      Gauge32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The high order 32 bits of the accumulated squares 
+       of completion times (in milliseconds) of RTT 
+       operations which complete successfully.
+
+       See the rttMonStatsCaptureSumCompletionTime2Low object
+       for a definition of Low/High Order." 
+  ::= { rttMonStatsCaptureEntry 9 }
+
+
+rttMonStatsCaptureCompletionTimeMax OBJECT-TYPE
+  SYNTAX      Gauge32
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The maximum completion time of any RTT operation which 
+       completes successfully."
+  ::= { rttMonStatsCaptureEntry 10 }
+
+
+rttMonStatsCaptureCompletionTimeMin OBJECT-TYPE
+  SYNTAX      Gauge32
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The minimum completion time of any RTT operation which 
+       completes successfully."
+  ::= { rttMonStatsCaptureEntry 11 }
+
+
+--    
+--    Statistics Collection Table
+--    
+
+rttMonStatsCollectTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonStatsCollectEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "The statistics collection database.
+
+       This table has the exact same behavior as the
+       rttMonStatsCaptureTable, except it does not keep
+       statistical distribution information.
+
+       For a complete table description see
+       the rttMonStatsCaptureTable object."
+  ::= { rttMonStats 2 }
+
+
+rttMonStatsCollectEntry OBJECT-TYPE
+  SYNTAX      RttMonStatsCollectEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects which accumulate the results of a
+       series of RTT operations over a 60 minute time period.
+ 
+       This entry has the exact same behavior as the 
+       rttMonStatsCaptureEntry, except it does not keep
+       statistical distribution information.
+
+       For a complete entry description see
+       the rttMonStatsCaptureEntry object."
+  INDEX { rttMonCtrlAdminIndex,
+          rttMonStatsCaptureStartTimeIndex,
+          rttMonStatsCapturePathIndex,
+          rttMonStatsCaptureHopIndex
+        }
+  ::= { rttMonStatsCollectTable 1 }
+
+
+RttMonStatsCollectEntry  ::= SEQUENCE
+{
+  rttMonStatsCollectNumDisconnects   Integer32,
+  rttMonStatsCollectTimeouts         Integer32,
+  rttMonStatsCollectBusies           Integer32,
+  rttMonStatsCollectNoConnections    Integer32,
+  rttMonStatsCollectDrops            Integer32,
+  rttMonStatsCollectSequenceErrors   Integer32,
+  rttMonStatsCollectVerifyErrors     Integer32,
+  rttMonStatsCollectAddress          RttMonTargetAddress
+}
+
+
+rttMonStatsCollectNumDisconnects OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'echo' or pathEcho', this 
+       object represents the number of times that the target or 
+       hop along the path to a target became disconnected.  For
+       all other values of RttMonRttType, this object will
+       remain zero.
+
+       For connectionless protocols this has no meaning,
+       and will consequently remain 0.  When
+       rttMonEchoAdminProtocol is one of snaRUEcho, this is
+       the number of times that an LU-SSCP session was lost, 
+       for snaLU0EchoAppl, snaLU2EchoAppl, snaLu62Echo, and for 
+       snaLU62EchoAppl, this is the number of times that LU-LU 
+       session was lost.
+
+       Since this error does not indicate any information about
+       the failure of an RTT operation, no response time 
+       information for this instance will be recorded in the 
+       appropriate objects.
+
+       If this error occurs and the rttMonStatsCapturePathIndex 
+       cannot be determined, this error will be accumulated in 
+       the source to target path, that will always exist.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 1 }
+
+
+rttMonStatsCollectTimeouts OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of occasions when a RTT operation was not
+       completed before a timeout occurred, i.e.
+       rttMonCtrlAdminTimeout was exceeded.
+
+       Since the RTT operation was never completed, the 
+       completion time of these operations are not accumulated,
+       nor do they increment rttMonStatsCaptureCompletions (in 
+       any of the statistics distribution buckets).
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 2 }
+
+
+rttMonStatsCollectBusies OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of occasions when a RTT operation could not
+       be initiated because a previous RTT operation has not 
+       been completed.
+
+       When the RttMonRttType is 'pathEcho' this can occur for
+       both connection oriented protocols and connectionless
+       protocols.
+
+       When the RttMonRttType is 'echo' this can only occur for
+       connection oriented protocols such as SNA. 
+
+       When the initiation of a new operation cannot be started,
+       this object will be incremented and the operation will be
+       omitted.  (The next operation will start at the next 
+       Frequency).  Since, a RTT operation was never initiated, 
+       the completion time of these operations is not 
+       accumulated, nor do they increment 
+       rttMonStatsCaptureCompletions.
+
+       When the RttMonRttType is 'pathEcho', and this error 
+       occurs and the rttMonStatsCapturePathIndex cannot be 
+       determined, this error will be accumulated in the source 
+       to target path, that will always exist.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 3 }
+
+
+rttMonStatsCollectNoConnections OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'echo' or 'pathEcho' this is
+       the number of occasions when a RTT operation could not be
+       initiated because the connection to the target has not 
+       been established.  For all other RttMonRttTypes this
+       object will remain zero.
+
+       This cannot occur for connectionless protocols, but may
+       occur for connection oriented protocols, such as SNA.
+
+       Since a RTT operation was never initiated, the completion
+       time of these operations are not accumulated, nor do they
+       increment rttMonStatsCaptureCompletions. 
+
+       If this error occurs and the rttMonStatsCapturePathIndex
+       cannot be determined, this error will be accumulated
+       in the source to target path, that will always exist.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 4 }
+
+
+rttMonStatsCollectDrops OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of occasions when a RTT operation could not 
+       be initiated because some necessary internal resource 
+       (for example memory, or SNA subsystem) was not available,
+       or the operation completion could not be recognized.
+
+       Since a RTT operation was never initiated or was not
+       recognized, the completion time of these operations 
+       are not accumulated, nor do they increment 
+       rttMonStatsCaptureCompletions (in the expected 
+       Distribution Bucket).
+
+       When the RttMonRttType is 'pathEcho', and this error 
+       occurs and the rttMonStatsCapturePathIndex cannot be 
+       determined, this error will be accumulated in the 
+       source to target path, that will always exist.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 5 }
+
+
+rttMonStatsCollectSequenceErrors OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'echo' of 'pathEcho' this is 
+       the number of RTT operation completions received with 
+       an unexpected sequence identifier.  For all other values
+       of RttMonRttType this object will remain zero.
+
+       When this has occurred some of the possible reasons may
+       be:  
+          - a duplicate packet was received
+          - a response was received after it had timed-out
+          - a corrupted packet was received and was not detected
+
+       The completion time of these operations are not 
+       accumulated, nor do they increment 
+       rttMonStatsCaptureCompletions (in the expected
+       Distribution Bucket).
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 6 }
+
+
+rttMonStatsCollectVerifyErrors OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of RTT operation completions received with 
+       data that does not compare with the expected data.  The 
+       completion time of these operations are not accumulated, 
+       nor do they increment rttMonStatsCaptureCompletions (in
+       the expected Distribution Bucket).
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsCollectEntry 7 }
+
+
+rttMonStatsCollectAddress OBJECT-TYPE
+  SYNTAX      RttMonTargetAddress
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This object only applies when the RttMonRttType is 
+       'echo' or 'pathEcho'.  For all other values of the
+       RttMonRttType, this will be null. 
+
+       The object is a string which specifies the address of 
+       the target for the this RTT operation.
+
+       This address will be the address of the hop along the 
+       path to the rttMonEchoAdminTargetAddress address, 
+       including rttMonEchoAdminTargetAddress address, or just 
+       the rttMonEchoAdminTargetAddress address, when the 
+       path information is not collected.  This behavior is
+       defined by the rttMonCtrlAdminRttType object.
+
+       The interpretation of this string depends on the type 
+       of RTT operation selected, as specified by the 
+       rttMonEchoAdminProtocol object."
+  ::= { rttMonStatsCollectEntry 8 }
+
+
+--    
+--    Statistics Totals Table
+--    
+
+rttMonStatsTotalsTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonStatsTotalsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "The statistics totals database.
+
+       This table has the exact same behavior as the
+       rttMonStatsCaptureTable, except it only keeps
+       60 minute group values.
+
+       For a complete table description see
+       the rttMonStatsCaptureTable object."
+  ::= { rttMonStats 3 }
+
+
+rttMonStatsTotalsEntry OBJECT-TYPE
+  SYNTAX      RttMonStatsTotalsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of objects which accumulate the results of a
+       series of RTT operations over a 60 minute time period.
+ 
+       This entry has the exact same behavior as the 
+       rttMonStatsCaptureEntry, except it only keeps
+       60 minute group values.
+
+       For a complete entry description see
+       the rttMonStatsCaptureEntry object."
+  INDEX { rttMonCtrlAdminIndex,
+          rttMonStatsCaptureStartTimeIndex
+        }
+  ::= { rttMonStatsTotalsTable 1 }
+
+
+RttMonStatsTotalsEntry  ::= SEQUENCE
+{
+  rttMonStatsTotalsElapsedTime       TimeInterval,
+  rttMonStatsTotalsInitiations       Integer32
+}
+
+rttMonStatsTotalsElapsedTime OBJECT-TYPE
+  SYNTAX      TimeInterval
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The length of time since this conceptual statistics row 
+       was created."
+  ::= { rttMonStatsTotalsEntry 1 }
+
+
+rttMonStatsTotalsInitiations OBJECT-TYPE
+  SYNTAX      Integer32 (0..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The number of RTT operations that have been initiated.  
+
+       This number includes all RTT operations which succeed 
+       or fail for whatever reason.
+
+       This object has the special behavior as defined by the
+       ROLLOVER NOTE in the DESCRIPTION of the ciscoRttMonMIB
+       object."
+  ::= { rttMonStatsTotalsEntry 2 }
+
+
+--    
+--    History Collection Table 
+--    
+
+rttMonHistoryCollectionTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF RttMonHistoryCollectionEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "The history collection database.
+
+       The history table contains a point by point rolling 
+       history of the most recent RTT operations for each 
+       conceptual RTT control row.  The rolling history of this 
+       information is maintained in a series of 'live(s)', each
+       containing a series of 'bucket(s)', each 'bucket' 
+       contains a series of 'sample(s)'.
+
+       Each conceptual history row can have lives.  A life is 
+       defined by the rttMonCtrlOperRttLife object.  A new life 
+       will be created when rttMonCtrlOperState transitions
+       'active'.  When the number of lives become greater 
+       than rttMonHistoryAdminNumLives the oldest life will be 
+       discarded and a new life will be created by incrementing
+       the index.
+
+       The path exploration RTT operation will be kept as an
+       entry in this table."
+  ::= { rttMonHistory 1 }
+
+
+rttMonHistoryCollectionEntry OBJECT-TYPE
+  SYNTAX      RttMonHistoryCollectionEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "A list of history objects that are recorded for each 
+       RTT operation.
+
+       The history collection table has four indices.  Each 
+       described as follows:
+         -  The first index correlates its entries to a 
+             conceptual RTT control row via the 
+             rttMonCtrlAdminIndex object.  
+         -  The second index uniquely identifies the results 
+             of each 'life' as defined by the 
+             rttMonCtrlOperRttLife object.  
+         -  The third index uniquely identifies the number of 
+             buckets in a life.  A bucket will contain one 
+             sample per bucket if the rttMonCtrlAdminRttType 
+             object is set to any value
+             other than 'pathEcho'.  If the 
+             rttMonCtrlAdminRttType object is set to 
+             'pathEcho', a bucket will contain one sample per 
+             hop along a path to the target (including the 
+             target).  
+         -  The fourth index uniquely identifies the number of 
+             samples in a bucket.   Again, if the 
+             rttMonCtrlAdminRttType object is set to 
+             'pathEcho', this value is associated with each 
+             hop in an ascending order, thus for the 
+             first hop on a path, this index will be 1, the 
+             second will be 2 and so on.   For all other values
+             of rttMonCtrlAdminRttType this will be 1."
+  INDEX { rttMonCtrlAdminIndex, 
+          rttMonHistoryCollectionLifeIndex,
+          rttMonHistoryCollectionBucketIndex,
+          rttMonHistoryCollectionSampleIndex
+        }
+  ::= { rttMonHistoryCollectionTable 1 }
+
+
+RttMonHistoryCollectionEntry ::= SEQUENCE
+{
+  rttMonHistoryCollectionLifeIndex         Integer32,
+  rttMonHistoryCollectionBucketIndex       Integer32,
+  rttMonHistoryCollectionSampleIndex       Integer32,
+  rttMonHistoryCollectionSampleTime        TimeStamp,
+  rttMonHistoryCollectionAddress           RttMonTargetAddress,
+  rttMonHistoryCollectionCompletionTime    Gauge32,
+  rttMonHistoryCollectionSense             RttResponseSense,
+  rttMonHistoryCollectionApplSpecificSense Integer32,
+  rttMonHistoryCollectionSenseDescription  DisplayString
+}
+
+
+rttMonHistoryCollectionLifeIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..2147483647)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This uniquely defines a life for a conceptual history 
+       row.
+
+       For a particular value of rttMonHistoryCollectionLifeIndex,
+       the agent assigns the first value of 1, the second value 
+       of 2, and so on.  The sequence keeps incrementing, 
+       despite older (lower) values being removed from the 
+       table."
+  ::= { rttMonHistoryCollectionEntry 1 }
+
+
+rttMonHistoryCollectionBucketIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..2147483647)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'pathEcho', this uniquely 
+       defines a bucket for a given value of 
+       rttMonHistoryCollectionLifeIndex.  For all other 
+       RttMonRttType this value will be the number of
+       operations per a lifetime.  Thus, this object 
+       increments on each operation attempt.
+
+       For a particular value of 
+       rttMonHistoryCollectionLifeIndex, the agent assigns 
+       the first value of 1, the second value of 2, and so 
+       on.  The sequence keeps incrementing until the number
+       of buckets equals rttMonHistoryAdminNumBuckets, then
+       no new buckets are created for the current 
+       rttMonHistoryCollectionLifeIndex."
+  ::= { rttMonHistoryCollectionEntry 2 }
+
+
+rttMonHistoryCollectionSampleIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..512)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+       "This uniquely defines a row for a given value of 
+       rttMonHistoryCollectionBucketIndex.  This object
+       represents a hop along a path to the Target.
+
+       For a particular value of 
+       rttMonHistoryCollectionBucketIndex, the agent assigns 
+       the first value of 1, the second value of 2, and so on.
+       The sequence keeps incrementing until the number of 
+       samples equals rttMonHistoryAdminNumSamples, then no 
+       new samples are created for the current 
+       rttMonHistoryCollectionBucketIndex.
+
+       When the RttMonRttType is 'pathEcho', this value 
+       directly represents the number of hops along a 
+       path to a target, thus we can only support 512 hops.
+       For all other values of RttMonRttType this object
+       will be one." 
+  ::= { rttMonHistoryCollectionEntry 3 }
+
+
+rttMonHistoryCollectionSampleTime OBJECT-TYPE
+  SYNTAX      TimeStamp
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "The time that the RTT operation was initiated."
+  ::= { rttMonHistoryCollectionEntry 4 }
+
+
+rttMonHistoryCollectionAddress OBJECT-TYPE
+  SYNTAX      RttMonTargetAddress 
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "When the RttMonRttType is 'echo' or 'pathEcho' this
+       is a string which specifies the address of the target for
+       the this RTT operation.  For all other values of
+       RttMonRttType this string will be null.
+
+       This address will be the address of the hop along the
+       path to the rttMonEchoAdminTargetAddress address,
+       including rttMonEchoAdminTargetAddress address, or just
+       the rttMonEchoAdminTargetAddress address, when the
+       path information is not collected.  This behavior is
+       defined by the rttMonCtrlAdminRttType object.
+
+       The interpretation of this string depends on the type
+       of RTT operation selected, as specified by the
+       rttMonEchoAdminProtocol object.
+
+       See rttMonEchoAdminTargetAddress for a complete
+       description."
+  ::= { rttMonHistoryCollectionEntry 5 }
+
+
+rttMonHistoryCollectionCompletionTime OBJECT-TYPE
+  SYNTAX      Gauge32
+  UNITS       "milliseconds"
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "This is the operation completion time of the RTT 
+       operation.  If the RTT operation fails 
+       (rttMonHistoryCollectionSense is any 
+       value other than ok), this has a value of 0."
+  ::= { rttMonHistoryCollectionEntry 6 }
+
+
+rttMonHistoryCollectionSense OBJECT-TYPE
+  SYNTAX      RttResponseSense 
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "A sense code for the completion status of the RTT 
+       operation."
+  ::= { rttMonHistoryCollectionEntry 7 }
+
+
+rttMonHistoryCollectionApplSpecificSense OBJECT-TYPE
+  SYNTAX      Integer32 (1001..2147483647)
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "An application specific sense code for the 
+       completion status of the last RTT operation.  This 
+       object will only be valid when the 
+       rttMonHistoryCollectionSense object is set to 
+       'applicationSpecific'.  Otherwise, this object's 
+       value is not valid."
+  ::= { rttMonHistoryCollectionEntry 8 }
+
+
+rttMonHistoryCollectionSenseDescription OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(0..255))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+       "A sense description for the completion status of 
+       the last RTT operation when the 
+       rttMonHistoryCollectionSense object is set to 
+       'applicationSpecific'."
+  ::= { rttMonHistoryCollectionEntry 9 }
+
+
+--    
+--    NOTIFICATION DEFINITIONS
+--    
+--    This section defines the traps that
+--    can be generated by the agent.
+--
+--
+
+rttMonNotificationsPrefix   OBJECT IDENTIFIER 
+                             ::= { ciscoRttMonMIB 2 }
+rttMonNotifications         OBJECT IDENTIFIER 
+                             ::= { rttMonNotificationsPrefix 0 }
+
+rttMonConnectionChangeNotification NOTIFICATION-TYPE
+  OBJECTS   {     rttMonCtrlAdminTag, 
+                  rttMonHistoryCollectionAddress,
+                  rttMonCtrlOperConnectionLostOccurred 
+            }
+  STATUS    current
+  DESCRIPTION
+       "This notification is only valid when the RttMonRttType
+       is 'echo' or 'pathEcho'.
+
+       A rttMonConnectionChangeNotification indicates that a
+       connection to a target (not to a hop along the path
+       to a target) has either failed on establishment or 
+       been lost and when reestablished.  Precisely, this
+       has resulted in rttMonCtrlOperConnectionLostOccurred
+       changing value.
+
+       If History is not being collected, the instance values 
+       for the rttMonHistoryCollectionAddress object will not 
+       be valid.  When RttMonRttType is not 'echo' or 'pathEcho'
+       the rttMonHistoryCollectionAddress object will be null."
+  ::= { rttMonNotifications 1 }
+
+
+rttMonTimeoutNotification NOTIFICATION-TYPE
+  OBJECTS   {     rttMonCtrlAdminTag, 
+                  rttMonHistoryCollectionAddress,
+                  rttMonCtrlOperTimeoutOccurred 
+            }
+  STATUS    current
+  DESCRIPTION
+       "A rttMonTimeoutNotification indicates the occurrence of 
+       a timeout for a RTT operation, and it indicates the 
+       clearing of such a condition by a subsequent RTT 
+       operation. Precisely, this has resulted in 
+       rttMonCtrlOperTimeoutOccurred changing value. 
+
+       When the RttMonRttType is 'pathEcho', this 
+       notification will only be sent when the timeout 
+       occurs during an operation to the target and not to
+       a hop along the path to the target.  This also 
+       applies to the clearing of the timeout. 
+     
+       If History is not being collected, the instance values 
+       for the rttMonHistoryCollectionAddress object will not 
+       be valid.  When RttMonRttType is not 'echo' or 'pathEcho'
+       the rttMonHistoryCollectionAddress object will be null."
+  ::= { rttMonNotifications 2 }
+
+
+rttMonThresholdNotification NOTIFICATION-TYPE
+  OBJECTS   {     rttMonCtrlAdminTag, 
+                  rttMonHistoryCollectionAddress,
+                  rttMonCtrlOperOverThresholdOccurred 
+            }
+  STATUS    current
+  DESCRIPTION
+       "A rttMonThresholdNotification indicates the 
+       occurrence of a threshold violation for a RTT operation,
+       and it indicates the previous violation has subsided for
+       a subsequent RTT operation.  Precisely, this has resulted
+       in rttMonCtrlOperOverThresholdOccurred changing value.  
+  
+       When the RttMonRttType is 'pathEcho', this 
+       notification will only be sent when the threshold
+       violation occurs during an operation to the target and
+       not to a hop along the path to the target.  This also
+       applies to the subsiding of a threshold condition.
+
+       If History is not being collected, the instance values 
+       for the rttMonHistoryCollectionAddress object will not 
+       be valid.  When RttMonRttType is not 'echo' or 'pathEcho'
+       the rttMonHistoryCollectionAddress object will be null."
+  ::= { rttMonNotifications 3 }
+
+--
+-- Conformance Information
+--
+
+ciscoRttMonMibConformance OBJECT IDENTIFIER 
+                             ::= { ciscoRttMonMIB 3 }
+ciscoRttMonMibCompliances OBJECT IDENTIFIER
+                             ::= { ciscoRttMonMibConformance 1 }
+ciscoRttMonMibGroups      OBJECT IDENTIFIER
+                             ::= { ciscoRttMonMibConformance 2 }
+
+--
+-- Compliance Statements
+--
+
+ciscoRttMonMibCompliance MODULE-COMPLIANCE
+  STATUS current
+  DESCRIPTION
+    "The compliance statement for the Round Trip Time (RTT)
+     Monitoring Application Architecture."
+  MODULE
+    MANDATORY-GROUPS {
+      ciscoApplGroup,
+      ciscoCtrlGroup,
+      ciscoStatsGroup,
+      ciscoHistoryGroup 
+    }
+  ::= { ciscoRttMonMibCompliances 1 }
+
+
+ciscoApplGroup OBJECT-GROUP
+  OBJECTS {
+    rttMonApplVersion,
+    rttMonApplMaxPacketDataSize,
+    rttMonApplTimeOfLastSet,
+    rttMonApplSupportedRttTypesValid,
+    rttMonApplSupportedProtocolsValid,
+    rttMonApplNumCtrlAdminEntry,
+    rttMonApplReset,
+    rttMonApplPreConfigedReset,
+    rttMonApplPreConfigedValid
+  }
+  STATUS current
+  DESCRIPTION
+    "A collection of objects providing the RTT Monitoring
+    Application defaults.
+ 
+    This group of information is provided to the agent when
+    the Application starts." 
+  ::= { ciscoRttMonMibGroups 1 }
+
+
+ciscoCtrlGroup OBJECT-GROUP
+  OBJECTS {
+    rttMonCtrlAdminOwner,
+    rttMonCtrlAdminTag,
+    rttMonCtrlAdminRttType,
+    rttMonCtrlAdminThreshold,
+    rttMonCtrlAdminFrequency,
+    rttMonCtrlAdminTimeout,
+    rttMonCtrlAdminVerifyData,
+    rttMonCtrlAdminStatus,
+    rttMonEchoAdminProtocol,
+    rttMonEchoAdminTargetAddress,
+    rttMonEchoAdminPktDataRequestSize,
+    rttMonEchoAdminPktDataResponseSize,
+    rttMonFileIOAdminFilePath,
+    rttMonFileIOAdminSize,
+    rttMonFileIOAdminAction,
+    rttMonScriptAdminName,
+    rttMonScriptAdminCmdLineParams,
+    rttMonScheduleAdminRttLife,
+    rttMonScheduleAdminRttStartTime,
+    rttMonScheduleAdminConceptRowAgeout,
+    rttMonReactAdminConnectionEnable,
+    rttMonReactAdminTimeoutEnable,
+    rttMonReactAdminThresholdType,
+    rttMonReactAdminThresholdFalling,
+    rttMonReactAdminThresholdCount,
+    rttMonReactAdminThresholdCount2,
+    rttMonReactAdminActionType,
+    rttMonStatisticsAdminNumHourGroups,
+    rttMonStatisticsAdminNumPaths,
+    rttMonStatisticsAdminNumHops,
+    rttMonStatisticsAdminNumDistBuckets,
+    rttMonStatisticsAdminDistInterval,
+    rttMonHistoryAdminNumLives,
+    rttMonHistoryAdminNumBuckets,
+    rttMonHistoryAdminNumSamples,
+    rttMonHistoryAdminFilter,
+    rttMonCtrlOperModificationTime,
+    rttMonCtrlOperDiagText,
+    rttMonCtrlOperResetTime,
+    rttMonCtrlOperOctetsInUse,
+    rttMonCtrlOperConnectionLostOccurred,
+    rttMonCtrlOperTimeoutOccurred,
+    rttMonCtrlOperOverThresholdOccurred,
+    rttMonCtrlOperNumRtts,
+    rttMonCtrlOperRttLife,
+    rttMonCtrlOperState,
+    rttMonLatestRttOperCompletionTime,
+    rttMonLatestRttOperSense,
+    rttMonLatestRttOperApplSpecificSense,
+    rttMonLatestRttOperSenseDescription,
+    rttMonLatestRttOperTime,
+    rttMonLatestRttOperAddress,
+    rttMonReactTriggerAdminStatus,
+    rttMonReactTriggerOperState
+  }
+  STATUS current
+  DESCRIPTION
+    "A collection of objects providing the Administration,
+    Operational, Last Statistical values for the RTT
+    Monitoring Application." 
+  ::= { ciscoRttMonMibGroups 2 }
+
+
+ciscoStatsGroup OBJECT-GROUP
+  OBJECTS {
+    rttMonStatsCaptureCompletions,
+    rttMonStatsCaptureOverThresholds,
+    rttMonStatsCaptureSumCompletionTime,
+    rttMonStatsCaptureSumCompletionTime2Low,
+    rttMonStatsCaptureSumCompletionTime2High,
+    rttMonStatsCaptureCompletionTimeMax,
+    rttMonStatsCaptureCompletionTimeMin,
+    rttMonStatsCollectNumDisconnects,
+    rttMonStatsCollectTimeouts,
+    rttMonStatsCollectBusies,
+    rttMonStatsCollectNoConnections,
+    rttMonStatsCollectDrops,
+    rttMonStatsCollectSequenceErrors,
+    rttMonStatsCollectVerifyErrors,
+    rttMonStatsCollectAddress,
+    rttMonStatsTotalsElapsedTime,
+    rttMonStatsTotalsInitiations
+  }
+  STATUS current
+  DESCRIPTION
+    "A collection of objects providing accumulated statistical 
+    history."
+  ::= { ciscoRttMonMibGroups 3 }
+
+
+ciscoHistoryGroup OBJECT-GROUP
+  OBJECTS {
+    rttMonHistoryCollectionSampleTime,
+    rttMonHistoryCollectionAddress,
+    rttMonHistoryCollectionCompletionTime,
+    rttMonHistoryCollectionSense,
+    rttMonHistoryCollectionApplSpecificSense,
+    rttMonHistoryCollectionSenseDescription
+  }
+  STATUS current
+  DESCRIPTION
+    "A collection of objects providing point by point
+    history of each RTT operation."
+  ::= { ciscoRttMonMibGroups 4 }
+
+
+END

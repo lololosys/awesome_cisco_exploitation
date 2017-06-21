@@ -1,0 +1,58 @@
+/* $Id: rspczip.link,v 3.1 1996/01/05 20:52:45 mbeesley Exp $
+ * $Source: /vws/aam/cherf.111/ios/sys/obj-4k-rsp/rspczip.link,v $
+ *------------------------------------------------------------------
+ * Loader command script for RSP self decompressor image
+ *
+ * January 1996, Michael Beesley
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: rspczip.link,v $
+ * Revision 3.1  1996/01/05  20:52:45  mbeesley
+ * CSCdi46502:  Ucode bundle linked twice in ziped images
+ * Use seperate linker script for the self-decompressor.
+ *
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+
+SECTIONS {
+
+	.text . : {
+	    	*(.text)
+		etext = .;
+		_etext = .;
+	}
+
+	.rodata ALIGN(0x2000) : {
+		_fdata = .;
+	    	*(.rodata)
+	}
+
+	.data . : {
+	    	*(.data)
+	}
+
+	_gp = (. + 0x8000);
+
+	.sdata . : {
+		*(.sdata)
+		edata = .;
+		_edata = .;
+	}
+
+	.sbss . : {
+		__bss_start = .;
+		_fbss = .;
+		*(.sbss) *(.scommon)
+	}
+
+	.bss . : {
+		*(.bss)
+		*(COMMON)
+		_end = .;
+		end = .;
+	}
+}

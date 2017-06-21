@@ -1,0 +1,17 @@
+/* $Id: c3640.link,v 1.1 1996/09/12 21:35:30 yoko Exp $
+ * $Source: /release/112/cvs/Xsys/obj-4k-c3640/c3640.link,v $
+ *------------------------------------------------------------------
+ * c3640.link - Loader command script for c3640 (Panther)
+ *
+ * January 1996, Yoko Izumi
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: c3640.link,v $
+# Revision 1.1  1996/09/12  21:35:30  yoko
+# placeholder files
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */

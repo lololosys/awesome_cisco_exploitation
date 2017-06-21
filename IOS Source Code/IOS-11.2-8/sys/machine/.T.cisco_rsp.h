@@ -1,0 +1,47 @@
+
+cisco_rsp.h,1576
+#define NMI_LEVEL	55,1773
+#define LEVEL_ERROR	56,1815
+#define LEVEL_CONSOLE	57,1860
+#define LEVEL_PCMCIA	58,1903
+#define LEVEL_STALL	59,1926
+#define LEVEL_NETWORK_HI 60,1948
+#define LEVEL_NETWORK	61,2009
+#define PCMCIA_DISABLE	63,2070
+#define STALL_DISABLE	64,2095
+#define UARTDEVBASEADDR	66,2153
+#define RSP_DCACHE_LINE_SIZE	68,2189
+#define RAMBASE 73,2267
+#define PHY_RAMBASE	74,2310
+#define CRASH_INFO_OFFSET	88,2909
+#define CRASH_INFO	90,2942
+#define R4K_SREG_SETUP 111,3561
+#define R4K_CONFIG_SETUP	117,3739
+#define NVBCOPY(NVBCOPY127,3946
+#define NVBASE	129,3990
+#define RSP_DELAY_VALUE	131,4027
+#define PLATFORM_ALL_DISABLE 137,4108
+#define PLATFORM_TTY_DISABLE 138,4171
+#define PLATFORM_NETS_DISABLE 139,4249
+#define PLATFORM_ALL_ENABLE 140,4326
+#define PLATFORM_FAMTYPE 142,4389
+#define REFRESHTIME 149,4469
+#define NMI_FREQ_NUMERATOR 150,4545
+#define NMI_FREQ_DENOMINATOR 151,4611
+#define WASTETIME(WASTETIME153,4679
+#define DELAY(DELAY154,4721
+#define INVALID_ADDR	156,4761
+#define MAX_SLOTS	158,4794
+#define MAX_CONTROLLERS	159,4832
+#define MAX_CTRLR_INTERFACES	160,4867
+#define MAX_CBUS_INTERFACES	161,4899
+#define PLATFORM_MAXLINES 166,5012
+#define MAX_IF_SLOT	171,5092
+#define RSP_RES_PROC_TX	178,5234
+#define BUFFERTHRESHOLD	183,5332
+} dbus_protect_t;dbus_protect_t197,5586
+#define pak_set_dirty(pak_set_dirty205,5746
+#define pak_ignore_inputq(pak_ignore_inputq210,5880
+#define pak_has_particles(pak_has_particles215,6000
+#define dbus_protect(dbus_protect219,6046
+#define dbus_restore(dbus_restore220,6098

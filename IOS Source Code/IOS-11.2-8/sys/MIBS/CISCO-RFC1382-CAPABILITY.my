@@ -1,0 +1,435 @@
+-- $Id: CISCO-RFC1382-CAPABILITY.my,v 3.2 1995/11/17 08:34:42 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-RFC1382-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-RFC1382-CAPABILITY.my: RFC1382-MIB AGENT-CAPABILITIES
+-- 
+-- August 1994, Jeffrey T. Johnson
+-- 
+-- Copyright (c) 1994 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-RFC1382-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:34:42  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:50:24  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:00:54  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-RFC1382-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoRFC1382Capability	MODULE-IDENTITY
+		LAST-UPDATED	"9408180000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for RFC1382-MIB (X.25 MIB)"
+		REVISION	"9408180000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 110 }
+
+ciscoRFC1382CapabilityV10R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.2"
+STATUS		current
+DESCRIPTION	"cisco x.25 mib capabilities"
+
+SUPPORTS	RFC1382-MIB
+INCLUDES	{ x25Group }
+
+VARIATION	x25AdmnInterfaceMode
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnMaxActiveCircuits
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnPacketSequencing
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnRestartTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnCallTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnResetTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnClearTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnWindowTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnDataRxmtTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnInterruptTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnRejectTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnRegistrationRequestTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnMinimumRecallTimer
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnRestartCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnResetCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnClearCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnDataRxmtCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnRejectCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnRegistrationRequestCount
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnNumberPVCs
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnDefCallParamId
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnLocalAddress
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25AdmnProtocolVersionSupported
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25OperResetCount
+SYNTAX		INTEGER (1..1)
+DESCRIPTION	"Hard-wired value"
+
+VARIATION	x25OperClearCount
+SYNTAX		INTEGER (1..1)
+DESCRIPTION	"Hard-wired value"
+
+VARIATION	x25OperDataRxmtCount
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25OperRejectCount
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25OperRegistrationRequestCount
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25StatOutgoingCircuits
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25StatIncomingCircuits
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25StatTwowayCircuits
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25StatDataRxmtTimeouts
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25StatInterruptTimeouts
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25ChannelLIC
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25ChannelHIC
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25ChannelLTC
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25ChannelHTC
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25ChannelLOC
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25ChannelHOC
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitStatus
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitDirection
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitDataRetransmissionTimeouts
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25CircuitInterruptTimeouts
+SYNTAX		INTEGER (0..0)
+DESCRIPTION	"Hardcoded to 0"
+
+VARIATION	x25CircuitCallParamId
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitCalledDteAddress
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitCallingDteAddress
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitOriginallyCalledAddress
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25CircuitDescr
+ACCESS		read-only
+DESCRIPTION	"Unable to create or modify"
+
+VARIATION	x25ClearedCircuitIndex
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitPleIndex
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitTimeEstablished
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitTimeCleared
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitChannel
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitClearingCause
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitDiagnosticCode
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitInPdus
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitOutPdus
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitCalledAddress
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitCallingAddress
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25ClearedCircuitClearFacilities
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25ClearedCircuitEntry not supported"
+
+VARIATION	x25CallParmIndex
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmStatus
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmRefCount
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmInPacketSize
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmOutPacketSize
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmInWindowSize
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmOutWindowSize
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmAcceptReverseCharging
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmProposeReverseCharging
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmFastSelect
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmInThruPutClasSize
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmOutThruPutClasSize
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmCug
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmCugoa
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmBcug
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmNui
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmChargingInfo
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmRpoa
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmTrnstDly
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmCallingExt
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmCalledExt
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmInMinThuPutCls
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmOutMinThuPutCls
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmEndTrnsDly
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmPriority
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmProtection
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmExptData
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmUserData
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmCallingNetworkFacilities
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25CallParmCalledNetworkFacilities
+ACCESS		not-implemented
+DESCRIPTION	"Table for x25CallParmEntry not supported"
+
+VARIATION	x25ClearedCircuitEntriesRequested
+ACCESS		not-implemented
+DESCRIPTION	"Not supported"
+
+VARIATION	x25ClearedCircuitEntriesGranted
+ACCESS		not-implemented
+DESCRIPTION	"Not supported"
+
+	::= { ciscoRFC1382Capability 1 }
+
+END

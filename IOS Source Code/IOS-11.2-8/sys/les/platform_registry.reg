@@ -1,0 +1,65 @@
+# $Id: platform_registry.reg,v 3.1 1995/11/09 12:34:21 shaker Exp $
+#------------------------------------------------------------------
+# platform_registry.reg - Platform Service Points
+#
+# Oct. 18 1995 - Julie Quan
+#
+# Copyright (c) 1995 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: platform_registry.reg,v $
+# Revision 3.1  1995/11/09  12:34:21  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.1  1995/10/23  16:13:04  jquan
+# CSCdi40522:  Modularity: sub_c3000 should not require sub_brut
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+#
+# Syntax for defining a registry
+#
+# Each item must begin a line of its own.
+# Lines may be continued by ending with a \
+#
+# BEGIN REGISTRY <name of registry>
+#
+# DEFINE <name of service point>
+# /* <comment lines in standard C format describing the
+#     registry. These will be reformatted unless they are
+#     in the comment bar format> */
+# DATA
+#    <Lines of text to be copied from the input to the
+#     between the comment and the function declaration>
+# END DATA
+#    <type of service> := LIST | LOOP | STUB | CASE | RETVAL | VALUE
+#    <type declaration of value returned by called function>
+#              must be void for LIST and CASE, boolean
+#              for LOOP, and ulong for VALUE.
+#    <prototype list for called function>
+#    <number of cases for case service>
+#    <type for case statement>
+# END
+#
+# END REGISTRY
+#
+#
+
+BEGIN REGISTRY PLATFORM platform_regcode
+
+
+
+DEFINE	brut2681_common
+/*
+ * This service is invoked on completion of a hub reset action
+ */
+	LIST
+	void
+        tt_soc *tty
+END
+
+
+END REGISTRY PLATFORM

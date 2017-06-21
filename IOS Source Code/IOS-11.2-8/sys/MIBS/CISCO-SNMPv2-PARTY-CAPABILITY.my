@@ -1,0 +1,67 @@
+-- $Id: CISCO-SNMPv2-PARTY-CAPABILITY.my,v 3.2 1995/11/17 08:35:07 hampton Exp $
+-- $Source: /swtal/cherf.111/ios/sys/MIBS/CISCO-SNMPv2-PARTY-CAPABILITY.my,v $
+-- *****************************************************************
+-- CISCO-SNMPv2-PARTY-CAPABILITY.my: SNMPv2-PARTY-MIB AGENT-CAPABILITIES
+-- 
+-- August 1994, Jeffrey T. Johnson
+-- 
+-- Copyright (c) 1994 by cisco Systems, Inc.
+-- All rights reserved.
+-- 
+-- *****************************************************************
+-- $Log: CISCO-SNMPv2-PARTY-CAPABILITY.my,v $
+-- Revision 3.2  1995/11/17  08:35:07  hampton
+-- Remove old entries from the RCS header logs.
+--
+-- Revision 3.1  1995/11/09  10:50:44  shaker
+-- Bump version numbers from 2.x to 3.x.
+--
+-- Revision 2.1  1995/06/07  20:01:18  hampton
+-- Bump version numbers from 1.x to 2.x.
+--
+-- *****************************************************************
+-- $Endlog$
+
+CISCO-SNMPv2-PARTY-CAPABILITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY
+		FROM SNMPv2-SMI
+	AGENT-CAPABILITIES
+		FROM SNMPv2-CONF
+	ciscoAgentCapability
+		FROM CISCO-SMI;
+
+ciscoSnmpV2PartyCapability MODULE-IDENTITY
+		LAST-UPDATED	"9408180000Z"
+		ORGANIZATION    "Cisco Systems, Inc."
+		CONTACT-INFO
+			"	Cisco Systems
+				Customer Service
+			
+			Postal:	170 West Tasman Drive
+				San Jose, CA  95134
+				USA
+			
+			   Tel:	+1 800 553-NETS
+			
+			E-mail:	cs-snmp@cisco.com"
+		DESCRIPTION
+			"Agent capabilities for SNMPv2-PARTY-MIB"
+		REVISION	"9408180000Z"
+		DESCRIPTION
+			"Initial version of this MIB module."
+	::= { ciscoAgentCapability 114 }
+
+ciscoSnmpV2PartyCapabilityV10R02 AGENT-CAPABILITIES
+
+PRODUCT-RELEASE "Cisco IOS 10.2"
+STATUS		current
+DESCRIPTION	"IOS 10.2 SNMPv2 Party MIB capabilities"
+
+SUPPORTS	SNMPv2-PARTY-MIB
+INCLUDES	{ partyMIBGroup }
+
+	::= { ciscoSnmpV2PartyCapability 1 }
+
+END

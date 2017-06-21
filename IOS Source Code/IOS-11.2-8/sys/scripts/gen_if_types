@@ -1,0 +1,168 @@
+: # use perl -*-Perl-*-
+eval 'exec perl5 -S $0 ${1+"$@"}'
+    if 0;
+#
+# $Id: gen_if_types,v 3.1.4.2 1996/07/26 23:46:41 ahh Exp $
+#------------------------------------------------------------------
+# gen_if_types -  Perl script to create interface_types.h
+#
+# April 1996, Gordon Cox
+#
+# Copyright (c) 1996, 1997 by cisco Systems, Inc.
+# All rights reserved.
+#
+#------------------------------------------------------------------
+# $Log: gen_if_types,v $
+# Revision 3.1.4.2  1996/07/26  23:46:41  ahh
+# CSCdi64106:  gen_if_types does not work well in shared trees
+# Just remove interface_types.h instead of trying to chmod it
+# when recreating the file.
+# Branch: California_branch
+#
+# Revision 3.1.4.1  1996/05/17  11:42:08  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.2  1996/04/29  22:06:18  gcox
+# Branch: IbuMod_Calif_branch
+# IBU Modularity - remove debug messages, clean up comments
+#
+# Revision 3.1.2.1  1996/04/26  07:57:01  dstine
+# Branch: IbuMod_Calif_branch
+# - commit of IBU modularity work, phase 1.
+#
+# Revision 3.1  1996/04/26  05:30:45  dstine
+# Placeholder for IbuMod_Calif_branch
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+# Program to extract portions of interface_private.h to 
+# interface_types.h according to some embedded #ifdef tokens
+# These tokens are designed to prevent this stuff compiling in 
+# interface_private directly (ie, they are never defined).
+# This stuff compiles by including it from interface_types.h 
+# in the form in which this script dumps it there.
+# some stuff is dumped directly in, but some is dumped to the 
+# body of some big macros.
+
+# The logic here is a bit strange and reflects some history of  
+# the way that this job was originally done through files 
+# instead of macros.
+
+# This processing done by this script is only temporary, and 
+# will be removed at some convenient time.
+
+@month = ( 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' );
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = "19$year" if ($year < 99);    # check this in 2000
+$mon  = $month[$mon];
+
+$file{"interface_types"} = "interface_types.h";
+$file{"hwidb_fields_generic"} = "HWIDB_FIELDS_GENERIC";
+$file{"swidb_fields_generic"} = "SWIDB_FIELDS_GENERIC";
+$file{"interface_generic_inlines"} = "INTERFACE_GENERIC_INLINES";
+$file{"hwidb_fields_ibu"} = "HWIDB_FIELDS_IBU";
+$file{"swidb_fields_ibu"} = "SWIDB_FIELDS_IBU";
+$file{"interface_ibu_inlines"} = "INTERFACE_IBU_INLINES";
+
+if ( -r "../depend.make") {
+  chdir  ".." ;  # in case started in obj-<something>
+}
+chdir "h";
+
+if ( -r "interface_types.h" ) {
+  unlink("interface_types.h") || die "cannot remove interface_types.h";
+}
+
+# open up all the output files
+foreach $file ( keys %file){
+  if ( $file{$file} =~ /^[a-z]/) { # lower case ones are files
+    open( $file, ">$file{$file}");
+    $company = 'cisco Systems, Inc.';
+    $header = <<"EndHeader";
+/* This file is generated from interface_private.h
+ * Do not attempt to edit it; change interface_private.h instead 
+ *------------------------------------------------------------------
+ * interface_types.h.  Generic components of idbs
+ *
+ * $mday-$mon-$year, gen_if_types script
+ *
+ * Copyright (c) $year by $company
+ * All rights reserved.
+ *
+ *------------------------------------------------------------------
+ */
+
+EndHeader
+    print $file $header;
+  }
+}
+
+# open up the input
+open ( IN, $in = "interface_private.h");
+$f = "";
+
+print "Building h/interface_types.h\n";
+
+# read the input line by line , and figure what to do with it
+while ( <IN>){
+  if ( /^#ifdef ([A-Za-z0-9_]+)/ && $file{$1}) {  # #ifdef is a token
+    $f = $1;
+    $termstring = "#endif $f";  # now looking for this ending token
+    while ( <IN>) {
+      if ( /$termstring/) {  # found the end
+        $termstring = "";    # reset ending tag
+        $f = "";             # reset output director
+        last;                # quit the while loop
+      } else {               # another line within #if..#end
+        if ( $file{$f} =~ /^[a-z]/) {
+          print $f $_;       # copy to file if lowercase tag
+        } else {
+          chop;              # add to define string if uppercase
+          s/\t/      /g;     # expand tabs to align trailing '\'
+          s/\s+$//;          # remove any trailing redundant whitespace
+          $define{$f} .= sprintf( "%-77s \\\n", $_); # add to body 
+                             # of #define, aligning trailing '\'
+        }
+      }
+    }
+  } else {
+    # do nothing - this line will compile directly in interface_private
+  }
+}
+
+# dump out the gathered up #define stuff
+
+&printdefines( "hwidb_fields_generic");
+&printdefines( "swidb_fields_generic");
+&printdefines( "interface_generic_inlines");
+&printdefines( "hwidb_fields_ibu");
+&printdefines( "swidb_fields_ibu");
+&printdefines( "interface_ibu_inlines");
+
+close( "interface_types");
+#close( "interface_types_ibu");
+
+#system "chmod 444 interface_types.h";
+#system "chmod 444 interface_types_ibu.h";
+chmod( 0444, "interface_types.h") || die "Unable to chmod 444 interface_types.h";
+
+close ( IN);
+
+# that's it - all done
+#----------------------------------
+
+sub printdefines {
+  local ( $file) = @_[0];
+  if ( $file{$file} =~ /^[a-z]/) {
+  } else {
+    print interface_types "\
+\
+#define $file{$file} \\\
+$define{$file}\
+\
+";
+  }
+}

@@ -1,0 +1,11 @@
+
+netbios_name_chain.c,315
+#define	ALTERNATE	92,3084
+#define	ALTERNATE	101,3256
+#define	ALTERNATE	110,3428
+#define	ALTERNATE	119,3599
+#define	ALTERNATE	128,3779
+void netbios_name_parser_init 150,4390
+#define NETBIOS_NAME_UI_MAJVERSION 159,4580
+#define NETBIOS_NAME_UI_MINVERSION 160,4617
+#define NETBIOS_NAME_UI_EDITVERSION 161,4654

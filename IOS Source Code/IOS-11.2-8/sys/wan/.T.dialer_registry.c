@@ -1,0 +1,6 @@
+
+dialer_registry.c,175
+static void dialer_registry_init 44,1408
+#define DIALER_REGISTRY_MAJVERSION 54,1606
+#define DIALER_REGISTRY_MINVERSION 55,1643
+#define DIALER_REGISTRY_EDITVERSION 56,1680

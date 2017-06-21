@@ -1,0 +1,109 @@
+
+rif.h,3648
+#define __RIF_H__89,3352
+#define SRB_MIN_MAXRD 112,4160
+#define SRB_DEF_MAXRD 113,4206
+#define SRB_MAX_MAXRD 114,4252
+#define SRB_MAXRIF	115,4298
+struct srbroute_t_ srbroute_t_117,4342
+typedef struct _srbrd_t _srbrd_t123,4422
+} srbrd_t;srbrd_t126,4497
+typedef struct _srbrif_t _srbrif_t128,4509
+} srbrif_t;srbrif_t134,4631
+#define RC_RTMASK	144,4929
+#define RC_BROADBIT	145,4952
+#define	RC_SPANBIT	146,4977
+#define	RC_TRACE_LM	147,5034
+#define	RC_TRACE_ORIG	148,5091
+#define RC_SPECIFIC	150,5151
+#define RC_TRACE_FRAME	151,5176
+#define RC_TRACE_BOTH	152,5204
+#define RC_B_ALL_ROUTES	153,5231
+#define RC_B_SPAN	154,5260
+#define RC_LTHMASK	156,5284
+#define RC_MIN_RIF	157,5308
+#define RC_NORD_LTH	158,5331
+#define RC_DEF_SPAN	160,5356
+#define RC_DEF_ALLRINGS	161,5381
+#define RIF_LENGTH(RIF_LENGTH163,5411
+#define RC_D	167,5505
+#define RC_LFMASK	169,5525
+#define RC_LF516	170,5548
+#define RC_LF1500	171,5570
+#define RC_LF1470	172,5593
+#define RC_LF2052	173,5616
+#define RC_LF4472	174,5639
+#define RC_LF8144	175,5662
+#define RC_LF11407	176,5685
+#define RC_LF11454	177,5709
+#define RC_LF17800	178,5733
+#define RC_LFINITIAL	179,5757
+#define RC_LF_MIN	181,5784
+#define RC_LF516_VAL	182,5806
+#define RC_LF1470_VAL	183,5831
+#define RC_LF1500_VAL	184,5858
+#define RC_LF2052_VAL	185,5885
+#define RC_LF4472_VAL	186,5912
+#define RC_LF8144_VAL	187,5939
+#define RC_LF11407_VAL	188,5966
+#define RC_LF11454_VAL	189,5995
+#define RC_LF17800_VAL	190,6024
+#define RC_LF_MAX	191,6053
+#define RC_LF_INFINITY	192,6077
+#define RC_TR_LFSERIAL	194,6107
+#define RC_TR_LFDEF	195,6135
+#define RC_TR16_LFDEF	196,6160
+#define RD_RNMASK	210,6643
+#define RD_RNSHIFT	211,6668
+#define RD_BNMASK	212,6691
+#define RD_MISMATCH(RD_MISMATCH213,6713
+#define MULTIRING_EAVESLLC 219,6929
+#define MULTIRING_EAVESALL 220,6967
+#define RIF_NOT_PRESENT 225,7044
+#define RIF_PRESENT 226,7118
+#define RIF_REQUIRED 227,7185
+#define RIF_USE_ALLROUTES 228,7257
+#define RIF_USE_DN_FUNC 229,7326
+#define RIF_USE_LOOP 230,7396
+#define RIF_IN_LLC_DTE 231,7474
+#define RIF_USE_PAK_PRIORITY 235,7623
+typedef struct _mac_hdr _mac_hdr238,7718
+} mac_hdr;mac_hdr242,7822
+struct riftype_ riftype_248,7862
+static inline uint rif_length 271,9010
+#define RIF_MAXAGE 276,9094
+#define RIF_VALIDATE_MAXAGE 277,9148
+#define RIF_MAGIC 278,9187
+#define RIF_NULL 280,9218
+#define RIF_INTERFACE 281,9249
+#define RIF_HANDCRAFT 282,9314
+#define RIF_HANDCRAFT_REM 283,9370
+#define RIF_AGED 284,9439
+#define RIF_AGED_REM 285,9486
+#define RIF_NOAGE 286,9544
+#define RIF_LNM 287,9603
+#define RIF_VALIDATE_NEW_ROUTE 290,9692
+typedef struct _llc1_xid_t _llc1_xid_t292,9761
+} llc1_xid_t;llc1_xid_t297,9972
+#define XID3_ESI_MASK	306,10254
+#define XID3_ESI_NOEXCH 307,10287
+#define XID3_ESI_NEG_PREC 308,10322
+#define XID3_ESI_PRENEG_PREC 309,10357
+#define XID3_ESI_NONACT 310,10392
+} xid3_t;xid3_t314,10501
+typedef struct _llc1_test_t _llc1_test_t316,10512
+} llc1_test_t;llc1_test_t320,10729
+typedef struct _loop_t _loop_t322,10745
+} loop_t;loop_t331,11053
+#define RIF_DEST_RING(RIF_DEST_RING341,11186
+#define RIF_START_RING(RIF_START_RING350,11386
+#define RIF_SECOND_RING(RIF_SECOND_RING359,11586
+#define RIF_THIRD_RING(RIF_THIRD_RING368,11787
+#define RIF_THIRD_RING_BACK(RIF_THIRD_RING_BACK377,11987
+#define RIF_START_BRIDGE(RIF_START_BRIDGE386,12221
+#define RIF_SECOND_BRIDGE(RIF_SECOND_BRIDGE395,12415
+#define RIF_FOURTH_RING(RIF_FOURTH_RING404,12610
+#define RIF_THIRD_BRIDGE(RIF_THIRD_BRIDGE413,12840
+#define FREE_RIF_LW 422,13048
+#define FREE_RIF_HW 423,13071
+#define rifhash(rifhash425,13095

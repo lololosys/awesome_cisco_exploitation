@@ -1,0 +1,38 @@
+# $Id: makefile.srsp,v 3.3 1995/12/06 21:52:24 foster Exp $
+# $Source: /vws/aam/cherf.111/ios/sys/obj-4k-rsp/makefile.srsp,v $
+#------------------------------------------------------------------
+# Makefile for RSP slave system software (rsp-dw-m[z])
+#
+# August 1995 John Foster
+#
+# Copyright (c) 1994-1995 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: makefile.srsp,v $
+# Revision 3.3  1995/12/06  21:52:24  foster
+# CSCdi44432:  rsp slave image dependenices are broken
+# remove all possable lock files, not just test.lock (for make clean)
+#
+# Revision 2.1.20.1  1995/10/21  01:42:31  getchell
+# Branch: Arkansas_branch
+# Ark_VIP_branch commit
+#
+# Revision 2.1.2.2  1995/09/13  18:27:34  foster
+# CSCdi40285:  dual rsp needs slave image in the bundle
+# Branch: VIP_branch
+#
+# Revision 2.1.2.1  1995/08/25  11:30:57  foster
+# initial checkin of RSP slave image
+# CSCdi39327:  slave image support
+# Branch: VIP_branch
+#
+# Revision 2.1  1995/08/24  19:57:07  foster
+# placeholder for future development
+#
+#
+#------------------------------------------------------------------
+# $Endlog$
+
+#
+# obsolete file.  support for the rsp-dw-* images moved to obj-4k-rsp/makefile
+#

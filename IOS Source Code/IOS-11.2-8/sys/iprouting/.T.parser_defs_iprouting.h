@@ -1,0 +1,8 @@
+
+parser_defs_iprouting.h,196
+#define IPR_SLOW_CONVERGE	36,1080
+#define	IPR_CLASSLESS	37,1108
+#define	IPCACHE_AGER	39,1134
+#define	IPCACHE_INVALIDATE	40,1158
+#define CLEAR_IP_CACHE 42,1188
+#define CLEAR_IP_ROUTE 43,1222

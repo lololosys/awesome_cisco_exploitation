@@ -1,0 +1,44 @@
+/* $Id: rtt_timeout_alert.alt,v 3.1.4.1 1996/05/17 11:42:28 ppearce Exp $
+ * $Source: /release/112/cvs/Xsys/snanm/rtt_timeout_alert.alt,v $
+ *------------------------------------------------------------------
+ * SNA Network Management Timeout alert
+ *
+ * Jan 96, Larry Metzger
+ *
+ * Copyright (c) 1996 by cisco Systems, Inc.
+ * All rights reserved.
+ *------------------------------------------------------------------
+ * $Log: rtt_timeout_alert.alt,v $
+# Revision 3.1.4.1  1996/05/17  11:42:28  ppearce
+# Merge IbuMod into Calif
+#
+# Revision 3.1.2.1  1996/03/22  19:03:24  lmetzger
+# Initial Version of Response Time Reporter
+#
+# Revision 3.1  1996/03/20  17:55:01  lmetzger
+# Placeholder for IbuMod_Calif_branch
+#
+ *------------------------------------------------------------------
+ * $Endlog$
+ */
+
+static const struct // Temporary Loss of Resource - Response Time Excessive
+  rttMonTimeoutNotification_Alert ##RTTMONTIMEOUTALERT { ?,02,4002
+  , {4003} //  Probable Cause of Communications Subsystem Overloaded
+  , // No Users Causes
+  , // No Install Causes
+  , // No Failure Causes
+	// Next is the Resource Hierarchy
+  , {05, {108009,cpRhName:8,20F408,appRhName:7,4040}} 
+	// Incident Id
+  , {4A, {0101,netID:8,cpIIdName:8,appIIdName:8,epochTime:8}}
+	// Next is the Unknown Causes Field:
+	//  Actions "Contact Network Adminstrator
+	//     and  "Verify"
+	//  Detail Data "Software Error Code" String
+	//     with value "at RTR Index "
+  , {97, {81310B}, 
+         {8101A1}, 
+         {82211211,rttMonCtrlAdminIndex:4}}
+  }
+

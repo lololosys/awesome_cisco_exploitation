@@ -1,0 +1,189 @@
+# $Id: makefile.monlib,v 3.6.4.3 1996/05/08 12:02:05 mdb Exp $
+# $Source: /release/112/cvs/Xsys/obj-68-c7000/makefile.monlib,v $
+#------------------------------------------------------------------
+# Makefile for making monlib for PCMCIA flash card on 7000
+#
+# April 1995, Szewei Ju
+#
+# Copyright (c) 1995-1996 by cisco Systems, Inc.
+# All rights reserved.
+#------------------------------------------------------------------
+# $Log: makefile.monlib,v $
+# Revision 3.6.4.3  1996/05/08  12:02:05  mdb
+# Implement a method of naming locally built tools based on the type of
+# the Machine, the name and the revision of the Operating System.
+# Also make provide for all locally built tools be to removed when a
+# 'make superclean' is performed in the sys directory. [CSCdi57043]
+# Branch: California_branch
+#
+# Revision 3.6.4.2  1996/03/28  02:46:27  hampton
+# Without optimization, the 95q4 compiler complains about static inline
+# routines that are defined but not referenced.  [CSCdi52864]
+# Branch: California_branch
+#
+# Revision 3.6.4.1  1996/03/18  21:15:58  gstovall
+# Branch: California_branch
+# Elvis has left the building.  He headed out to California, and took the
+# port ready changes with him.
+#
+# Revision 3.3.12.2  1996/03/16  07:13:38  gstovall
+# Branch: DeadKingOnAThrone_branch
+# Make the king aware of V111_1_3.
+#
+# Revision 3.3.12.1  1996/03/07  10:17:05  mdb
+# Branch: DeadKingOnAThrone_branch
+# cisco and ANSI/POSIX libraries.
+#
+# Revision 3.6  1996/03/07  21:51:01  rchiao
+# CSCdi50987:  take out the RCS magic word
+# Replace the magic word with "last comment".
+#
+# Revision 3.5  1996/03/07  20:50:38  rchiao
+# CSCdi50983:  need an empty line after last comment in makfiles
+# add an empty line in makefiles right after the last comment.
+#
+# Revision 3.4  1996/02/17  09:03:56  rchiao
+# CSCdi49271:  makefile changes for ClearCase
+#
+# Revision 3.3  1996/01/02  22:19:53  mdb
+# CSCdi46306:  monlib make depend is too verbose
+#
+# Revision 3.2  1995/11/17  17:52:51  hampton
+# Remove old entries from the RCS header logs.
+#
+# Revision 3.1  1995/11/09  12:42:57  shaker
+# Bump version numbers from 2.x to 3.x.
+#
+# Revision 2.2  1995/07/17  23:27:56  smackie
+# Tidy up various makefile semantics (CSCdi37193)
+#
+#   o Split out native tool support from cross-compilation tools
+#   o Rename errant makefiles
+#   o Make native object directories more explicitly named
+#   o Clean up bogus tool includes
+#
+# Revision 2.1  1995/06/07  21:52:26  hampton
+# Bump version numbers from 1.x to 2.x.
+#
+#------------------------------------------------------------------
+# $Endlog$
+#
+
+ifeq ($(origin SYSROOT), undefined)
+SYSROOT :=       $(shell ../scripts/sysroot)
+endif
+
+default: gs7-monlib-m
+
+include ../makefile.tools
+include ../makefile.68
+include ../lib/makefile
+
+ifeq ($(origin QUIET), undefined)
+QUIET_COM=@\#
+QUIET_CMD=@
+QUIET_CC=
+else
+QUIET_COM=@
+QUIET_CMD=
+QUIET_CC=@
+endif
+
+# Crash us if /bin/make is used:
+ifeq ($(origin USER),undefined)
+USER=Bozo
+endif
+
+SHELL=  /bin/sh
+GDB_FLAG=
+DEFS = -DRP1 -DOBJECT_68 -DC7000 -DTARGET_CISCO -DFSLIB
+#DEFS = -DRP1 -DOBJECT_68 -DC7000 -DTARGET_CISCO -DFSLIB -DFSLIB_NO_DEBUG
+INC = -nostdinc -I. -I../machine $(lib_inc) -I../h  
+#WARNING = -Werror -Wall -Wpointer-arith -Wno-format -Wstrict-prototypes
+WARNING = -Werror -Wall -Wpointer-arith -Wno-format
+START=  __start
+
+CFLAGS = -O -fno-builtin ${INC} ${GDB_FLAG} ${DEFS} -pipe ${WARNING}
+CPPOPTS= ${INC} ${DEFS} 
+LDFLAGS= -e $(START) -N -fno-builtin -nostdlib -Ttext E00000 -static
+
+# MONLIB defines
+MONLIB = gs7-monlib-m
+# FSLIB defines
+FSLIB = gs7-fslib-m
+
+FILESYS_DIR = ../filesys
+
+FSLIB_FILES =	$(FILESYS_DIR)/c7000_monlib_main.c \
+		$(FILESYS_DIR)/rommon_fslib_iface.c \
+		$(FILESYS_DIR)/rommon_fslib_dev.c \
+		$(FILESYS_DIR)/fslib.c \
+		$(FILESYS_DIR)/fslib_dev_rom.c \
+		$(FILESYS_DIR)/fslib_print.c \
+		$(FILESYS_DIR)/rp_ralib.c
+
+FSLIB_OBJS =	monlib_c7000_monlib_main.o \
+		monlib_rommon_fslib_iface.o \
+		monlib_rommon_fslib_dev.o \
+		monlib_fslib.o \
+		monlib_fslib_dev_rom.o \
+		monlib_fslib_print.o \
+		monlib_rp_ralib.o
+
+# Override RCS stuff
+#%: %,v
+#%: RCS/%,v
+
+
+.SUFFIXES: .o .lis .S .c .s
+
+%.o :
+	$(QUIET_COM) echo "Compiling $< to $@"
+	$(QUIET_CC)$(CC) -c $(CFLAGS) $< -o $@
+
+% : %.o
+
+%.lis : %.c
+        lister3 CC=$(CC) AS=$(AS) $< $(CFLAGS) >$*.lis
+
+all:    clean depend $(MONLIB)
+
+trunkd.test: $(MONLIB)
+	rm -f $(MONLIB)
+
+clean:
+	@echo "##### clean up $(FSLIB) object files ..."
+	rm -f $(FSLIB_OBJS)
+
+$(lib_shl):
+	$(MAKE) --no-print-directory -f makefile $(lib_shl)
+
+$(FSLIB): $(FSLIB_OBJS) makefile.monlib $(lib_shl)
+	@echo ""
+	@echo "##### Making $(FSLIB) ..."
+	@rm -f $@
+	$(CC) $(LDFLAGS) -o $@ $(FSLIB_OBJS) $(lib_shl)
+	cp $@ $@.sun
+	$(STRIP) $@
+	$(SIZE) $@ 
+	sh $(SYSROOT)/symbols.sh $(NM) $@.sun $@.sym RP1 FSLIB
+	expand <$@.sym >$@.symbols
+	rm -f $@.sym
+
+$(MONLIB): $(FSLIB) $(MKFFSI_PROG)
+	$(MKFFSI_PROG) $(FSLIB) $@
+
+#
+# The include file dependancies
+#
+depend: dependancies.monlib $(FSLIB_FILES)
+	@echo "##### Making" `pwd`/dependancies.monlib "..."
+	@$(CC) $(CPPOPTS) -MM $(FSLIB_FILES) | sed "/^[^ ]/s/^/monlib_/" > dependancies.monlib
+	@echo "##### Making" `pwd`/TAGS
+	@etags -t $(FSLIB_FILES)
+
+dependancies.monlib:
+	$(QUIET_CC)rm -f dependancies.monlib
+	$(QUIET_CC)touch dependancies.monlib
+
+include dependancies.monlib

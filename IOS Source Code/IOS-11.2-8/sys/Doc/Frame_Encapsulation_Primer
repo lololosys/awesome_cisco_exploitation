@@ -1,0 +1,578 @@
+# $Id: Frame_Encapsulation_Primer,v 3.1 1995/11/09 10:48:51 shaker Exp $
+
+          Title: Frame Encapsulation Primer
+           Date: 27-March-94
+        Version: 1.0
+
+Copyright (c) 1994-1995 by cisco Systems, Inc.
+
+The document describes the way frames are encapsulated and de-encapsulated
+by the system. It also covers common utilities and various packet foibles
+of platforms.
+
+However, the only real way to fully understand this aspect of the code is
+to read the code. This should hopefully help with the "Huh?" and "What
+the &^%%&?" questions.
+
+A Brief History Of Assumptions
+==============================
+
+The multitude of various frame formats and encapsulations in the current
+router code can be bewildering to people who're viewing the full scope
+for the first time. Life was once simple. Ethernet had a 14 byte ARPA
+encapsulation and serial lines had a 4 byte HDLC encapsulation, the
+last 2 bytes of which were the same as the equivalent Ethernet frame.
+
+Now, there are a plethora of media to support (Token Ring, FDDI, ATM)
+along with a variety of encapsulations (SNAP, SAP, Frame Relay, SMDS).
+And, there are noew extensions to the basic code such as variable length
+encapsulations, tunnels and multiple encapsulations in one frame to
+deal with.
+
+Unfortunately, the system code didn't keep up with these development.
+The system code up until 10.0 made many assuptions about frame formats
+that just didn't hold true. In order to make the various encapsulations
+fit, software engineers brewed up various schemes - many of which 
+broke when presented with another protocol or media.
+
+The frame encapsulation, de-encapsulation and classification code
+quickly became a house of cards with each new engineer playing a
+delicate insertion game with his latest feature.
+
+The primary assumption was that the architecture was based on a system
+where the frame was viewable on the Switch Processor before copying the
+the Route Processor. This was an invalid assumption the moment the IGS
+was created, which was a DMA based machine and used a single processor
+and memory architecture for both the RP and SP. Since the IGS, many new
+platforms have been designed, most of which are based on DMA architectures.
+
+The majority of platforms shipped today are based on an integrated RP/SP
+design.
+
+However, the assumption of a separate RP/SP leads to some curious side
+effects. The chief one was that the system code assumed that the buffers
+used by the Route Processor had the network header aligned to a fixed
+offset from the start of the packet structure. This point was nicknamed
+The Line and it marked the boundary between encapsulation and the network
+data payload.
+
+However, on a separate RP/SP machine this makes sense. You can use the
+pre-buffering of the SP as a "crystal ball" to work out the frame
+encapsulation and therefore work out a set of pointers so the eventual
+frame copy from the SP to RP results in an aligned frame.
+
+Obviously, DMA machines don't work this way. They attempt to minimise
+packet copies and so attempt to work with the frame in the buffer it
+was received in. However, there isn't a crystal ball here. If the
+DMA offset picked for the frame doesn't result in a frame with a network
+level header starting on The Line, the frame has to be moved. This can
+be an expensive operation as the memory is contended and usually quite
+slow in comparison to local memory.
+
+An example of this would be the Lance driver, which expects the majority
+of the frame recieved to be of an ARPA encapsulation. As such, the DMA
+start is placed 14 bytes back from The Line in each buffer in the receive
+ring. If a, say, IEEE802.3 frame with a 3 byte LLC1 SAP header is DMA'd
+to memory, the start of the network header will be 3 bytes past The Line.
+
+The frame must therefore be moved in order for the upper level system
+code to work properly.
+
+In addition, multiple and variable length encapsulations cause many
+problems for the system code as each peeling of an encapsulation requires
+the newly revealed network header to be moved to The Line. Again, slow and
+time consuming.
+
+Another assumption was that the RP would be the only CPU or controller
+to access the packet structure. As such, all the CPU specific information
+was lumped to the start of the encapsulation and network playload areas.
+This is a performance problem for DMA machines as this area is typically
+uncached. And accesses are often very slow and can be of a lesser width
+than the main system bus. Whilst this was a marginal problem with a
+16Mhz 68020 IGS, it becomes much more of a problem on a 40Mhz 68030
+based machine like the 4000, or a real handicap on the 50Mhz R4600
+which is to be used on the Sierra project.
+
+The Old Way
+===========
+
+The Line was enforced via a macro, called PAKMACRO. This macros defined
+the CPU specific context for a structure and also the size of the 
+encapsulation area. The encapsulation area was set to be the biggest
+encapsulation possible on the current range of media. This turns out
+to be Token Ring with an encapsulation of 84 bytes (this constant is
+called ENCAPBYTES in the system). Therefore, PAKMACRO was the size
+of the variables in the header plus ENCAPBYTES.
+
+However it defined nothing above The Line and thus, the end of PAKMACRO
+was in fact The Line. The vanilla use of PAKMACRO was handled by a
+structure called paktype, which was just basically a wrapper around
+PAKMACRO.
+
+Protocols used PAKMACRO to define a structure that would map on to the
+entire frame and overlay the network payload section of the data with
+whatever network level protocol was required (for example, iptype is
+PAKMACRO with an IP header after it).
+
+So, the world looked something like this
+
+    +-----------------+   --+
+    |                 |     |
+    |                 |     |
+    ~  CPU Context    ~     |
+    |                 |     |
+    |                 |     |- PAKMACRO (paktype)
+    +-----------------+     |
+    |                 |     |
+    |  ENCAPBYTES     |     |
+    |                 |     |
+    +-----------------+   --+
+    |                 |
+    |  Network Header |
+    |                 |
+    +-----------------+
+    |                 |
+    |  Network Data   |
+    |                 |
+
+
+The New Way
+===========
+
+In the current code, the structure above becomes the following one
+
+    +-----------------+   --+
+    |                 |     |
+    |                 |     |
+    ~  CPU Context    ~     |- paktype
+    |                 |     |
+    |                 |     |
+    +-----------------+   --+ 
+            |
+            | data_area
+            V
+    +-----------------+
+    |                 |
+    |  ENCAPBYTES     |
+    |                 |  
+    +-----------------+
+    |                 |
+    |  Network Header |
+    |                 |
+    +-----------------+
+    |                 |
+    |  Network Data   |
+    |                 |
+
+
+The structure has been split in two (hence the name usually associated
+with this fix, "the packet split") with data_area in paktype pointing
+at the chunk of memory used to hold the actual frame.
+
+PAKMACRO has been removed, as it is no longer required. paktype is now the
+only structure used to describe a packet in the system code and each of the
+protocol specific structures using PAKMACRO have been removed (for example,
+iptype doesn't exist now).
+
+In the above example, the CPU context block would be allocated from a
+malloc() operation. The data is allocated by an io_malloc(). This
+means the data is in a separate memory pool for DMA based platforms
+and in the same memory pool for the Sniff Buffer platforms.
+
+However, the code should never assume anything about this.
+
+paktype Structure Highlights
+============================
+
+As mentioned above, the main method used to access data in old code
+was using combined structure that consisted of PAKMACRO and a structure
+for the network level packet that was being manipulated.
+
+Whilst it's still possible to reference the data from a single pointer
+to the paktype structure, it's ugly and doesn't buy you very much.
+Instead, the code now works from a set of pointers that were defined
+in 9.21 and onwards and are now fully used.
+
+The main data pointers to be aware of are
+
+    mac_start     : Points to the start of the MAC header
+                    
+                    This is usually the same as datagramstart but can
+                    change (encapuslated bridging plays games with this
+                    pointer).
+
+    addr_start    : Points to the start of the DA
+
+                    This is a somewhat kludgy pointer but an extremely
+                    useful one. This points at the DA in the MAC header.
+                    This makes media independant processing in bridging
+                    an order of magnitude easier.
+
+    info_start    : Points to the link level header (where applicable)
+
+                    This points to a link level header if it exists.
+                    For example, info_start will point at the start of
+                    the SNAP header for an ET_SNAP frame.
+
+    network_start : Points to the start of the network header
+
+                    This is the pointer that most folk will become
+                    familiar with. It points at the network header for
+                    the frame. Using a pointer for this makes coping
+                    with frames that have multiple encapsulations a 
+                    matter of pointing network_start at the relevant one.
+
+                    This can be considered to be "The Virtual Line".
+
+In addition to the pointers are some new fields
+
+    encsize       : Gives the size of the encapsulation being processed
+
+                    This is nominally equal to (network_start - mac_start)
+                    but can be set to any value. This value makes it easy
+                    to calculate the value of datagramsize without the
+                    encapsulation.
+
+Incoming Frame Classification
+=============================
+
+A new key part of the frame classification is the idb vector, parse_packet.
+This vector replaces the old pakalign vector and adds a little more
+functionality.
+
+This routine classifies all frames going to process level, destined for
+the router itself or the process switching path. It sets up all the
+pointers and fields mentioned in the previous section, along with
+old favorites like pak->enctype.
+
+The parse_packet call has the following parameters
+
+    typedef iqueue_t (*parse_packet_t)(hwidbtype *, paktype *, uchar *);
+
+Most of the parameters are obvious here, with the exception of the latter
+parameter, the uchar *. This is rooted in folklore, was present in the
+previous incarnation of this call (pakalign) and needs explained better.
+
+This pointer points at the sniff buffer contents for frame classification
+allowing the crystal ball behaviour mentioned earlier. However, for the
+DMA based boxes, this pointer was fudged to point at the frame data in
+memory that would simulate sniff buffer contents. As pakalign attempted
+to set datagramstart (based on the sniff buffer contents), the driver
+had to save the original datagramstart lest it be changed. If it *was*
+changed, the driver moved the frame down in memory.
+
+That's how frame alignment for PAKMACRO on the DMA based boxes was achieved.
+
+However, parse_packet is a little smarter.
+
+If it's passed a pointer to a sniff buffer (i.e. the last parameter
+isn't NULL) it works just the same as the old pakalign call. However, if
+the pointer to the sniff buffer data is NULL, it assumes that datagramstart
+points at a valid datagram. It won't change datagramstart and classifies
+the frame from this point.
+
+This obviously means that network_start can end up on a point that isn't
+where The Line used to be. In fact, it can end up on any old alignment.
+
+This isn't a problem for the majority of our products. For some, it's
+faster to incur a few unaligned accesses (which the processor handles)
+than move the entire frame in shared memory.
+
+However, some of our products *do* care about this and process level
+code isn't written to flag unaligned accesses to the processor. In
+particular, the cs500, SPARC and MIPS R4K based machines will barf if
+passed a frame like this.
+
+How's this solved? Read on.
+
+Incoming Frame Alignment
+========================
+
+As was previously mentioned, alignment was forced in the driver via
+the pakalign vector and frame moving in the drivers (for DMA machines).
+In addition, any piece of code that changed the size of the encapsulation
+(or, if you prefer, where the encapsulation was deemed to end) had to
+start shuffling frames up and down in memory. Even worse, extra buffers
+were often allocated to avoid having to deal with bcopy() foibles (i.e.
+it's only safe in the "down" direction), resulting in needless buffer pool
+turnover.
+
+In the new scheme, most of these kludges have been removed. Instead, a
+single, conditionally compiled function call has been added to 
+raw_enqueue(). 
+
+    /*
+     * Snap the frame to alignment if required
+     */
+    ALIGN_DATAGRAM_CMD(pak_realign(pak, NULL));
+
+    reg_invoke_raw_enqueue(pak->linktype, pak);
+
+ALIGN_DATAGRAM_CMD() is a macro that will allow the contents of the
+parenthesis to be compiled in iff the flag ALIGN_DATAGRAM is defined.
+
+Platforms that require network level header alignment should define
+this in their respective h/defs_*.h file. An easy example to spot
+is in h/defs_cs500.h.
+
+The magic happens in pak_realign(). This function will take a frame
+and attempt to align the point indicated by pak->network_start to the
+value passed as a second parameter. If this is NULL, as indicated by
+the example above, it attempts to do the default alignment.
+
+The default is to align network_start to the value given by pak_center().
+
+If network_start is already aligned, it just returns. If network_start
+isn't aligned, the frame is moved in memory and all the pointers 
+pointing into the frame are moved by the same delta.
+
+The beauty of having the alignment done in raw_enqueue() is that all
+frames for process level come through this point (as it dispatches
+the frames based on linktype). This means that alignment for things
+like tunnelling is all done in one place and only if the platform
+needs this support.
+
+This means that, fundamentally, the de-encapsulation code doesn't have
+to mess with the frame data in order to force alignment. It just
+has to put network_start at the right spot and let raw_enqueue() take
+care of alignment issues.
+
+Outgoing Frame Encapsulation
+============================
+
+Whilst the text up until now has covered the reception of frames, what
+follows will attempt to describe the methods of adding outgoing frame
+encapsulations.
+
+Again, frame alignment assumptions play a crucial role in determining
+how the code evolved. The primary method for adding a media encapsulation
+to an outgoing datagram is through by calling a vector in the idb of the
+outgoing interface, idb->encap.
+
+In old code, the idb->encap routine assumes that the network header
+starts on The Line (like the rest of the code). When prefixing the
+frame with the required encapsulation, it just build backwards from
+The Line, pointing datagramstart at the resultant start point.
+
+However, this was a simplistic way to look at encapsulation. Some
+protocols had trouble with this method, almost right away. The first
+protocol to spill outside of this mould was Appletalk. Appletalk has
+two primary encapsulations on Ethernet - Ethertalk and 802.3 SNAP.
+
+Ethertalk has a 17 byte encapsulation (14 bytes of Ethernet V2 and
+3 bytes of Apple's own LLAP) and the 802.3 SNAP encapsulation is
+22 bytes.
+
+Due to the vagarities in dealing with multiple encapsulations, Appletalk
+doesn't use PAKMACRO. Instead, it used a precursor to network_start,
+called dataptr. Not using PAKMACRO meant that Appletalk had to use
+some other way to encapsulate a frame as the Appletalk network header
+might not align with The Line.
+
+So idb->vencap was born. This routine does exactly the same work as
+idb->encap, but works from pak->datagramstart instead of The Line.
+
+Unfortunately, this meant very similar two code paths for outgoing
+frames to use. And that some encapsulations implemented vencap
+and some didn't. The Modularisation effort tried to rectify some of
+this by making the idb->encap routine a wrapper around an idb->vencap
+core and by adding more idb->vencap routines.
+
+New protocols should use the idb->vencap call to encapsulate frames.
+
+However, when PAKMACRO disappeared, the idb->encap routines were changed
+to build back from pak->network_start. Whilst this is more flexible
+than the older incarnation, it would still be better to use idb->vencap
+to do the encapsulation.
+
+Buffer Pool Changes
+===================
+
+Whilst the most obvious change to the buffer pool code is that there's
+now two malloc() calls for a buffer, there are other subtle changes too.
+
+The primary one is that pak->network_start is set to point to where
+The Line used to be when a buffer is acquired via getbuffer() (or
+one of it's derivatives). pak->datagramstart also points to this memory
+address (as it always has).
+
+This allows macros that replaced code which wrote directly to The Line
+to function without any further changes to the system code.
+
+In addition, there's now a context block at the start of the data area
+that points back to the packet header that it belongs to. This is
+intended primarily for debugging.
+
+Network Level Changes
+=====================
+
+Obviously, not having structures like iptype around has meant changing
+the way the system code views the frames.
+
+However, the change isn't rocket science and isn't tough to understand.
+
+For example, ip_forus() in 10.0 looks like -
+
+boolean ip_forus (iptype *pak)
+{
+    idbtype *idb;
+    ipaddrtype target = pak->dstadr;
+
+    /*
+     * If we have a source route in progress it can't be for us.
+     */
+    if (pak->flags & PAKOPT_SRNOTEND)
+	return(FALSE);
+
+    if (ip_ouraddress(target))
+	return(TRUE);
+
+In the new scheme, it looks like this -
+
+boolean ip_forus (paktype *pak)
+{
+    idbtype *idb;
+    iphdrtype *ip; 
+    ipaddrtype target; 
+
+    ip = (iphdrtype *)ipheadstart(pak);
+    target = ip->dstadr;
+
+    /*
+     * If we have a source route in progress it can't be for us.
+     */
+    if (pak->flags & PAKOPT_SRNOTEND)
+	return(FALSE);
+
+Obviously, the "ip" pointer points at the IP header and the pak pointer
+now only points at internal frame data. This makes reading some of
+the sections of code, *much* easier to follow.
+
+And that's about it. Where ever the code needs to access protocol header
+information in a function, it has to find the header start from a
+protocol defined macro (all of them are named [foo]headstart()) and
+use that.
+
+Very simple and quite flexible.
+
+House Of Style
+==============
+
+What follows are style tips, helpful hints and fashion rules for today's
+well dressed software engineer. Or something.
+
+Whilst many of these may seem really trivial and/or anal, when you're making
+an enormous change, it helps to have rules for things. These are the rules
+I used to do the work - sticking to these helps keep the code looking the
+same.
+
+I've also lobbed in some Don't messages too. 
+
+I'll use IP as the protocol in the following examples. That doesn't
+mean I'm completely IPcentric - it just means that IP had the bulk of the
+changes and so makes a good example.
+
+  o The variable name "pak" is used for the paktype pointer in the vast
+    majority of the code. This shouldn't be used for pointing at any
+    other than the primary paktype structure in a function.
+
+    Similarly, don't do this -
+
+       paktype *ip;
+
+    This is just bloody confusing later on in the function and leads to
+    all sorts of chaos. Variable names like "clns", "ip" or "ipx" should
+    point at the protocol header, not the paktype structure.
+
+  o Be careful with casts in macros. Very careful.
+
+    Whilst I'm fairly anal about typecasting, the following code and
+    #defines are that way for a reason.
+
+    #define ipheadstart(pak) ((pak)->network_start)
+
+    iphdrtype *ip;
+
+    ip = (iphdrtype *)ipheadstart(pak);
+
+    If you move the cast into the #define, you run the risk of breaking
+    a whole load of pointer arithmetic. Whilst pointer arithmetic is
+    always kinda ugly, I'd much rather it didn't get broken as we have
+    nearly a million lines packed full of it. Therefore, it's best to
+    return (uchar *) from these macros and cast on the assignment.
+
+    Whilst not strictly the neatest solution, it'll save heartache later.
+
+  o Trying to name variables when there's multiple paktypes in a function
+    (and thus, multiple protocol header pointers) caused me some pain
+    until I came up with a fairly standard scheme.
+
+    It works like this -
+
+       "pak"    pairs with "ip"
+       "newpak" pairs with "newip"
+       "foopak" pairs with "fooip"
+
+    and so on. Keep it simple and use the protocol name as a replacement
+    for "pak". Life gets simple and your code gets more readable as there's
+    a style to it all.
+
+  o Don't bury protocol header assignments in the variable declarations
+    at the start of the function. Why? Because pak might be NULL and
+    you've evaded any checking the function might do. Get the pointer
+    as soon as you can but clearly for all to see.
+
+    Same for getting the pointer after a getbuffer(). The pointer should
+    be derived *after* the return value is checked. Deduct several
+    paychecks if you just said "getbuffer() can return NULL?"
+
+  o Be very careful about functions that play bait and switch with packet
+    pointers. If you have a function that might getbuffer() and new buffer
+    and return it, always freshen the protocol pointer *immediately*
+    afterwards. Similarly, take great care over following the goto
+    breadcrumb trails that some engineers insist on coding. You may be
+    unpleasantly surprised.
+
+  o There's very little need for (paktype *) casting. The only legitimate
+    place to use this cast in the majority of the system code is in
+    front of a dequeue() operation (as it currently returns a mempointer
+    and not a void *).
+
+    For example
+
+        datagram_done((paktype *)pak));
+
+    becomes
+
+        datagram_done(pak);
+
+    I changed all of the casts I came across. There are more. Your help
+    in removing them is required.
+
+  o (iphdrtype *)(pak + 1)
+
+    Never, ever, ever, ever, ever use this henious pointer arithmetic to
+    dereference a network header. This is the one of the few things
+    that will break the image in a big way. What this used to give you
+    was The Line. What it gives you now is effectively hyperspace.
+
+    David Hampton and I removed all the (pak + 1)s we could find.
+
+    The same goes for something like
+
+        (uchar *)pak + sizeof(paktype)
+
+    This is equivalent and garbage too. A pox on anyone who uses this.
+
+    Use a protocol header macro to get what you want. If one isn't
+    defined, define one.
+
+
+
+
+
+
+
+
+
+
